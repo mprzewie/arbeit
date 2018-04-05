@@ -1,41 +1,65 @@
 package pl.edu.agh.core;
 
+import com.sun.deploy.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AppTracker {
-    private String appToTrack;
+    private CopyOnWriteArrayList<String> applicationsToTrack;
 
-    public AppTracker(String appToTrack) {
-        this.appToTrack = appToTrack;
+    public AppTracker(CopyOnWriteArrayList<String> applicationsToTrack) {
+        this.applicationsToTrack = applicationsToTrack;
     }
 
     public void track() throws IOException, InterruptedException {
 
-        while(true) {
-            String line;
-            String pidInfo ="";
-            Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+        Thread appTrackThread = new Thread() {
+            public void run() {
+                while(true) {
+                    try {
+                        String line;
+                        Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+                        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        while ((line = input.readLine()) != null) {
+                            for (String appToTrack : applicationsToTrack) {
+                                if (line.contains(appToTrack)) {
+                                    //Not print but add to some class
+                                    System.out.println(new Date().toString() + " App: " + appToTrack + " is running");
+                                    break;
+                                }
+                            }
+                        }
+                        input.close();
+                        Thread.sleep(1000);
+                    }catch (Exception e){
 
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            while ((line = input.readLine()) != null) {
-                pidInfo += line;
+                    }
+                }
             }
+        };
+        appTrackThread.start();
+    }
 
-            input.close();
-
-            if (pidInfo.contains(this.appToTrack)) {
-                System.out.println(new Date().toString() + " App: " + this.appToTrack + " is running");
-            }
-            Thread.sleep(1000);
-        }
+    public void addAppToTrack(String appToTrack){
+        this.applicationsToTrack.add(appToTrack);
     }
 
     public static void main(String [] args) throws IOException, InterruptedException {
-        AppTracker appTracker = new AppTracker("Steam.exe");
+        AppTracker appTracker = new AppTracker(new CopyOnWriteArrayList<String>());
         appTracker.track();
+
+        Scanner sc = new Scanner(System.in);
+        String input = "";
+        while(true){
+            input = sc.nextLine();
+            input = input.replace("\n","");
+            appTracker.addAppToTrack(input);
+        }
+
     }
 }
