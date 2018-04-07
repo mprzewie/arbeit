@@ -1,12 +1,9 @@
-package pl.edu.agh.core;
-
-import com.sun.deploy.util.StringUtils;
+package pl.edu.agh.arbeit.tracker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AppTracker {

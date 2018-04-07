@@ -1,4 +1,4 @@
-package pl.edu.agh.core;
+package pl.edu.agh.arbeit.tracker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
