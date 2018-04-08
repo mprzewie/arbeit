@@ -1,4 +1,4 @@
-package pl.edu.agh.arbeit.tracker;
+package pl.edu.agh.arbeit.tracker.trackers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,30 +15,28 @@ public class AppTracker {
 
     public void track() throws IOException, InterruptedException {
 
-        Thread appTrackThread = new Thread() {
-            public void run() {
-                while(true) {
-                    try {
-                        String line;
-                        Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
-                        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                        while ((line = input.readLine()) != null) {
-                            for (String appToTrack : applicationsToTrack) {
-                                if (line.contains(appToTrack)) {
-                                    //Not print but add to some class
-                                    System.out.println(new Date().toString() + " App: " + appToTrack + " is running");
-                                    break;
-                                }
+        Thread appTrackThread = new Thread(() -> {
+            while(true) {
+                try {
+                    String line;
+                    Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+                    BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    while ((line = input.readLine()) != null) {
+                        for (String appToTrack : applicationsToTrack) {
+                            if (line.contains(appToTrack)) {
+                                //Not print but add to some class
+                                System.out.println(new Date().toString() + " Application: " + appToTrack + " is running");
+                                break;
                             }
                         }
-                        input.close();
-                        Thread.sleep(1000);
-                    }catch (Exception e){
-
                     }
+                    input.close();
+                    Thread.sleep(1000);
+                }catch (Exception e){
+
                 }
             }
-        };
+        });
         appTrackThread.start();
     }
 

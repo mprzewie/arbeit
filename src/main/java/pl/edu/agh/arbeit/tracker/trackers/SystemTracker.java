@@ -1,4 +1,4 @@
-package pl.edu.agh.arbeit.tracker;
+package pl.edu.agh.arbeit.tracker.trackers;
 
 import com.google.common.eventbus.EventBus;
 import pl.edu.agh.arbeit.tracker.events.EventType;
@@ -7,7 +7,7 @@ import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 /**
  * @author marcin on 4/8/18
  **/
-public class SystemTracker implements Runnable{
+public class SystemTracker implements Tracker {
 
     private final long pingTime = 3;
 
@@ -35,5 +35,10 @@ public class SystemTracker implements Runnable{
 
     public EventBus getBus() {
         return bus;
+    }
+
+    @Override
+    public Long getPingTime() {
+        return pingTime;
     }
 }

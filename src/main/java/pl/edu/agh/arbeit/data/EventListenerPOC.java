@@ -2,7 +2,7 @@ package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import pl.edu.agh.arbeit.tracker.SystemTracker;
+import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.events.*;
 
 /**

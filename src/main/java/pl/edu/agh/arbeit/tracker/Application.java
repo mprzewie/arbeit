@@ -22,7 +22,9 @@ import javax.script.ScriptException;
 /**
  * Created by Albert on 06.04.2018.
  */
-public class TrackedApplication {
+
+// TODO the whole logic of whether the app is running or not should be stored here
+public class Application {
     String name;
     boolean isApplicationRunning;
 
@@ -30,17 +32,17 @@ public class TrackedApplication {
         return name;
     }
 
-    public boolean isApplicationRunning() {
+    public boolean isRunning() {
         return isApplicationRunning;
     }
 
-    public boolean isApplicationActive() {
+    public boolean isActive() {
         return isApplicationActive;
     }
 
     boolean isApplicationActive;
 
-    public TrackedApplication(String name) {
+    public Application(String name) {
         this.name = name;
     }
 
@@ -67,7 +69,7 @@ public class TrackedApplication {
         Psapi.INSTANCE.GetModuleBaseNameW(processHandle.getPointer(), Pointer.NULL, filename, filename.length);
         String name = new String(filename);
         System.out.println(name);
-        if (name.endsWith("wwahost.exe")) { // Metro App
+        if (name.endsWith("wwahost.exe")) { // Metro Application
             // There is no stable API to get the current Metro app
             // But you can guestimate the name form the current directory of the process
             // To query this, see:
@@ -85,7 +87,7 @@ public class TrackedApplication {
             while ((line = input.readLine()) != null) {
                 if (line.contains(name)) {
                     //Not print but add to some class
-                    System.out.println(new Date().toString() + " App: " + name + " is running");
+                    System.out.println(new Date().toString() + " Application: " + name + " is running");
                     break;
                 }
 
