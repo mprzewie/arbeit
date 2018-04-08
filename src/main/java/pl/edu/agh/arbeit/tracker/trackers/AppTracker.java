@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Deprecated
 public class AppTracker {
     private CopyOnWriteArrayList<String> applicationsToTrack;
 

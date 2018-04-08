@@ -3,48 +3,70 @@ package pl.edu.agh.arbeit.tracker;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
+
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.unix.X11;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
+import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 /**
  * Created by Albert on 06.04.2018.
  */
 
 // TODO the whole logic of whether the app is running or not should be stored here
 public class Application {
-    String name;
-    boolean isApplicationRunning;
+    private final String name;
+    private final String programName;
+
+    public Application(String name, String programName) {
+        this.name = name;
+        this.programName = programName;
+    }
+
+    public boolean isRunning() {
+        try {
+            String line;
+            Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            while ((line = input.readLine()) != null) {
+                if (line.contains(programName)) {
+                    return true;
+                }
+            }
+            input.close();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public ApplicationEvent stateEvent(){
+        if(isActive()) return new ApplicationEvent(EventType.ACTIVE, this);
+        else return new ApplicationEvent(EventType.PASSIVE, this);
+    }
+
+    //TODO
+    public boolean isActive() {
+        return false;
+    }
 
     public String getName() {
         return name;
     }
 
-    public boolean isRunning() {
-        return isApplicationRunning;
+    public String getProgramName() {
+        return programName;
     }
 
-    public boolean isActive() {
-        return isApplicationActive;
-    }
 
-    boolean isApplicationActive;
-
-    public Application(String name) {
-        this.name = name;
-    }
 
     public interface Psapi extends StdCallLibrary {
         Psapi INSTANCE = (Psapi) Native.loadLibrary("Psapi", Psapi.class);
@@ -78,28 +100,8 @@ public class Application {
     }
     }
 
-    //TODO: this method should update state of app
-    public void track() throws IOException, InterruptedException {
-        try {
-            String line;
-            Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            while ((line = input.readLine()) != null) {
-                if (line.contains(name)) {
-                    //Not print but add to some class
-                    System.out.println(new Date().toString() + " Application: " + name + " is running");
-                    break;
-                }
-
-            }
-            input.close();
-
-        } catch (Exception e) {
-
-        }
-
     }
 
 
-}
+
 
