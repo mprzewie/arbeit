@@ -1,6 +1,5 @@
 package pl.edu.agh.arbeit.tracker.trackers;
 
-import com.google.common.eventbus.EventBus;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
