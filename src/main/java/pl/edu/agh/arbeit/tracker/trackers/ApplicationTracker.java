@@ -8,33 +8,29 @@ import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.util.Stack;
 
-public class ApplicationTracker implements Tracker {
+public class ApplicationTracker extends AsyncTracker {
 
-    private final EventBus bus;
     private final Application application;
     private final Stack<Event> previousEvents;
-    private final long pingTime = 3;
 
-    public ApplicationTracker(EventBus eventBus, Application application) {
-        this.bus = eventBus;
+    public ApplicationTracker(long pingTime, Application application) {
+        super(pingTime);
         this.application = application;
         previousEvents = new Stack<>();
+        previousEvents.push(new ApplicationEvent(EventType.STOP, application));
     }
 
     @Override
-    public void run() {
-        previousEvents.push(new ApplicationEvent(EventType.START, application));
-        bus.post(previousEvents.peek());
-        while (application.isRunning()){
-            try {
-                Thread.sleep(pingTime * 1000);
-                Event newEvent = application.stateEvent();
-                if(!newEvent.equals(previousEvents.peek())){
-                    previousEvents.push(newEvent);
-                    bus.post(newEvent);
-                }
-            } catch (InterruptedException ignored) {}
+    protected void actOnStatus() {
+        Event currentStateEvent = application.getCurrentStateEvent();
+        if(!currentStateEvent.equals(previousEvents.peek())){
+            previousEvents.push(currentStateEvent);
+            bus.post(currentStateEvent);
         }
+    }
+
+    @Override
+    protected void stopTracking() {
         bus.post(new ApplicationEvent(EventType.STOP, application));
     }
 
@@ -42,14 +38,4 @@ public class ApplicationTracker implements Tracker {
         return application;
     }
 
-
-    @Override
-    public EventBus getBus() {
-        return bus;
-    }
-
-    @Override
-    public Long getPingTime() {
-        return pingTime;
-    }
 }

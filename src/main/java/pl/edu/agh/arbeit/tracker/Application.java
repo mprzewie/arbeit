@@ -48,9 +48,12 @@ public class Application {
         }
     }
     
-    public ApplicationEvent stateEvent(){
-        if(isActive()) return new ApplicationEvent(EventType.ACTIVE, this);
-        else return new ApplicationEvent(EventType.PASSIVE, this);
+    public ApplicationEvent getCurrentStateEvent(){
+        if(isRunning()){
+            if(isActive()) return new ApplicationEvent(EventType.ACTIVE, this);
+            else return new ApplicationEvent(EventType.PASSIVE, this);
+        } else return new ApplicationEvent(EventType.STOP, this);
+
     }
 
     //TODO

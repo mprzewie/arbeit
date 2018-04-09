@@ -2,10 +2,11 @@ package pl.edu.agh.arbeit.tracker.trackers;
 
 import com.google.common.eventbus.EventBus;
 
-public interface Tracker extends Runnable{
+public interface Tracker {
 
     EventBus getBus();
-    Long getPingTime();
+    void start();
+    void stop();
 
 
 }
