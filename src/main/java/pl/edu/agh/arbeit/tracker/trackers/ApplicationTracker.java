@@ -1,48 +1,40 @@
 package pl.edu.agh.arbeit.tracker.trackers;
 
-import com.google.common.eventbus.EventBus;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
+import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 
-public class ApplicationTracker implements Tracker {
+import java.util.Stack;
 
-    private final EventBus bus;
+public class ApplicationTracker extends AsyncTracker {
+
     private final Application application;
-    private final long pingTime = 3;
+    private final Stack<Event> previousEvents;
 
-    public ApplicationTracker(EventBus eventBus, Application application) {
-        this.bus = eventBus;
+    public ApplicationTracker(long pingTime, Application application) {
+        super(pingTime);
         this.application = application;
+        previousEvents = new Stack<>();
+        previousEvents.push(new ApplicationEvent(EventType.STOP, application));
     }
 
     @Override
-    public void run() {
-        bus.post(new ApplicationEvent(EventType.START, application));
-
-        while (application.isRunning()){
-            try {
-                Thread.sleep(pingTime * 1000);
-                if(application.isActive()){
-                    bus.post(new ApplicationEvent(EventType.ACTIVE, application));
-                }
-                else {
-                    bus.post(new ApplicationEvent(EventType.PASSIVE, application));
-                }
-            } catch (InterruptedException e) {
-            }
+    protected void actOnStatus() {
+        Event currentStateEvent = application.getCurrentStateEvent();
+        if(!currentStateEvent.equals(previousEvents.peek())){
+            previousEvents.push(currentStateEvent);
+            bus.post(currentStateEvent);
         }
+    }
+
+    @Override
+    protected void stopTracking() {
         bus.post(new ApplicationEvent(EventType.STOP, application));
-
     }
 
-    @Override
-    public EventBus getBus() {
-        return bus;
+    public Application getApplication() {
+        return application;
     }
 
-    @Override
-    public Long getPingTime() {
-        return pingTime;
-    }
 }
