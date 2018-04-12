@@ -22,4 +22,12 @@ public class ActivityEvent {
     public EventType getType() {
         return type;
     }
+
+    public Date getStartdate() {
+        return startdate;
+    }
+
+    public Date getPossibleEndDate() {
+        return possibleEndDate;
+    }
 }

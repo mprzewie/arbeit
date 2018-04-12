@@ -2,6 +2,7 @@ package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.Subscribe;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.events.*;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
@@ -35,22 +36,22 @@ public class EventListener {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Application pyCharm = new Application("PyCharm", "pycharm64.exe");
+        Application pyCharm = new Application("Chrome", "chrome.exe");
 
-        //Tracker pyCharmTracker = new ApplicationTracker(5, pyCharm);
+        Tracker pyCharmTracker = new ApplicationTracker(5, pyCharm);
         Tracker systemTracker = new SystemTracker(10);
         EventListener poc = new EventListener();
 
         poc.subscribe(systemTracker);
-        //poc.subscribe(pyCharmTracker);
+        poc.subscribe(pyCharmTracker);
 
         systemTracker.start();
-        //pyCharmTracker.start();
+        pyCharmTracker.start();
 
         Thread.sleep(120 * 1000);
 
         systemTracker.stop();
-        //pyCharmTracker.stop();
+        pyCharmTracker.stop();
 
 
     }

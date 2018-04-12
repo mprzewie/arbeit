@@ -11,6 +11,7 @@ public class ApplicationInfo {
     private Stack<ActivityEvent> activityEventStack = new Stack<ActivityEvent>();
 
     public ApplicationInfo(Date startdate) {
+
         this.startdate = startdate;
     }
 
@@ -28,5 +29,17 @@ public class ApplicationInfo {
         }
         //in case of crash set possible endDate of application to last receive event
         this.enddate = date;
+    }
+
+    public Date getStartdate() {
+        return startdate;
+    }
+
+    public Date getEnddate() {
+        return enddate;
+    }
+
+    public Stack<ActivityEvent> getActivityEventStack() {
+        return activityEventStack;
     }
 }
