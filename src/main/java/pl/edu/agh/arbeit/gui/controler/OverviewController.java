@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
+import pl.edu.agh.arbeit.gui.model.FakeTracker;
 
 import java.io.IOException;
 
@@ -22,12 +23,16 @@ public class OverviewController {
             System.out.print(Main.class.getResource(MAIN_PAIN_RPATH));
             AnchorPane rootLayout = loader.load();
             MainWindowController mainWindowController = loader.getController();
-            mainWindowController.init(this);
+            mainWindowController.init(this, new FakeTracker());
             Scene scene = new Scene(rootLayout);
             this.primaryStage.setScene(scene);
             this.primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 }
