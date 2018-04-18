@@ -18,7 +18,7 @@ public class DataCollector {
         try {
             modifyApplicationInfo(event);
 //            System.out.println("Will be writing CSV");
-            generateCSVFile(getCSVFromHashMap());
+//            generateCSVFile(getCSVFromHashMap());
         } catch (InvalidEventTypeException e) {
             //todo
         } catch (Exception e) {
