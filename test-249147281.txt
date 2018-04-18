@@ -1,0 +1,9 @@
+Nazwa programu,Data uruchomienia programu,Data zakończenia programu,Data rozpoczęcia aktywności,Data zakończenia aktywności,
+,Wed Apr 18 18:32:54 CEST 2018,null
+,Wed Apr 18 18:32:54 CEST 2018,null,Wed Apr 18 18:32:54 CEST 2018,Wed Apr 18 18:32:54 CEST 2018
+system,Wed Apr 18 18:32:49 CEST 2018,null
+system,Wed Apr 18 18:32:49 CEST 2018,null,Wed Apr 18 18:32:49 CEST 2018,Wed Apr 18 18:32:49 CEST 2018
+system,Wed Apr 18 18:32:49 CEST 2018,null,Wed Apr 18 18:32:59 CEST 2018,Wed Apr 18 18:32:59 CEST 2018
+system,Wed Apr 18 18:32:49 CEST 2018,null,Wed Apr 18 18:33:09 CEST 2018,Wed Apr 18 18:33:09 CEST 2018
+chrome.exe,Wed Apr 18 18:33:07 CEST 2018,null
+chrome.exe,Wed Apr 18 18:33:07 CEST 2018,null,Wed Apr 18 18:33:07 CEST 2018,Wed Apr 18 18:33:07 CEST 2018

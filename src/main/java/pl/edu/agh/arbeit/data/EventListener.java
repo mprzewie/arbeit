@@ -32,28 +32,8 @@ public class EventListener {
         dataCollector.parseEvent(event);
     }
 
-
-
-    public static void main(String[] args) throws InterruptedException {
-
-        Application pyCharm = new Application("Chrome", "chrome.exe");
-
-        Tracker pyCharmTracker = new ApplicationTracker(5, pyCharm);
-        Tracker systemTracker = new SystemTracker(100);
-        EventListener poc = new EventListener();
-
-        poc.subscribe(systemTracker);
-        poc.subscribe(pyCharmTracker);
-
-        systemTracker.start();
-        pyCharmTracker.start();
-
-        Thread.sleep(1200 * 1000);
-
-        systemTracker.stop();
-        pyCharmTracker.stop();
-
-
+    public DataCollector getDataCollector() {
+        return dataCollector;
     }
 }
 
