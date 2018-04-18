@@ -18,7 +18,7 @@ public class DataCollector {
         try {
             modifyApplicationInfo(event);
 //            System.out.println("Will be writing CSV");
-//            generateCSVFile(getCSVFromHashMap());
+            generateCSVFile(getCSVFromHashMap());
         } catch (InvalidEventTypeException e) {
             //todo
         } catch (Exception e) {
@@ -99,6 +99,15 @@ public class DataCollector {
         Set<String> keys = hashMap.keySet();
 
         StringBuilder builder = new StringBuilder();
+
+        builder.append(
+                "Nazwa programu" + "," +
+                        "Data uruchomienia programu" + "," +
+                        "Data zakończenia programu" + "," +
+                        "Data rozpoczęcia aktywności" + "," +
+                        "Data zakończenia aktywności" + ","
+        );
+        builder.append(System.lineSeparator());
 
         for (String key :
                 keys) {
