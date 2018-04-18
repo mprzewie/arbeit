@@ -38,7 +38,10 @@ public class DataCollector {
                 // set enddate of applicationInfo, mark it as closed, if there is activity end date set do this as event date
                 if(hashMap.get(event.getTopic()).empty())
                     throw new InvalidEventTypeException(event);
-                hashMap.get(event.getTopic()).peek().setEnddate(event.getDate());
+                synchronized (hashMap) {
+                    hashMap.get(event.getTopic()).peek().setEnddate(event.getDate());
+                    hashMap.get(event.getTopic()).peek().setClosed(true);
+                }
                 break;
             case ACTIVE:
                 /* if there is nothing on this application's stack or the peeked element is closed
@@ -50,11 +53,20 @@ public class DataCollector {
                 *     insert new ActivityEvent to the stack of the ApplicationInfo's event stack
                 *     set startdate of it
                 * */
-                ActivityEvent activityEvent = new ActivityEvent(event.getType(), event.getDate());
+                if (hashMap.get(event.getTopic()).empty() || hashMap.get(event.getTopic()).peek().isClosed()) {
+                    applicationInfo = new ApplicationInfo(event.getDate());
+                    ActivityEvent newEvent = new ActivityEvent(event.getType(), event.getDate());
+                    applicationInfo.getActivityEventStack().push(newEvent);
+                    hashMap.get(event.getTopic()).push(applicationInfo);
+                } else {
+                    ActivityEvent newEvent = new ActivityEvent(event.getType(), event.getDate());
+                    hashMap.get(event.getTopic()).peek().getActivityEventStack().push(newEvent);
+                }
+                /*ActivityEvent activityEvent = new ActivityEvent(event.getType(), event.getDate());
                 if (hashMap.get(event.getTopic()).empty()) {
                     hashMap.get(event.getTopic()).push(new ApplicationInfo(event.getDate()));
                 }
-                hashMap.get(event.getTopic()).peek().getActivityEventStack().push(activityEvent);
+                hashMap.get(event.getTopic()).peek().getActivityEventStack().push(activityEvent);*/
                 break;
             case PASSIVE:
                 /* if there is nothing on this application's stack or the peeked element is closed
@@ -65,8 +77,18 @@ public class DataCollector {
                  *  else
                  *     set enddate of the top of event stack of the top of Info stack
                  * */
-                if(hashMap.get(event.getTopic()).empty()) throw new InvalidEventTypeException(event);
-                hashMap.get(event.getTopic()).peek().handleActivityEvent(event.getType(), event.getDate());
+
+                if (hashMap.get(event.getTopic()).empty() || hashMap.get(event.getTopic()).peek().isClosed()) {
+                    applicationInfo = new ApplicationInfo(event.getDate());
+                    ActivityEvent newEvent = new ActivityEvent(event.getType(), event.getDate());
+                    newEvent.setPossibleEndDate(event.getDate());
+                    applicationInfo.getActivityEventStack().push(newEvent);
+                    hashMap.get(event.getTopic()).push(applicationInfo);
+                } else {
+                    hashMap.get(event.getTopic()).peek().getActivityEventStack().peek().setPossibleEndDate(event.getDate());
+                }
+                /*if(hashMap.get(event.getTopic()).empty()) throw new InvalidEventTypeException(event);
+                hashMap.get(event.getTopic()).peek().handleActivityEvent(event.getType(), event.getDate());*/
                 break;
         }
     }

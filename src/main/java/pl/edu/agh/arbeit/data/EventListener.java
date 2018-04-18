@@ -48,7 +48,7 @@ public class EventListener {
 //        systemTracker.start();
         pyCharmTracker.start();
 
-        Thread.sleep(120 * 1000);
+        Thread.sleep(1200 * 1000);
 
 //        systemTracker.stop();
         pyCharmTracker.stop();
