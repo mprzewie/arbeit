@@ -6,12 +6,14 @@ import java.util.Date;
 import java.util.Stack;
 
 public class ApplicationInfo {
+    private boolean isClosed;
+
     private Date startdate;
+
     private Date enddate = null;
     private Stack<ActivityEvent> activityEventStack = new Stack<ActivityEvent>();
-
     public ApplicationInfo(Date startdate) {
-
+        this.setClosed(false);
         this.startdate = startdate;
     }
 
@@ -41,5 +43,13 @@ public class ApplicationInfo {
 
     public Stack<ActivityEvent> getActivityEventStack() {
         return activityEventStack;
+    }
+
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    public void setClosed(boolean closed) {
+        isClosed = closed;
     }
 }

@@ -17,7 +17,7 @@ public class DataCollector {
         }
         try {
             modifyApplicationInfo(event);
-            System.out.println("Will be writing CSV");
+//            System.out.println("Will be writing CSV");
             writeHashMapToCsv();
         } catch (InvalidEventTypeException e) {
             //todo
@@ -30,14 +30,26 @@ public class DataCollector {
         ApplicationInfo applicationInfo;
         switch(event.getType()) {
             case START:
+                // push new applicationInfo to stack and set startDate on it
                 applicationInfo = new ApplicationInfo(event.getDate());
                 hashMap.get(event.getTopic()).push(applicationInfo);
                 break;
             case STOP:
-                if(hashMap.get(event.getTopic()).empty()) throw new InvalidEventTypeException(event);
+                // set enddate of applicationInfo, mark it as closed, if there is activity end date set do this as event date
+                if(hashMap.get(event.getTopic()).empty())
+                    throw new InvalidEventTypeException(event);
                 hashMap.get(event.getTopic()).peek().setEnddate(event.getDate());
                 break;
             case ACTIVE:
+                /* if there is nothing on this application's stack or the peeked element is closed
+                *     insert new application info to this application's stack
+                *     set it's start date
+                *     insert new ActivityEvent to newly created ApplicationInfo's stack
+                *     set startdate on it
+                *  else
+                *     insert new ActivityEvent to the stack of the ApplicationInfo's event stack
+                *     set startdate of it
+                * */
                 ActivityEvent activityEvent = new ActivityEvent(event.getType(), event.getDate());
                 if (hashMap.get(event.getTopic()).empty()) {
                     hashMap.get(event.getTopic()).push(new ApplicationInfo(event.getDate()));
@@ -45,6 +57,14 @@ public class DataCollector {
                 hashMap.get(event.getTopic()).peek().getActivityEventStack().push(activityEvent);
                 break;
             case PASSIVE:
+                /* if there is nothing on this application's stack or the peeked element is closed
+                 *     insert new application info to this application's stack
+                 *     set it's start date
+                 *     insert new ActivityEvent to newly created ApplicationInfo's stack
+                 *     set startdate and enddate on it
+                 *  else
+                 *     set enddate of the top of event stack of the top of Info stack
+                 * */
                 if(hashMap.get(event.getTopic()).empty()) throw new InvalidEventTypeException(event);
                 hashMap.get(event.getTopic()).peek().handleActivityEvent(event.getType(), event.getDate());
                 break;
@@ -52,7 +72,7 @@ public class DataCollector {
     }
 
     public void writeHashMapToCsv() throws Exception {
-        System.out.println("Started CSV");
+//        System.out.println("Started CSV");
 
         Set<String> keys = hashMap.keySet();
 
@@ -60,7 +80,7 @@ public class DataCollector {
 
         for (String key :
                 keys) {
-            System.out.println("Keys: " + keys);
+//            System.out.println("Keys: " + keys);
             for (ApplicationInfo tmpInfo :
                     hashMap.get(key)) {
                 builder.append(key + "," +
@@ -82,7 +102,7 @@ public class DataCollector {
 
         System.out.println(builder.toString());
 
-        System.out.println("Finished CSV");
+//        System.out.println("Finished CSV");
     }
 
 }
