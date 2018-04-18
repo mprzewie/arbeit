@@ -3,7 +3,7 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
 
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 
 public class DataCollector {
@@ -18,7 +18,7 @@ public class DataCollector {
         try {
             modifyApplicationInfo(event);
 //            System.out.println("Will be writing CSV");
-            writeHashMapToCsv();
+//            generateCSVFile(getCSVFromHashMap());
         } catch (InvalidEventTypeException e) {
             //todo
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class DataCollector {
         }
     }
 
-    public void writeHashMapToCsv() throws Exception {
+    public String getCSVFromHashMap() throws Exception {
 //        System.out.println("Started CSV");
 
         Set<String> keys = hashMap.keySet();
@@ -121,10 +121,27 @@ public class DataCollector {
             }
         }
 
+        String result = builder.toString();
+        System.out.println(result);
 
-        System.out.println(builder.toString());
+        return result;
+    }
 
-//        System.out.println("Finished CSV");
+    public void generateCSVFile(String sourceCSV) {
+        BufferedWriter out = null;
+        try {
+            Random rand = new Random();
+            out = new BufferedWriter(new FileWriter("test" + rand.nextInt() + ".txt"));
+            out.write(sourceCSV);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

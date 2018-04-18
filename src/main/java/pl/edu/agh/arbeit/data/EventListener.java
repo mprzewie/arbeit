@@ -39,18 +39,18 @@ public class EventListener {
         Application pyCharm = new Application("Chrome", "chrome.exe");
 
         Tracker pyCharmTracker = new ApplicationTracker(5, pyCharm);
-//        Tracker systemTracker = new SystemTracker(10);
+        Tracker systemTracker = new SystemTracker(100);
         EventListener poc = new EventListener();
 
-//        poc.subscribe(systemTracker);
+        poc.subscribe(systemTracker);
         poc.subscribe(pyCharmTracker);
 
-//        systemTracker.start();
+        systemTracker.start();
         pyCharmTracker.start();
 
         Thread.sleep(1200 * 1000);
 
-//        systemTracker.stop();
+        systemTracker.stop();
         pyCharmTracker.stop();
 
 
