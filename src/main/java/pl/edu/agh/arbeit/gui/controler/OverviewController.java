@@ -1,9 +1,12 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import pl.edu.agh.arbeit.gui.Main;
 
 import java.io.IOException;
@@ -25,6 +28,12 @@ public class OverviewController {
             mainWindowController.init(this);
             Scene scene = new Scene(rootLayout);
             this.primaryStage.setScene(scene);
+
+            primaryStage.setOnCloseRequest(t -> {
+                Platform.exit();
+                System.exit(0);
+            });
+
             this.primaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();

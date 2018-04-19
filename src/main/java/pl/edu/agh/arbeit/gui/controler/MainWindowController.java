@@ -1,13 +1,12 @@
 package pl.edu.agh.arbeit.gui.controler;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.view.AddCircle;
 import pl.edu.agh.arbeit.tracker.Application;
@@ -39,6 +38,10 @@ public class MainWindowController {
     private EventListener eventListener;
 
     private List<Tracker> trackerList;
+
+    private Line verticalLine;
+
+    private Line timeLine;
     
     public void init(OverviewController overviewController) {
         this.trackerList = new LinkedList<>();
@@ -46,6 +49,32 @@ public class MainWindowController {
         this.addCircle = new AddCircle();
         this.addCircle.setDisable(true);
         this.anchorPane.getChildren().add(this.addCircle);
+
+        this.verticalLine = new Line();
+        this.verticalLine.setStartX(120);
+        this.verticalLine.setEndX(120);
+        this.verticalLine.setStartY(0);
+        this.verticalLine.setEndY(150);
+        this.anchorPane.getChildren().add(this.verticalLine);
+
+        timeLine = new Line();
+        timeLine.setStartX(0);
+        timeLine.setEndX(800);
+        timeLine.setStartY(50);
+        timeLine.setEndY(50);
+        this.anchorPane.getChildren().add(timeLine);
+
+        Line f1 = new Line();
+        f1.setStartX(0);
+        f1.setEndX(120);
+        f1.setStartY(100);
+        f1.setEndY(100);
+        this.anchorPane.getChildren().add(f1);
+
+        Text systemText = new Text("System");
+        systemText.setLayoutX(10);
+        systemText.setLayoutY(80);
+        this.anchorPane.getChildren().add(systemText);
 
         this.eventListener = new EventListener();
         Tracker systemTracker = new SystemTracker(10);
@@ -59,6 +88,7 @@ public class MainWindowController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         });
 
         addCircle.setOnMouseClicked(event ->{
@@ -67,6 +97,23 @@ public class MainWindowController {
             eventListener.subscribe(appTracker);
             appTracker.start();
             trackerList.add(appTracker);
+
+            this.verticalLine.setEndY(this.verticalLine.getEndY()+50);
+
+            Line ft = new Line();
+            ft.setStartX(0);
+            ft.setEndX(120);
+            ft.setStartY(100+50*(trackerList.size()-1));
+            ft.setEndY(100+50*(trackerList.size()-1));
+            this.anchorPane.getChildren().add(ft);
+
+            Text appName = new Text(appNameTextField.getText());
+            appName.setLayoutX(10);
+            appName.setLayoutY(80+50*(trackerList.size()-1));
+            this.anchorPane.getChildren().add(appName);
+
+            addCircle.setLayoutY(addCircle.getLayoutY()+50);
+            appNameTextField.setLayoutY(appNameTextField.getLayoutY()+50);
         });
 
         appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
