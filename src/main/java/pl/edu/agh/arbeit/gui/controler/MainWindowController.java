@@ -1,6 +1,11 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -8,12 +13,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.data.EventListener;
+import javafx.stage.Stage;
+import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.view.AddCircle;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +50,8 @@ public class MainWindowController {
     private Line verticalLine;
 
     private Line timeLine;
-    
+
+
     public void init(OverviewController overviewController) {
         this.trackerList = new LinkedList<>();
         this.overviewController=overviewController;
@@ -82,15 +91,6 @@ public class MainWindowController {
         systemTracker.start();
         trackerList.add(systemTracker);
 
-        generateReportButton.setOnMouseClicked(event -> {
-            try {
-                eventListener.getDataCollector().generateCSVFile(eventListener.getDataCollector().getCSVFromHashMap());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
-
         addCircle.setOnMouseClicked(event ->{
             Application app = new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
             Tracker appTracker = new ApplicationTracker(5, app);
@@ -124,6 +124,7 @@ public class MainWindowController {
         });
         this.bindSizeProperties();
         this.initDatePicer();
+        this.initReportButton();
     }
 
     private void bindSizeProperties() {
@@ -132,5 +133,24 @@ public class MainWindowController {
     private void initDatePicer(){
         datePicker.setValue(LocalDate.now());
         datePicker.setDisable(true);
+    }
+
+    private void initReportButton() {
+        generateReportButton.setOnAction(
+            (ActionEvent event) -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(Main.class.getResource("view/ReportsPane.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = new Stage();
+                    ReportsController reportsController = loader.getController();
+                    reportsController.init(stage, eventListener, trackerList);
+                    stage.setScene(new Scene(root, 450, 450));
+                    stage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        );
     }
 }
