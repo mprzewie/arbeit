@@ -55,7 +55,7 @@ public class DatabaseInitializer {
         String sql = "CREATE TABLE IF NOT EXISTS Event (\n"
                 + " appName text NOT NULL,\n"
                 + "	eventType text NOT NULL,\n"
-                + " eventDate text NOT NULL\n"
+                + " eventDate datetime NOT NULL\n"
                 + ");";
         System.out.println(sql);
 
