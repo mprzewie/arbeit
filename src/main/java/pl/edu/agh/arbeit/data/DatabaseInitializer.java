@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 public class DatabaseInitializer {
     public static Connection conn = null;
-    private static String url = "jdbc:sqlite:test.db";
+    public static String url = "jdbc:sqlite:test.db";
     public static void initializeDatabase(){
 
 
@@ -18,7 +18,7 @@ public class DatabaseInitializer {
         try {
             conn = DriverManager.getConnection(url);
             System.out.println("Connection to SQLite has been established.");
-            createApplicationTable();
+//            createApplicationTable();
             createEventTable();
 
         } catch (SQLException e) {
@@ -36,10 +36,9 @@ public class DatabaseInitializer {
 
     }
 
-    private static void createApplicationTable() {
+ /*   private static void createApplicationTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Application (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	name text NOT NULL\n"
+                + "	appName text NOT NULL\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -50,23 +49,23 @@ public class DatabaseInitializer {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-    }
+    }*/
 
     private static void createEventTable() {
         String sql = "CREATE TABLE IF NOT EXISTS Event (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + " appId integer NOT NULL,\n"
-                + "	eventtype text NOT NULL,\n"
-                + " FOREIGN KEY (appId) REFERENCES Application(id)"
+                + " appName text NOT NULL,\n"
+                + "	eventType text NOT NULL,\n"
+                + " eventDate text NOT NULL\n"
                 + ");";
+        System.out.println(sql);
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
-            System.out.println("Created Application table.");
+            System.out.println("Created Event table.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

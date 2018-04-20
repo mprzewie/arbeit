@@ -8,6 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.view.AddCircle;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
@@ -42,8 +43,11 @@ public class MainWindowController {
     private Line verticalLine;
 
     private Line timeLine;
+
+    private EventRepository applicationRepository;
     
     public void init(OverviewController overviewController) {
+        this.applicationRepository = new EventRepository();
         this.trackerList = new LinkedList<>();
         this.overviewController=overviewController;
         this.addCircle = new AddCircle();
@@ -93,6 +97,7 @@ public class MainWindowController {
 
         addCircle.setOnMouseClicked(event ->{
             Application app = new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
+
             Tracker appTracker = new ApplicationTracker(5, app);
             eventListener.subscribe(appTracker);
             appTracker.start();

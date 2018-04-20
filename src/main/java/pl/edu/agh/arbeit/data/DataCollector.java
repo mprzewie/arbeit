@@ -1,4 +1,5 @@
 package pl.edu.agh.arbeit.data;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
@@ -10,7 +11,12 @@ public class DataCollector {
 
     private HashMap<String, Stack<ApplicationInfo>> hashMap = new HashMap<>();
 
+    private EventRepository eventRepository = new EventRepository();
+
     public void parseEvent(Event event) {
+        this.eventRepository.insertEvent(event);
+        System.out.println(this.eventRepository.getAllEvents().toString());
+
         if(!hashMap.containsKey(event.getTopic())) {
             Stack<ApplicationInfo> stack = new Stack<>();
             hashMap.put(event.getTopic(), stack);
