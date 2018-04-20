@@ -10,16 +10,21 @@ class ApplicationTest {
     Application intelliJIdea = new Application("IntelliJ Idea", "idea64.exe");
     Application pyCharm = new Application("PyCharm", "pycharm64.exe");
 
-
     @Test
     void intelliJRunning() {
         assertTrue(intelliJIdea.isRunning());
     }
 
     @Test
+    void intelliJActive() {
+        assertTrue(intelliJIdea.isActive());
+    }
+
+    @Test
     void pyCharmRunning() {
         assertFalse(pyCharm.isRunning());
     }
+
     @Test
     void getCurrentStateEvent() {
         MockedApplication app = new MockedApplication(true,true);
