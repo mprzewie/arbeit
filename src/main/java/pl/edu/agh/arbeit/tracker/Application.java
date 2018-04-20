@@ -98,12 +98,11 @@ public class Application {
                 // But you can guestimate the name form the current directory of the process
                 // To query this, see:
                 // http://stackoverflow.com/questions/16110936/read-other-process-current-directory-in-c-sharp
-                throw new NotImplementedException();
+                return "";
             }
             return focusedName;
         } else {
-            //UNIX code
-            throw new NotImplementedException();
+            return "";
         }
 
     }
