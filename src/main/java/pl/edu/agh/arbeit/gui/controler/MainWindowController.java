@@ -3,7 +3,6 @@ package pl.edu.agh.arbeit.gui.controler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,6 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainWindowController {
+    private final static long APP_TRACKER_PING_TIME = 5;
+    private final static long SYSTEM_TRACKER_PING_TIME = 10;
+    private final static int SINGLE_APP_VIEW_WIDTH = 50;
     private OverviewController overviewController;
 
     @FXML
@@ -86,34 +88,20 @@ public class MainWindowController {
         this.anchorPane.getChildren().add(systemText);
 
         this.eventListener = new EventListener();
-        Tracker systemTracker = new SystemTracker(10);
+        Tracker systemTracker = new SystemTracker(SYSTEM_TRACKER_PING_TIME);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
 
         addCircle.setOnMouseClicked(event ->{
-            Application app = new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
-            Tracker appTracker = new ApplicationTracker(5, app);
-            eventListener.subscribe(appTracker);
-            appTracker.start();
-            trackerList.add(appTracker);
-
-            this.verticalLine.setEndY(this.verticalLine.getEndY()+50);
-
-            Line ft = new Line();
-            ft.setStartX(0);
-            ft.setEndX(120);
-            ft.setStartY(100+50*(trackerList.size()-1));
-            ft.setEndY(100+50*(trackerList.size()-1));
-            this.anchorPane.getChildren().add(ft);
-
-            Text appName = new Text(appNameTextField.getText());
-            appName.setLayoutX(10);
-            appName.setLayoutY(80+50*(trackerList.size()-1));
-            this.anchorPane.getChildren().add(appName);
-
-            addCircle.setLayoutY(addCircle.getLayoutY()+50);
-            appNameTextField.setLayoutY(appNameTextField.getLayoutY()+50);
+            Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
+            if(isAppNotTracked(newApp)) {
+                this.trackerList.add(createTracker(APP_TRACKER_PING_TIME, newApp));
+                this.verticalLine.setEndY(this.verticalLine.getEndY() + SINGLE_APP_VIEW_WIDTH);
+                drawNewAppView();
+                addCircle.setLayoutY(addCircle.getLayoutY() + SINGLE_APP_VIEW_WIDTH);
+                appNameTextField.setLayoutY(appNameTextField.getLayoutY() + SINGLE_APP_VIEW_WIDTH);
+            }
         });
 
         appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -125,6 +113,33 @@ public class MainWindowController {
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
+    }
+
+    private Tracker createTracker(long pingTime,  Application application){
+        Tracker appTracker = new ApplicationTracker(pingTime, application);
+        eventListener.subscribe(appTracker);
+        appTracker.start();
+        return appTracker;
+    }
+
+    private boolean isAppNotTracked(Application application){
+        return trackerList.stream()
+                .filter(tracker -> tracker instanceof ApplicationTracker)
+                .noneMatch(tracker -> ((ApplicationTracker) tracker).getApplication().equals(application));
+    }
+
+    private void drawNewAppView(){
+        Line ft = new Line();
+        ft.setStartX(0);
+        ft.setEndX(120);
+        ft.setStartY(100 + SINGLE_APP_VIEW_WIDTH * (trackerList.size()-1));
+        ft.setEndY(100+ SINGLE_APP_VIEW_WIDTH *(trackerList.size()-1));
+        this.anchorPane.getChildren().add(ft);
+
+        Text appName = new Text(appNameTextField.getText());
+        appName.setLayoutX(10);
+        appName.setLayoutY(80+ SINGLE_APP_VIEW_WIDTH *(trackerList.size()-1));
+        this.anchorPane.getChildren().add(appName);
     }
 
     private void bindSizeProperties() {

@@ -70,6 +70,10 @@ public class Application {
         return programName;
     }
 
+    //to determine if new tracker should be created
+    public boolean equals(Application other) {
+        return this.name.equals(other.name) && this.programName.equals(other.programName);
+    }
 
     private interface Psapi extends StdCallLibrary {
         Psapi INSTANCE = (Psapi) Native.loadLibrary("Psapi", Psapi.class);
