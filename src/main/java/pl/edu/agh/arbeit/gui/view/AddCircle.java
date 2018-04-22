@@ -13,9 +13,6 @@ public class AddCircle extends Group {
     private Line horizontalLine;
     private Line verticalLine;
     public AddCircle(){
-        this.setLayoutX(60);
-        this.setLayoutY(125);
-
         this.circle = new Circle();
         this.circle.setFill(Paint.valueOf("WHITE"));
         this.circle.setStroke(Paint.valueOf("BLACK"));

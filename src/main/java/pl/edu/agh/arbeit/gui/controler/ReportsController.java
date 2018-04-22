@@ -9,7 +9,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
-import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
-    private List<Tracker> trackers;
+    private List<ApplicationTracker> trackers;
 
     @FXML
     private AnchorPane anchorPane;
@@ -40,7 +39,7 @@ public class ReportsController {
     @FXML
     private Button cancelButton;
 
-    public void init(Stage reportsStage, EventListener eventListener, List<Tracker> trackers){
+    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
         this.trackers = trackers;
@@ -70,9 +69,7 @@ public class ReportsController {
 
     private void initAppList(){
         List<String> apps = new LinkedList<>();
-        trackers.stream()
-                .filter(tracker -> tracker instanceof ApplicationTracker)
-                .forEach(tracker -> apps.add(((ApplicationTracker) tracker).getApplication().getName()));
+        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
         double checkBoxYValue = 199;
         final double distanceBetweenCheckBoxes = 39;
         final double checkBoxXValue = 14;

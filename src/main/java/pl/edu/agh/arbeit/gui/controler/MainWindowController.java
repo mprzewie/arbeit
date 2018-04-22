@@ -7,14 +7,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
-import pl.edu.agh.arbeit.gui.view.AddCircle;
+import pl.edu.agh.arbeit.gui.view.AppAdder;
+import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainWindowController {
-    private final static long APP_TRACKER_PING_TIME = 5;
     private final static long SYSTEM_TRACKER_PING_TIME = 10;
     private final static int SINGLE_APP_VIEW_WIDTH = 50;
+
     private OverviewController overviewController;
 
     @FXML
@@ -40,14 +40,13 @@ public class MainWindowController {
     @FXML
     private Button generateReportButton;
 
-    @FXML
-    private TextField appNameTextField;
-
-    private AddCircle addCircle;
+    private AppAdder appAdder;
 
     private EventListener eventListener;
 
     private List<Tracker> trackerList;
+
+    private List<ApplicationTracker> applicationTrackerList;
 
     private Line verticalLine;
 
@@ -56,16 +55,15 @@ public class MainWindowController {
 
     public void init(OverviewController overviewController) {
         this.trackerList = new LinkedList<>();
+        this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
-        this.addCircle = new AddCircle();
-        this.addCircle.setDisable(true);
-        this.anchorPane.getChildren().add(this.addCircle);
 
+        this.verticalLine = new Line();
         this.verticalLine = new Line();
         this.verticalLine.setStartX(120);
         this.verticalLine.setEndX(120);
         this.verticalLine.setStartY(0);
-        this.verticalLine.setEndY(150);
+        this.verticalLine.setEndY(100);
         this.anchorPane.getChildren().add(this.verticalLine);
 
         timeLine = new Line();
@@ -93,53 +91,21 @@ public class MainWindowController {
         systemTracker.start();
         trackerList.add(systemTracker);
 
-        addCircle.setOnMouseClicked(event ->{
-            Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
-            if(isAppNotTracked(newApp)) {
-                this.trackerList.add(createTracker(APP_TRACKER_PING_TIME, newApp));
-                this.verticalLine.setEndY(this.verticalLine.getEndY() + SINGLE_APP_VIEW_WIDTH);
-                drawNewAppView();
-                addCircle.setLayoutY(addCircle.getLayoutY() + SINGLE_APP_VIEW_WIDTH);
-                appNameTextField.setLayoutY(appNameTextField.getLayoutY() + SINGLE_APP_VIEW_WIDTH);
-            }
-        });
+        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        this.appAdder.setLayoutY(100);
+        this.anchorPane.getChildren().add(this.appAdder);
 
-        appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals(""))
-                addCircle.setDisable(true);
-            else
-                addCircle.setDisable(false);
-        });
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
     }
 
-    private Tracker createTracker(long pingTime,  Application application){
-        Tracker appTracker = new ApplicationTracker(pingTime, application);
-        eventListener.subscribe(appTracker);
-        appTracker.start();
-        return appTracker;
-    }
-
-    private boolean isAppNotTracked(Application application){
-        return trackerList.stream()
-                .filter(tracker -> tracker instanceof ApplicationTracker)
-                .noneMatch(tracker -> ((ApplicationTracker) tracker).getApplication().equals(application));
-    }
-
-    private void drawNewAppView(){
-        Line ft = new Line();
-        ft.setStartX(0);
-        ft.setEndX(120);
-        ft.setStartY(100 + SINGLE_APP_VIEW_WIDTH * (trackerList.size()-1));
-        ft.setEndY(100+ SINGLE_APP_VIEW_WIDTH *(trackerList.size()-1));
-        this.anchorPane.getChildren().add(ft);
-
-        Text appName = new Text(appNameTextField.getText());
-        appName.setLayoutX(10);
-        appName.setLayoutY(80+ SINGLE_APP_VIEW_WIDTH *(trackerList.size()-1));
-        this.anchorPane.getChildren().add(appName);
+    public void drawNewAppView(Application application){
+        AppListItem appListItem = new AppListItem(application, applicationTrackerList);
+        appListItem.setLayoutX(0);
+        appListItem.setLayoutY(50 + SINGLE_APP_VIEW_WIDTH * (applicationTrackerList.size()));
+        this.anchorPane.getChildren().add(appListItem);
+        this.appAdder.setLayoutY(50 + SINGLE_APP_VIEW_WIDTH * (applicationTrackerList.size() + 1));
     }
 
     private void bindSizeProperties() {
@@ -159,7 +125,7 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, trackerList);
+                    reportsController.init(stage, eventListener, applicationTrackerList);
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
