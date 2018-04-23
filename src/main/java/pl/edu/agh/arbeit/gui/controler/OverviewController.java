@@ -25,7 +25,7 @@ public class OverviewController {
             System.out.print(Main.class.getResource(MAIN_PAIN_RPATH));
             AnchorPane rootLayout = loader.load();
             MainWindowController mainWindowController = loader.getController();
-            mainWindowController.init(this);
+            mainWindowController.init(this, primaryStage.heightProperty().multiply(0.85));
             Scene scene = new Scene(rootLayout);
             this.primaryStage.setScene(scene);
 

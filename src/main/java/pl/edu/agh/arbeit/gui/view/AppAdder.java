@@ -24,8 +24,6 @@ public class AppAdder extends Group {
         this.eventListener = eventListener;
 
         this.addCircle = new AddCircle();
-        this.addCircle.setLayoutX(60);
-        this.addCircle.setLayoutY(25);
         this.getChildren().add(addCircle);
         addCircle.setDisable(true);
 
@@ -64,7 +62,7 @@ public class AppAdder extends Group {
             Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
             if(isAppNotTracked(newApp)) {
                 this.applicationTrackers.add(createTracker(APP_TRACKER_PING_TIME, newApp));
-                mainWindowController.drawNewAppView(newApp);
+                mainWindowController.addNewAppView(newApp);
             }
         });
     }

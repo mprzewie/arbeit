@@ -1,5 +1,6 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,14 +8,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
 import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
+import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
@@ -40,6 +42,12 @@ public class MainWindowController {
     @FXML
     private Button generateReportButton;
 
+    @FXML
+    private ScrollPane appScrollPane;
+
+    @FXML
+    private VBox scrollAndButtonVBox;
+
     private AppAdder appAdder;
 
     private EventListener eventListener;
@@ -48,42 +56,18 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
-    private Line verticalLine;
+    private VBox listContent;
 
-    private Line timeLine;
-
-
-    public void init(OverviewController overviewController) {
+    public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.trackerList = new LinkedList<>();
         this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
 
-        this.verticalLine = new Line();
-        this.verticalLine = new Line();
-        this.verticalLine.setStartX(120);
-        this.verticalLine.setEndX(120);
-        this.verticalLine.setStartY(0);
-        this.verticalLine.setEndY(100);
-        this.anchorPane.getChildren().add(this.verticalLine);
+        SystemListItem systemListItem = new SystemListItem();
 
-        timeLine = new Line();
-        timeLine.setStartX(0);
-        timeLine.setEndX(800);
-        timeLine.setStartY(50);
-        timeLine.setEndY(50);
-        this.anchorPane.getChildren().add(timeLine);
-
-        Line f1 = new Line();
-        f1.setStartX(0);
-        f1.setEndX(120);
-        f1.setStartY(100);
-        f1.setEndY(100);
-        this.anchorPane.getChildren().add(f1);
-
-        Text systemText = new Text("System");
-        systemText.setLayoutX(10);
-        systemText.setLayoutY(80);
-        this.anchorPane.getChildren().add(systemText);
+        listContent = new VBox();
+        this.appScrollPane.setContent(listContent);
+        listContent.getChildren().add(systemListItem);
 
         this.eventListener = new EventListener();
         Tracker systemTracker = new SystemTracker(SYSTEM_TRACKER_PING_TIME);
@@ -92,20 +76,21 @@ public class MainWindowController {
         trackerList.add(systemTracker);
 
         this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
-        this.appAdder.setLayoutY(100);
-        this.anchorPane.getChildren().add(this.appAdder);
+        listContent.getChildren().add(this.appAdder);
 
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
+        scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
     }
 
-    public void drawNewAppView(Application application){
-        AppListItem appListItem = new AppListItem(application, applicationTrackerList);
-        appListItem.setLayoutX(0);
-        appListItem.setLayoutY(50 + SINGLE_APP_VIEW_WIDTH * (applicationTrackerList.size()));
-        this.anchorPane.getChildren().add(appListItem);
-        this.appAdder.setLayoutY(50 + SINGLE_APP_VIEW_WIDTH * (applicationTrackerList.size() + 1));
+    public void addNewAppView(Application application){
+        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
+        this.listContent.getChildren().add(listContent.getChildren().size() - 1, appListItem);
+    }
+
+    public void removeAppView(AppListItem appListItem){
+        this.listContent.getChildren().removeIf(view -> view.equals(appListItem));
     }
 
     private void bindSizeProperties() {

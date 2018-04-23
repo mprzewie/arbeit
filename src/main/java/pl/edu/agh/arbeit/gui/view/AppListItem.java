@@ -3,6 +3,7 @@ package pl.edu.agh.arbeit.gui.view;
 import javafx.scene.Group;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
@@ -16,7 +17,7 @@ public class AppListItem extends Group {
     private DeleteAppButton deleteAppButton;
     private List<ApplicationTracker> trackers;
 
-    public AppListItem(Application application, List<ApplicationTracker> trackers) {
+    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
         this.application = application;
         this.trackers = trackers;
 
@@ -42,12 +43,13 @@ public class AppListItem extends Group {
         deleteAppButton.setLayoutY(6);
         this.getChildren().add(deleteAppButton);
 
-        initDeleteButton();
+        initDeleteButton(mainWindowController);
     }
 
-    private void initDeleteButton(){
-        deleteAppButton.setOnMouseClicked(event ->
-                trackers.removeIf(tracker -> tracker.getApplication().equals(this.application))
-        );
+    private void initDeleteButton(MainWindowController mainWindowController){
+        deleteAppButton.setOnMouseClicked(event -> {
+            trackers.removeIf(tracker -> tracker.getApplication().equals(this.application));
+            mainWindowController.removeAppView(this);
+        });
     }
 }
