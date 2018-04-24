@@ -7,19 +7,12 @@ import java.awt.event.ActionListener;
 
     public class MouseTracker  {
         private int secondsSinceLastMoveNoticed=0;
+        private Point lastMouseLocation = getCurrentMouseLocation();
         public MouseTracker(int intervalInSeconds) throws AWTException {
             ActionListener actionListener = new ActionListener() {
-
-                Point lastMouseLocation;
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Point currentMouseLocation = MouseInfo.getPointerInfo().getLocation();
-                    if (!currentMouseLocation.equals(lastMouseLocation)) {
-                        secondsSinceLastMoveNoticed=0;
-                        lastMouseLocation = currentMouseLocation;
-                    }
-                    else{
+                    if(!checkAndUpdateLocation()){
                         secondsSinceLastMoveNoticed+=intervalInSeconds;
                     }
                 }
@@ -29,7 +22,21 @@ import java.awt.event.ActionListener;
         }
 
         public int getSecondsSinceLastMoveNoticed() {
+            checkAndUpdateLocation();
             return secondsSinceLastMoveNoticed;
+        }
+
+        private Point getCurrentMouseLocation(){
+            return MouseInfo.getPointerInfo().getLocation();
+        }
+
+        private boolean checkAndUpdateLocation(){
+            if (!lastMouseLocation.equals(getCurrentMouseLocation())) {
+                secondsSinceLastMoveNoticed=0;
+                lastMouseLocation = getCurrentMouseLocation();
+                return true;
+            }
+            return false;
         }
     }
 

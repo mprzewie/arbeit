@@ -77,7 +77,7 @@ public class MainWindowController {
         this.anchorPane.getChildren().add(systemText);
 
         this.eventListener = new EventListener();
-        Tracker systemTracker = new SystemTracker(10,1);
+        Tracker systemTracker = new SystemTracker(10,900);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);

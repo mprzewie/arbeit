@@ -23,6 +23,7 @@ public class SystemTracker extends AsyncTracker {
         } catch (AWTException e) {
             e.printStackTrace();
         }
+        keyboardTracker.start();
     }
 
     @Override
@@ -39,6 +40,5 @@ public class SystemTracker extends AsyncTracker {
     protected void stopTracking() {
         bus.post(new SystemEvent(EventType.STOP));
     }
-
 
 }

@@ -33,14 +33,6 @@ public class KeyboardTracker extends Thread{
         lib.UnhookWindowsHookEx(hhk);
     }
 
-
-
-    public static void main(String[] argv) throws InterruptedException {
-        Thread thread = new KeyboardTracker();
-        thread.start();
-        sleep(10000);
-    }
-
     public long getSecondsSinceLastKeyPressed() {
         return Duration.between(lastCheckTimestamp,Instant.now()).get(ChronoUnit.SECONDS);
     }
