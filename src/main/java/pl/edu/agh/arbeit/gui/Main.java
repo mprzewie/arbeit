@@ -2,7 +2,7 @@ package pl.edu.agh.arbeit.gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import pl.edu.agh.arbeit.data.DatabaseInitializer;
+import pl.edu.agh.arbeit.data.repository.DatabaseInitializer;
 import pl.edu.agh.arbeit.gui.controler.OverviewController;
 
 public class Main extends Application {

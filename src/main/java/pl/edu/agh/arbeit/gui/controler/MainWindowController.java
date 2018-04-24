@@ -8,6 +8,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.report.CsvReport;
+import pl.edu.agh.arbeit.data.report.Report;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.view.AddCircle;
 import pl.edu.agh.arbeit.tracker.Application;
@@ -15,6 +18,7 @@ import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +51,7 @@ public class MainWindowController {
     private EventRepository applicationRepository;
     
     public void init(OverviewController overviewController) {
-        this.applicationRepository = new EventRepository();
+        this.applicationRepository = new DatabaseEventRepository();
         this.trackerList = new LinkedList<>();
         this.overviewController=overviewController;
         this.addCircle = new AddCircle();
@@ -88,7 +92,8 @@ public class MainWindowController {
 
         generateReportButton.setOnMouseClicked(event -> {
             try {
-                eventListener.getDataCollector().generateCSVFile(eventListener.getDataCollector().getCSVFromHashMap());
+                Report report = new CsvReport(applicationRepository.getEvents());
+                report.writeCsv(Paths.get("."));
             } catch (Exception e) {
                 e.printStackTrace();
             }

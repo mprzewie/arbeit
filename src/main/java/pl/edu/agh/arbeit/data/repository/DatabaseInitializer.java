@@ -1,16 +1,13 @@
-package pl.edu.agh.arbeit.data;
+package pl.edu.agh.arbeit.data.repository;
 
-import com.sun.corba.se.impl.orb.DataCollectorBase;
-
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseInitializer {
-    public static Connection conn = null;
-    public static String url = "jdbc:sqlite:test.db";
+    private static Connection conn = null;
+    private static String url = "jdbc:sqlite:test.db";
     public static void initializeDatabase(){
 
 
@@ -34,6 +31,10 @@ public class DatabaseInitializer {
         }
 
 
+    }
+
+    public static String getUrl() {
+        return url;
     }
 
  /*   private static void createApplicationTable() {
