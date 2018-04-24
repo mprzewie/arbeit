@@ -1,6 +1,7 @@
 package pl.edu.agh.arbeit.gui.view;
 
 import javafx.scene.Group;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;

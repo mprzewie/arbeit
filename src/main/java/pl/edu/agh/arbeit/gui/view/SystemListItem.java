@@ -16,7 +16,7 @@ public class SystemListItem extends Group {
 
         Line timeLine = new Line();
         timeLine.setStartX(0);
-        timeLine.setEndX(800);
+        timeLine.setEndX(1000);
         timeLine.setStartY(0);
         timeLine.setEndY(0);
         this.getChildren().add(timeLine);

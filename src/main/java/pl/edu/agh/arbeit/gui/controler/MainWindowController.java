@@ -14,6 +14,8 @@ import javafx.scene.layout.VBox;
 import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
+import pl.edu.agh.arbeit.gui.model.AppConfig;
+import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
@@ -26,11 +28,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MainWindowController {
-    private final static long SYSTEM_TRACKER_PING_TIME = 10;
-    private final static int SINGLE_APP_VIEW_WIDTH = 50;
-
     private OverviewController overviewController;
 
     @FXML
@@ -58,35 +58,42 @@ public class MainWindowController {
 
     private VBox listContent;
 
+    private ConfigProvider appConfig;
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.trackerList = new LinkedList<>();
         this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
-
-        SystemListItem systemListItem = new SystemListItem();
+        this.appConfig = new AppConfig();
 
         listContent = new VBox();
         this.appScrollPane.setContent(listContent);
-        listContent.getChildren().add(systemListItem);
+        listContent.getChildren().add(new SystemListItem());
 
         this.eventListener = new EventListener();
-        Tracker systemTracker = new SystemTracker(SYSTEM_TRACKER_PING_TIME);
+        Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime());
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
 
-        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
-        listContent.getChildren().add(this.appAdder);
-
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
+        this.initAppAdder();
         scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initAppAdder(){
+        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        listContent.getChildren().add(this.appAdder);
     }
 
     public void addNewAppView(Application application){
         AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
-        this.listContent.getChildren().add(listContent.getChildren().size() - 1, appListItem);
+        int listContentIndex = listContent.getChildren().size() - 1;
+        if(listContentIndex == 0)
+            listContentIndex++;
+        this.listContent.getChildren().add(listContentIndex, appListItem);
     }
 
     public void removeAppView(AppListItem appListItem){

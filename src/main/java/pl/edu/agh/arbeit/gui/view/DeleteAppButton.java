@@ -15,7 +15,7 @@ public class DeleteAppButton extends Group{
         this.line1.setStartY(-5);
         this.line1.setEndX(5);
         this.line1.setEndY(5);
-        this.line1.setStroke(Paint.valueOf("GREY"));
+        this.line1.setStroke(Paint.valueOf("#a00000"));
         this.line1.setStrokeLineCap(StrokeLineCap.ROUND);
         this.line1.setStrokeWidth(4);
         this.getChildren().add(line1);
@@ -25,7 +25,7 @@ public class DeleteAppButton extends Group{
         this.line2.setStartY(5);
         this.line2.setEndX(5);
         this.line2.setEndY(-5);
-        this.line2.setStroke(Paint.valueOf("GREY"));
+        this.line2.setStroke(Paint.valueOf("RED"));
         this.line2.setStrokeLineCap(StrokeLineCap.ROUND);
         this.line2.setStrokeWidth(4);
         this.getChildren().add(line2);
