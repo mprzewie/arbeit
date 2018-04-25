@@ -1,86 +1,120 @@
 package pl.edu.agh.arbeit.data.repository;
 
-import com.google.common.collect.Lists;
 import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 
-public class DatabaseEventRepository implements EventRepository{
-    public void put(Event event) {
-//        int x = new Random().nextInt(1500);
-//        SimpleDateFormat parserToInsert=new SimpleDateFormat("YYYY-MM-DD HH:MM:SS:sss");
-//        SimpleDateFormat parserFromEvent=new SimpleDateFormat("EEE MMM dd HH:MM:SS Z yyyy");
-//        Date dt = null;
-//        try {
-//            dt = convertUtilToSql(parserFromEvent.parse(event.getDate().toString()));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-/*        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:MM:SS ZZZZ yyyy");
-        Calendar calendar = new GregorianCalendar(
-                event.getDate().getYear(),
-                event.getDate().getMonth(),
-                event.getDate().getDay(),
-                event.getDate().getHours(),
-                event.getDate().getMinutes(),
-                event.getDate().getSeconds());
-        System.out.println("HAHAHA "+ event.getDate().getYear() + "(((" + sdf.format(calendar.getTime()));*/
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(event.getDate());
-        String dateToInsert = sdf.format(calendar.getTime());
+public class DatabaseEventRepository implements EventRepository {
+
+    public DatabaseEventRepository() {
+        initialize(true);
+    }
+
+    private final String url = "jdbc:sqlite:test.db";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+    public void put(Event event){
+        String dateToInsert = dateFormat.format(event.getDate());
         String sql = "INSERT INTO Event (appName, eventType, eventDate) " +
-            "VALUES (" +
+                "VALUES (" +
                 "'" + event.getTopic() +  "'" + ", " +
                 "'" + event.getType() + "'" +
                 ", " + "'" +  dateToInsert + "'" + ")"
                 ;
         System.out.println("SQL:   " + sql);
 
-        try (Connection conn = DriverManager.getConnection(DatabaseInitializer.getUrl());
-             Statement stmt = conn.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(url)) {
+            Statement stmt = connection.createStatement();
             stmt.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public List<Event> getEvents() {
-
-        List<String> result = new LinkedList<>();
+    //TODO change to stream maybe?
+    public List<Event> getEvents(){
         String sql = "SELECT rowid, appName, eventType, eventDate\n" +
-                "FROM Event\n" +
-                "WHERE eventDate\n" +
-                "BETWEEN '2018-04-21' AND '2018-04-22'";
+                "FROM Event";
 
         System.out.println("SQL:   " + sql);
-        try (Connection conn = DriverManager.getConnection(DatabaseInitializer.getUrl());
-             Statement stmt = conn.createStatement()) {
+        LinkedList<Event> result = new LinkedList<>();
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()
+        ) {
             ResultSet rs = stmt.executeQuery(sql);
-            SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzzz yyyy");
-//            System.out.println(rs.getInt("rowid"));
             while (rs.next()) {
-//                System.out.println(rs.getInt("id"));
-//                System.out.println(rs.getString("appName"));
-                result.add("[");
-                result.add(rs.getString("appName"));
-                result.add(rs.getString("eventType"));
-//                FIXME add some wise date parsing so that we filter dates in SQL
-                result.add(rs.getString("eventDate"));
-                result.add("]\n");
+                fromResultSet(rs).ifPresent(result::addLast);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Collections.emptyList();
-
-//        return result;
-    }
-    private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
-        java.sql.Date sDate = new java.sql.Date(uDate.getTime());
-        return sDate;
+        return result;
     }
 
+    private Optional<Event> fromResultSet(ResultSet set){
+        try {
+            String topic = set.getString("appName");
+            Date parsedDate = dateFormat.parse(set.getString("eventDate"));
+            EventType type = EventType.valueOf(EventType.class, set.getString("eventType"));
+
+            Event result = new Event() {
+                @Override
+                public String getTopic() {
+                    return topic;
+                }
+                @Override
+                public EventType getType() {
+                    return type;
+                }
+
+                @Override
+                public Date getDate() {
+                    return parsedDate;
+                }
+            };
+            return Optional.of(result);
+        } catch (Exception e){
+            return Optional.empty();
+        }
+    }
+
+    private void initialize(){
+        initialize(false);
+    }
+    private void initialize(boolean drop){
+        try(Connection connection = DriverManager.getConnection(url)) {
+            System.out.println("Connection to SQLite has been established.");
+            if(drop){
+                System.out.println("DROPPING DATABASE");
+                setupTablesWithDrop(connection);
+            }
+            else setupTables(connection);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupTablesWithDrop(Connection connection) throws SQLException{
+        String sql = "DROP TABLE IF EXISTS Event";
+        Statement statement = connection.createStatement();
+        statement.execute(sql);
+        setupTables(connection);
+    }
+
+    private void setupTables(Connection connection) throws SQLException{
+        String sql = "CREATE TABLE IF NOT EXISTS Event (\n"
+                + " appName text NOT NULL,\n"
+                + "	eventType text NOT NULL,\n"
+                + " eventDate datetime NOT NULL\n"
+                + ");";
+        System.out.println(sql);
+        Statement stmt = connection.createStatement();
+        stmt.execute(sql);
+    }
 }

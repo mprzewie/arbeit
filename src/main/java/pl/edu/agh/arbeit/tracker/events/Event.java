@@ -10,7 +10,6 @@ public abstract class Event {
 
     public Date getDate(){
         return date;
-
     }
 
     @Override
@@ -19,6 +18,11 @@ public abstract class Event {
         if(o == null || o.getClass() != this.getClass()) return false;
         Event e = (Event) o;
         return e.getType() == getType() && e.getTopic().equals(getTopic());
+    }
+
+    @Override
+    public String toString(){
+        return "Event : " + getTopic() + " : " + getType() + " : " + getDate();
     }
 
 }

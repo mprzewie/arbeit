@@ -84,7 +84,7 @@ public class MainWindowController {
         systemText.setLayoutY(80);
         this.anchorPane.getChildren().add(systemText);
 
-        this.eventListener = new EventListener();
+        this.eventListener = new EventListener(applicationRepository);
         Tracker systemTracker = new SystemTracker(10);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();

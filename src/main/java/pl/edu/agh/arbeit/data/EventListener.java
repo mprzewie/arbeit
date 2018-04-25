@@ -1,11 +1,7 @@
 package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.Subscribe;
-import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
-import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
-import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.events.*;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
@@ -25,8 +21,8 @@ public class EventListener {
         tracker.getBus().unregister(this);
     }
 
-    public EventListener() {
-        repository = new DatabaseEventRepository();
+    public EventListener(EventRepository repository) {
+        this.repository = repository;
     }
 
     @Subscribe

@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface Report {
 
-    void writeCsv(Path path);
 
     List<Event> getEvents();
 }
