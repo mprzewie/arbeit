@@ -26,7 +26,7 @@ public class EventListener {
     }
 
     @Subscribe
-    public void event(Event event){
+    public void acceptEvent(Event event){
         System.out.println(event.getTopic() + " " + event.getDate() + " " + event.getType());
         repository.put(event);
     }

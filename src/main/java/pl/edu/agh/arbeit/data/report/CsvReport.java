@@ -22,4 +22,5 @@ public class CsvReport implements Report {
     public List<Event> getEvents() {
         return events;
     }
+
 }

@@ -92,7 +92,7 @@ public class MainWindowController {
 
         generateReportButton.setOnMouseClicked(event -> {
             try {
-                Report report = new CsvReport(applicationRepository.getEvents());
+                CsvReport report = new CsvReport(applicationRepository.getEvents());
                 report.writeCsv(Paths.get("."));
             } catch (Exception e) {
                 e.printStackTrace();
