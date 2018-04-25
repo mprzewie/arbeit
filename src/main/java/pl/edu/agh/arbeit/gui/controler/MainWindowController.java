@@ -15,6 +15,7 @@ import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
+import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
@@ -98,6 +99,10 @@ public class MainWindowController {
 
     public void removeAppView(AppListItem appListItem){
         this.listContent.getChildren().removeIf(view -> view.equals(appListItem));
+    }
+
+    public void removeApp(String programName){
+        this.appConfig.removeAppToTrack(programName);
     }
 
     private void bindSizeProperties() {

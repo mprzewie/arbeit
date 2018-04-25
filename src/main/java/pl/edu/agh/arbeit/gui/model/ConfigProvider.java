@@ -1,10 +1,11 @@
 package pl.edu.agh.arbeit.gui.model;
 
-import pl.edu.agh.arbeit.tracker.Application;
-
-import java.util.Map;
+import java.util.List;
 
 public interface ConfigProvider {
-    Map<Application, Long> getAppsToTrack();
+    List<AppInfo> getAppsToTrack();
     Long getSystemPingTime();
+    void addAppToTrack(AppInfo appInfo);
+    void removeAppToTrack(String programName);
+    void setSystemPingTime(Long pingTime);
 }

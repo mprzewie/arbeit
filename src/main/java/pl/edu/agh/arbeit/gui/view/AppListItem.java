@@ -5,6 +5,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
+import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
@@ -51,6 +52,7 @@ public class AppListItem extends Group {
         deleteAppButton.setOnMouseClicked(event -> {
             trackers.removeIf(tracker -> tracker.getApplication().equals(this.application));
             mainWindowController.removeAppView(this);
+            mainWindowController.removeApp(this.application.getProgramName());
         });
     }
 }

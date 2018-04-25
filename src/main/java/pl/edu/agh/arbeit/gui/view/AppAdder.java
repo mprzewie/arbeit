@@ -6,10 +6,12 @@ import javafx.scene.shape.Line;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
+import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +50,10 @@ public class AppAdder extends Group {
         initAddButton(mainWindowController);
     }
 
-    private void initTrackingAppsFromConfig(Map<Application,Long> mapOfApps, MainWindowController mainWindowController){
-        mapOfApps.forEach((app,time) -> addApp(mainWindowController, app, time));
+    private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){
+        List<AppInfo> tempList= new LinkedList<>();
+        tempList.addAll(appInfos);
+        tempList.forEach(e -> addApp(mainWindowController, new Application(e.getName(),e.getProgramName()), e.getPingTime()));
     }
 
     private boolean isAppNotTracked(Application application){
@@ -69,6 +73,8 @@ public class AppAdder extends Group {
     private void initAddButton(MainWindowController mainWindowController){
         addCircle.setOnMouseClicked(event ->{
             Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
+            if(isAppNotTracked(newApp))
+                appConfig.addAppToTrack(new AppInfo(newApp.getName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
             addApp(mainWindowController,newApp,APP_TRACKER_PING_TIME);
         });
     }
