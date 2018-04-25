@@ -72,7 +72,7 @@ public class MainWindowController {
         listContent.getChildren().add(new SystemListItem());
 
         this.eventListener = new EventListener();
-        Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime());
+        Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
