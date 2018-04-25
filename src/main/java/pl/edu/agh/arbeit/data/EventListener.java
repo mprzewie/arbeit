@@ -1,9 +1,7 @@
 package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.Subscribe;
-import pl.edu.agh.arbeit.tracker.Application;
-import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
-import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.tracker.events.*;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
@@ -12,7 +10,8 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
  **/
 public class EventListener {
 
-    private DataCollector dataCollector;
+
+    private EventRepository repository;
 
     public void subscribe(Tracker tracker){
         tracker.getBus().register(this);
@@ -22,19 +21,16 @@ public class EventListener {
         tracker.getBus().unregister(this);
     }
 
-    public EventListener() {
-        dataCollector = new DataCollector();
+    public EventListener(EventRepository repository) {
+        this.repository = repository;
     }
 
     @Subscribe
-    public void event(Event event){
+    public void acceptEvent(Event event){
         System.out.println(event.getTopic() + " " + event.getDate() + " " + event.getType());
-        dataCollector.parseEvent(event);
+        repository.put(event);
     }
 
-    public DataCollector getDataCollector() {
-        return dataCollector;
-    }
 }
 
 
