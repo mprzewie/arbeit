@@ -65,6 +65,12 @@ public class Application {
     public String getProgramName() {
         return programName;
     }
+
+
+    //to determine if new tracker should be created
+    public boolean equals(Application other) {
+        return this.name.equals(other.name) && this.programName.equals(other.programName);
+    }    
 }
 
 

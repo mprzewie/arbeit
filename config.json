@@ -1,0 +1,8 @@
+{
+  "systemPingTime" : 5,
+  "appsToTrack" : [ {
+    "name" : "chrome.exe",
+    "programName" : "chrome.exe",
+    "pingTime" : 5
+  } ]
+}

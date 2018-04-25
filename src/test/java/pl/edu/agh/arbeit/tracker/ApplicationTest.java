@@ -81,6 +81,7 @@ class ApplicationTest {
     @Test
     void getCurrentStateEventStopped() {
         assertEquals(EventType.STOP, stoppedApp.getCurrentStateEvent().getType());
+
     }
 
 
