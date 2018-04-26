@@ -56,6 +56,30 @@ public class DatabaseEventRepository implements EventRepository {
         return result;
     }
 
+    @Override
+    public List<Event> getBy(Date date, String topic) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getBy(Date date) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getBy(String topic) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getAll() {
+        // TODO implement this method
+        return null;
+    }
+
     private Optional<Event> fromResultSet(ResultSet set){
         try {
             String topic = set.getString("appName");

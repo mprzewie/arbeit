@@ -2,6 +2,7 @@ package pl.edu.agh.arbeit.data.repository;
 
 import pl.edu.agh.arbeit.tracker.events.Event;
 
+import java.util.Date;
 import java.util.List;
 
 public interface EventRepository {
@@ -9,5 +10,10 @@ public interface EventRepository {
     void put(Event event);
 
     List<Event> getEvents();
+
+    List<Event> getBy(Date date, String topic);
+    List<Event> getBy(Date date);
+    List<Event> getBy(String topic);
+    List<Event> getAll();
 
 }
