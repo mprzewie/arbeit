@@ -1,6 +1,9 @@
 package pl.edu.agh.arbeit.gui.view;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -11,12 +14,13 @@ import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.util.List;
 
-public class AppListItem extends Group {
+public class AppListItem extends Pane {
     private Line verticalLine;
     private Line horizontalLine;
     private Text appNameText;
     private Application application;
-    private DeleteAppButton deleteAppButton;
+    private FontAwesomeIconView deleteAppButton;
+    private FontAwesomeIconView settingsIcon;
     private List<ApplicationTracker> trackers;
 
     public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
@@ -40,10 +44,17 @@ public class AppListItem extends Group {
         this.appNameText = new Text(10, 30, application.getName());
         this.getChildren().add(appNameText);
 
-        this.deleteAppButton = new DeleteAppButton();
-        deleteAppButton.setLayoutX(114);
-        deleteAppButton.setLayoutY(6);
+        this.deleteAppButton = new FontAwesomeIconView(FontAwesomeIcon.TRASH);
+        deleteAppButton.setLayoutX(98);
+        deleteAppButton.setLayoutY(44);
+        deleteAppButton.setSize("22px");
         this.getChildren().add(deleteAppButton);
+
+        this.settingsIcon = new FontAwesomeIconView(FontAwesomeIcon.COG);
+        this.settingsIcon.setSize("22px");
+        this.settingsIcon.setLayoutX(97);
+        this.settingsIcon.setLayoutY(20);
+        this.getChildren().add(settingsIcon);
 
         initDeleteButton(mainWindowController);
     }

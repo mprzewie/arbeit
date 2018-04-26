@@ -1,8 +1,14 @@
 package pl.edu.agh.arbeit.gui.view;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import org.controlsfx.glyphfont.FontAwesome;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
@@ -16,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 
-public class AppAdder extends Group {
+public class AppAdder extends Pane {
     private final static long APP_TRACKER_PING_TIME = 5;
 
-    private AddCircle addCircle;
+    private FontAwesomeIconView addCircle;
     private TextField appNameTextField;
     private List<ApplicationTracker> applicationTrackers;
     private EventListener eventListener;
@@ -29,7 +35,11 @@ public class AppAdder extends Group {
         this.applicationTrackers = applicationTrackers;
         this.eventListener = eventListener;
         this.appConfig = new AppConfig();
-        this.addCircle = new AddCircle();
+
+        addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
+        addCircle.setSize("45px");
+        addCircle.setLayoutX(40);
+        addCircle.setLayoutY(40);
         this.getChildren().add(addCircle);
         addCircle.setDisable(true);
 

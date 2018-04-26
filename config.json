@@ -1,8 +1,28 @@
 {
   "systemPingTime" : 5,
   "appsToTrack" : [ {
-    "name" : "chrome.exe",
-    "programName" : "chrome.exe",
+    "name" : "asd",
+    "programName" : "asd",
+    "pingTime" : 5
+  }, {
+    "name" : "asds",
+    "programName" : "asds",
+    "pingTime" : 5
+  }, {
+    "name" : "asdsd",
+    "programName" : "asdsd",
+    "pingTime" : 5
+  }, {
+    "name" : "asdsda",
+    "programName" : "asdsda",
+    "pingTime" : 5
+  }, {
+    "name" : "asdsdaf",
+    "programName" : "asdsdaf",
+    "pingTime" : 5
+  }, {
+    "name" : "asdsdaff",
+    "programName" : "asdsdaff",
     "pingTime" : 5
   } ]
 }
