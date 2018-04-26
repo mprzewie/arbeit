@@ -15,7 +15,6 @@ import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
-import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -68,8 +66,8 @@ public class MainWindowController {
         this.appConfig = new AppConfig();
 
         listContent = new VBox();
-        this.appScrollPane.setContent(listContent);
         listContent.getChildren().add(new SystemListItem());
+        initAppScrollPane();
 
         this.eventListener = new EventListener();
         Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
@@ -82,6 +80,12 @@ public class MainWindowController {
         this.initReportButton();
         this.initAppAdder();
         scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initAppScrollPane(){
+        this.appScrollPane.setContent(listContent);
+        this.appScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.appScrollPane.setStyle("-fx-background-color:transparent;");
     }
 
     private void initAppAdder(){

@@ -19,7 +19,6 @@ import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 
 public class AppAdder extends Pane {
@@ -49,6 +48,13 @@ public class AppAdder extends Pane {
         verticalLine.setStartY(0);
         verticalLine.setEndY(50);
         this.getChildren().add(verticalLine);
+
+        Line horizontalLineDown = new Line();
+        horizontalLineDown.setStartX(0);
+        horizontalLineDown.setEndX(1000);
+        horizontalLineDown.setStartY(50);
+        horizontalLineDown.setEndY(50);
+        this.getChildren().add(horizontalLineDown);
 
         this.appNameTextField = new TextField();
         this.appNameTextField.setLayoutX(130);
