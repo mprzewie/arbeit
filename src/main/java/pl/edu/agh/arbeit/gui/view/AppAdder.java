@@ -81,15 +81,16 @@ public class AppAdder extends Group {
 
     private void addApp(MainWindowController mainWindowController, Application application, Long pingTime){
         if(isAppNotTracked(application)) {
-            this.applicationTrackers.add(createTracker(pingTime, application));
+            this.applicationTrackers.add(createTracker(pingTime, application, mainWindowController));
             mainWindowController.addNewAppView(application);
         }
     }
 
-    private ApplicationTracker createTracker(long pingTime,  Application application){
+    private ApplicationTracker createTracker(long pingTime,  Application application, MainWindowController mainWindowController){
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();
+        mainWindowController.addToTrackerList(appTracker);
         return appTracker;
     }
 }

@@ -131,4 +131,12 @@ public class MainWindowController {
             }
         );
     }
+
+    public void addToTrackerList(Tracker tracker){
+        this.trackerList.add(tracker);
+    }
+
+    public void stopTrackingAll(){
+        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
+    }
 }
