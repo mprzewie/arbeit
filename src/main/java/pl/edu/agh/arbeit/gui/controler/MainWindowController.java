@@ -44,9 +44,6 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-    @FXML
-    private VBox scrollAndButtonVBox;
-
     private AppAdder appAdder;
 
     private EventListener eventListener;
@@ -55,6 +52,7 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+    @FXML
     private VBox listContent;
 
     private ConfigProvider appConfig;
@@ -65,8 +63,7 @@ public class MainWindowController {
         this.overviewController=overviewController;
         this.appConfig = new AppConfig();
 
-        listContent = new VBox();
-        listContent.getChildren().add(new SystemListItem());
+        listContent.getChildren().add(0,new SystemListItem());
         initAppScrollPane();
 
         this.eventListener = new EventListener();
@@ -79,7 +76,7 @@ public class MainWindowController {
         this.initDatePicer();
         this.initReportButton();
         this.initAppAdder();
-        scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+        //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
     }
 
     private void initAppScrollPane(){

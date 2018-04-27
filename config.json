@@ -1,10 +1,6 @@
 {
   "systemPingTime" : 5,
   "appsToTrack" : [ {
-    "name" : "asd",
-    "programName" : "asd",
-    "pingTime" : 5
-  }, {
     "name" : "asds",
     "programName" : "asds",
     "pingTime" : 5
@@ -13,16 +9,20 @@
     "programName" : "asdsd",
     "pingTime" : 5
   }, {
-    "name" : "asdsda",
-    "programName" : "asdsda",
+    "name" : "asd",
+    "programName" : "asd",
     "pingTime" : 5
   }, {
-    "name" : "asdsdaf",
-    "programName" : "asdsdaf",
+    "name" : "asdsa",
+    "programName" : "asdsa",
     "pingTime" : 5
   }, {
-    "name" : "asdsdaff",
-    "programName" : "asdsdaff",
+    "name" : "asdsad",
+    "programName" : "asdsad",
+    "pingTime" : 5
+  }, {
+    "name" : "asdsadasd",
+    "programName" : "asdsadasd",
     "pingTime" : 5
   } ]
 }

@@ -39,6 +39,7 @@ public class AppAdder extends Pane {
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
         addCircle.setLayoutY(40);
+        addCircle.setStyleClass("icon-plus");
         this.getChildren().add(addCircle);
         addCircle.setDisable(true);
 
@@ -46,15 +47,9 @@ public class AppAdder extends Pane {
         verticalLine.setStartX(120);
         verticalLine.setEndX(120);
         verticalLine.setStartY(0);
-        verticalLine.setEndY(50);
-        this.getChildren().add(verticalLine);
+        verticalLine.setEndY(52);
 
-        Line horizontalLineDown = new Line();
-        horizontalLineDown.setStartX(0);
-        horizontalLineDown.setEndX(1000);
-        horizontalLineDown.setStartY(50);
-        horizontalLineDown.setEndY(50);
-        this.getChildren().add(horizontalLineDown);
+        this.getChildren().add(verticalLine);
 
         this.appNameTextField = new TextField();
         this.appNameTextField.setLayoutX(130);
