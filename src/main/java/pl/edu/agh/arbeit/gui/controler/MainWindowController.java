@@ -15,7 +15,6 @@ import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
-import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -46,9 +44,6 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-    @FXML
-    private VBox scrollAndButtonVBox;
-
     private AppAdder appAdder;
 
     private EventListener eventListener;
@@ -57,6 +52,7 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+    @FXML
     private VBox listContent;
 
     private ConfigProvider appConfig;
@@ -67,9 +63,8 @@ public class MainWindowController {
         this.overviewController=overviewController;
         this.appConfig = new AppConfig();
 
-        listContent = new VBox();
-        this.appScrollPane.setContent(listContent);
-        listContent.getChildren().add(new SystemListItem());
+        listContent.getChildren().add(0,new SystemListItem());
+        initAppScrollPane();
 
         this.eventListener = new EventListener();
         Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
@@ -81,7 +76,13 @@ public class MainWindowController {
         this.initDatePicer();
         this.initReportButton();
         this.initAppAdder();
-        scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+        //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initAppScrollPane(){
+        this.appScrollPane.setContent(listContent);
+        this.appScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.appScrollPane.setStyle("-fx-background-color:transparent;");
     }
 
     private void initAppAdder(){
@@ -130,5 +131,13 @@ public class MainWindowController {
                 }
             }
         );
+    }
+
+    public void addToTrackerList(Tracker tracker){
+        this.trackerList.add(tracker);
+    }
+
+    public void stopTrackingAll(){
+        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
     }
 }

@@ -1,8 +1,14 @@
 package pl.edu.agh.arbeit.gui.view;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+import org.controlsfx.glyphfont.FontAwesome;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
@@ -13,13 +19,12 @@ import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 
-public class AppAdder extends Group {
+public class AppAdder extends Pane {
     private final static long APP_TRACKER_PING_TIME = 5;
 
-    private AddCircle addCircle;
+    private FontAwesomeIconView addCircle;
     private TextField appNameTextField;
     private List<ApplicationTracker> applicationTrackers;
     private EventListener eventListener;
@@ -29,7 +34,12 @@ public class AppAdder extends Group {
         this.applicationTrackers = applicationTrackers;
         this.eventListener = eventListener;
         this.appConfig = new AppConfig();
-        this.addCircle = new AddCircle();
+
+        addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
+        addCircle.setSize("45px");
+        addCircle.setLayoutX(40);
+        addCircle.setLayoutY(40);
+        addCircle.setStyleClass("icon-plus");
         this.getChildren().add(addCircle);
         addCircle.setDisable(true);
 
@@ -37,7 +47,8 @@ public class AppAdder extends Group {
         verticalLine.setStartX(120);
         verticalLine.setEndX(120);
         verticalLine.setStartY(0);
-        verticalLine.setEndY(50);
+        verticalLine.setEndY(52);
+
         this.getChildren().add(verticalLine);
 
         this.appNameTextField = new TextField();
@@ -81,15 +92,16 @@ public class AppAdder extends Group {
 
     private void addApp(MainWindowController mainWindowController, Application application, Long pingTime){
         if(isAppNotTracked(application)) {
-            this.applicationTrackers.add(createTracker(pingTime, application));
+            this.applicationTrackers.add(createTracker(pingTime, application, mainWindowController));
             mainWindowController.addNewAppView(application);
         }
     }
 
-    private ApplicationTracker createTracker(long pingTime,  Application application){
+    private ApplicationTracker createTracker(long pingTime,  Application application, MainWindowController mainWindowController){
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();
+        mainWindowController.addToTrackerList(appTracker);
         return appTracker;
     }
 }

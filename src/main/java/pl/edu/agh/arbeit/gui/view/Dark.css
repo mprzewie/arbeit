@@ -1,0 +1,8 @@
+.root {
+    -fx-base: rgba(60, 63, 65, 255); // dark
+}
+
+.icon-arrow {
+    -fx-stroke: #6838ff;
+    -fx-fill: #6838ff;
+}
