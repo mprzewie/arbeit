@@ -8,10 +8,12 @@ import pl.edu.agh.arbeit.tracker.events.EventType;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.*;
 import java.util.stream.Stream;
 
 public class CsvReport implements Report {
@@ -20,10 +22,12 @@ public class CsvReport implements Report {
     // initial set of events is going to be needed in order to calculate the activities properly
 //    private final Collection<Event> predecessors;
     private final List<LocalDate> dates;
+    private final List<String> appsToReport;
     private final CSVFormat format;
 
-    public CsvReport(List<Event> events) {
+    public CsvReport(List<String> appsToReport, List<Event> events) {
 
+        this.appsToReport = appsToReport;
 //        this.predecessors = predecessors;
         this.events = events;
         // list of distinct LocalDates when systemEvents happened
@@ -45,11 +49,11 @@ public class CsvReport implements Report {
     public void writeCsv(Path path) throws IOException {
         FileWriter writer = new FileWriter(path.toString());
         try(CSVPrinter printer = new CSVPrinter(writer, format)){
-            events.stream()
-                    .map(Event::getTopic)
+            appsToReport.stream()
                     .distinct()
                     .forEach(topic ->
                             Arrays.asList(EventType.ACTIVE, EventType.PASSIVE).forEach(activityType -> {
+//                        System.out.println("TOPIC " + topic);
                         try {
                             printer.printRecord(activityRecord(topic, activityType));
                         } catch (IOException e) {
@@ -63,9 +67,9 @@ public class CsvReport implements Report {
         LinkedList<String> record = new LinkedList<>();
         record.addLast(topic);
         record.addLast(activityType.toString());
-        System.out.println(topic + " " + activityType.toString());
+//        System.out.println(topic + " " + activityType.toString());
         Map<LocalDateTime, Duration> map = splitDurationMap(topic, activityType);
-        System.out.println(new MapDebug<>(map));
+//        System.out.println(new MapDebug<>(map));
 
         record.addAll(dates.stream()
                 .map(date ->
