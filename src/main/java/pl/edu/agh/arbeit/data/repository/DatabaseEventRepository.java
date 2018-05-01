@@ -11,7 +11,7 @@ import java.util.Date;
 public class DatabaseEventRepository implements EventRepository {
 
     public DatabaseEventRepository() {
-        initialize(true);
+        initialize(false);
     }
 
     private final String url = "jdbc:sqlite:test.db";
@@ -25,7 +25,7 @@ public class DatabaseEventRepository implements EventRepository {
                 "'" + event.getType() + "'" +
                 ", " + "'" +  dateToInsert + "'" + ")"
                 ;
-        System.out.println("SQL:   " + sql);
+//        System.out.println("SQL:   " + sql);
 
         try (Connection connection = DriverManager.getConnection(url)) {
             Statement stmt = connection.createStatement();
@@ -40,7 +40,7 @@ public class DatabaseEventRepository implements EventRepository {
         String sql = "SELECT rowid, appName, eventType, eventDate\n" +
                 "FROM Event";
 
-        System.out.println("SQL:   " + sql);
+//        System.out.println("SQL:   " + sql);
         LinkedList<Event> result = new LinkedList<>();
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()
