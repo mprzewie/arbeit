@@ -1,6 +1,9 @@
 package pl.edu.agh.arbeit.tracker.events;
 
 import javax.print.attribute.standard.DateTimeAtCreation;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 public abstract class Event {
@@ -10,6 +13,14 @@ public abstract class Event {
 
     public Date getDate(){
         return date;
+    }
+
+    public LocalDate getLocalDate(){
+        return getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public LocalDateTime getDateTime(){
+        return getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     @Override
