@@ -8,10 +8,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.report.CsvReport;
+import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
-import java.util.LinkedList;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
@@ -48,6 +51,7 @@ public class ReportsController {
         initGenerateReportsButton();
         initAppList();
         makeFieldsDisabledForNow();
+        pathTextField.setText("report.csv");
     }
 
     private void initCancelButton(){
@@ -59,7 +63,9 @@ public class ReportsController {
     private void initGenerateReportsButton(){
         generateReportButton.setOnAction(event -> {
             try {
-                eventListener.getDataCollector().generateCSVFile(eventListener.getDataCollector().getCSVFromHashMap());
+                List<Event> events = eventListener.getRepository().getEvents();
+                CsvReport report = new CsvReport(trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList()), events);
+                if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,8 +74,7 @@ public class ReportsController {
     }
 
     private void initAppList(){
-        List<String> apps = new LinkedList<>();
-        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
+        List<String> apps = trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList());
         double checkBoxYValue = 199;
         final double distanceBetweenCheckBoxes = 39;
         final double checkBoxXValue = 14;
