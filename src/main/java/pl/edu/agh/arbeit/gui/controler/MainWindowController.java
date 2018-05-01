@@ -12,6 +12,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.report.CsvReport;
+import pl.edu.agh.arbeit.data.report.Report;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
+import pl.edu.agh.arbeit.gui.view.AddCircle;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
@@ -23,6 +28,8 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
+
+import java.nio.file.Paths;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -52,6 +59,10 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+    private Line timeLine;
+
+    private EventRepository applicationRepository;
+
     @FXML
     private VBox listContent;
 
@@ -66,11 +77,55 @@ public class MainWindowController {
         listContent.getChildren().add(0,new SystemListItem());
         initAppScrollPane();
 
-        this.eventListener = new EventListener();
+        this.eventListener = new EventListener(applicationRepository);
+
         Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
+
+        generateReportButton.setOnMouseClicked(event -> {
+            try {
+                CsvReport report = new CsvReport(applicationRepository.getEvents());
+                report.writeCsv(Paths.get("report.csv"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        addCircle.setOnMouseClicked(event ->{
+            Application app = new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
+
+            Tracker appTracker = new ApplicationTracker(5, app);
+            eventListener.subscribe(appTracker);
+            appTracker.start();
+            trackerList.add(appTracker);
+
+            this.verticalLine.setEndY(this.verticalLine.getEndY()+50);
+
+            Line ft = new Line();
+            ft.setStartX(0);
+            ft.setEndX(120);
+            ft.setStartY(100+50*(trackerList.size()-1));
+            ft.setEndY(100+50*(trackerList.size()-1));
+            this.anchorPane.getChildren().add(ft);
+
+            Text appName = new Text(appNameTextField.getText());
+            appName.setLayoutX(10);
+            appName.setLayoutY(80+50*(trackerList.size()-1));
+            this.anchorPane.getChildren().add(appName);
+
+            addCircle.setLayoutY(addCircle.getLayoutY()+50);
+            appNameTextField.setLayoutY(appNameTextField.getLayoutY()+50);
+        });
+
+        appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(""))
+                addCircle.setDisable(true);
+            else
+                addCircle.setDisable(false);
+        });
 
         this.bindSizeProperties();
         this.initDatePicer();
