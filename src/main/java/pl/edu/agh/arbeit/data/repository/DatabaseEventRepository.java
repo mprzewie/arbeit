@@ -11,7 +11,7 @@ import java.util.Date;
 public class DatabaseEventRepository implements EventRepository {
 
     public DatabaseEventRepository() {
-        initialize(false);
+        initialize(true);
     }
 
     private final String url = "jdbc:sqlite:test.db";
@@ -19,7 +19,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     public void put(Event event){
         String dateToInsert = dateFormat.format(event.getDate());
-        String sql = "INSERT INTO Event (appName, eventType, eventDate) " +
+        String sql = "INSERT INTO Event (topic, eventType, eventDate) " +
                 "VALUES (" +
                 "'" + event.getTopic() +  "'" + ", " +
                 "'" + event.getType() + "'" +
@@ -37,7 +37,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     //TODO change to stream maybe?
     public List<Event> getEvents(){
-        String sql = "SELECT rowid, appName, eventType, eventDate\n" +
+        String sql = "SELECT rowid, topic, eventType, eventDate\n" +
                 "FROM Event";
 
 //        System.out.println("SQL:   " + sql);
@@ -58,7 +58,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     private Optional<Event> fromResultSet(ResultSet set){
         try {
-            String topic = set.getString("appName");
+            String topic = set.getString("topic");
             Date parsedDate = dateFormat.parse(set.getString("eventDate"));
             EventType type = EventType.valueOf(EventType.class, set.getString("eventType"));
 
@@ -109,7 +109,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     private void setupTables(Connection connection) throws SQLException{
         String sql = "CREATE TABLE IF NOT EXISTS Event (\n"
-                + " appName text NOT NULL,\n"
+                + " topic text NOT NULL,\n"
                 + "	eventType text NOT NULL,\n"
                 + " eventDate datetime NOT NULL\n"
                 + ");";
