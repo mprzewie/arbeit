@@ -123,7 +123,7 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, applicationTrackerList);
+                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty());
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
