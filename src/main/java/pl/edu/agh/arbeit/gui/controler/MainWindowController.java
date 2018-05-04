@@ -42,6 +42,12 @@ public class MainWindowController {
     private Button generateReportButton;
 
     @FXML
+    private Button addCustomEventButton;
+
+    @FXML
+    private Button beginCustomEventButton;
+
+    @FXML
     private ScrollPane appScrollPane;
 
     private AppAdder appAdder;
@@ -52,12 +58,15 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+    private boolean customEventActive;
+
     @FXML
     private VBox listContent;
 
     private ConfigProvider appConfig;
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
+        customEventActive = false;
         this.trackerList = new LinkedList<>();
         this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
@@ -76,6 +85,8 @@ public class MainWindowController {
         this.initDatePicer();
         this.initReportButton();
         this.initAppAdder();
+        this.initAddCustomEventButton();
+        this.initBeginCustomEventButton();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
     }
 
@@ -130,6 +141,39 @@ public class MainWindowController {
                     e.printStackTrace();
                 }
             }
+        );
+    }
+
+    private void initAddCustomEventButton() {
+        addCustomEventButton.setOnAction(
+                event -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(Main.class.getResource("view/CustomEventsPane.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = new Stage();
+                        CustomEventsController customEventsController = loader.getController();
+                        customEventsController.init(stage);
+                        stage.setScene(new Scene(root, 450, 450));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+    }
+
+    private void initBeginCustomEventButton() {
+        beginCustomEventButton.setOnAction(
+                event -> {
+                    if(customEventActive){
+                        beginCustomEventButton.setText("Begin Custom Event");
+                        customEventActive = false;
+                    } else {
+                        beginCustomEventButton.setText("End Custom Event");
+                        customEventActive = true;
+                    }
+                }
         );
     }
 
