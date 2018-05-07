@@ -11,8 +11,10 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
+import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
@@ -28,6 +30,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+
+//import pl.edu.agh.arbeit.gui.view.AddCircle;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -58,7 +62,10 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+
     private boolean customEventActive;
+
+    private EventRepository applicationRepository = new DatabaseEventRepository();
 
     @FXML
     private VBox listContent;
@@ -75,7 +82,8 @@ public class MainWindowController {
         listContent.getChildren().add(0,new SystemListItem());
         initAppScrollPane();
 
-        this.eventListener = new EventListener();
+        this.eventListener = new EventListener(applicationRepository);
+
         Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();

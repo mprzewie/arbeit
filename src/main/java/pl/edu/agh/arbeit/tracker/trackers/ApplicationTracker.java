@@ -22,7 +22,16 @@ public class ApplicationTracker extends AsyncTracker {
     @Override
     protected void actOnStatus() {
         Event currentStateEvent = application.getCurrentStateEvent();
+
+
         if(!currentStateEvent.equals(previousEvents.peek())){
+
+            // we need this to distinguish between application
+            // changing state from active/passive and
+            // changing state from stopped
+            if(previousEvents.peek().getType().equals(EventType.STOP))
+                currentStateEvent = new ApplicationEvent(EventType.START, application);
+
             previousEvents.push(currentStateEvent);
             bus.post(currentStateEvent);
         }
