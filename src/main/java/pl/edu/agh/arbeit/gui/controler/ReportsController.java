@@ -1,17 +1,18 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
-
+import java.io.File;
+import java.util.LinkedList;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +21,6 @@ public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
     private List<ApplicationTracker> trackers;
-
-    @FXML
-    private AnchorPane anchorPane;
 
     @FXML
     private DatePicker dateFromPicker;
@@ -34,22 +32,27 @@ public class ReportsController {
     private TextField pathTextField;
 
     @FXML
-    private TextField nameTextField;
-
-    @FXML
     private Button generateReportButton;
 
     @FXML
     private Button cancelButton;
 
-    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers){
+    @FXML
+    private ScrollPane appListScrollPane;
+
+    @FXML
+    private VBox appListContent;
+
+
+    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
         this.trackers = trackers;
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
-        initAppList();
+        initAppList(heightProperty);
+        initPathTextField();
         makeFieldsDisabledForNow();
         pathTextField.setText("report.csv");
     }
@@ -73,27 +76,57 @@ public class ReportsController {
         });
     }
 
-    private void initAppList(){
-        List<String> apps = trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList());
-        double checkBoxYValue = 199;
-        final double distanceBetweenCheckBoxes = 39;
-        final double checkBoxXValue = 14;
+
+    private void initAppList(ReadOnlyDoubleProperty heightProperty){
+        initScrollPane(heightProperty);
+        System.out.println(calculateSpaceTakenByOtherViews());
+        List<String> apps = new LinkedList<>();
+        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
+        final String last = apps.remove(apps.size() - 1);
 
         for (String appName : apps){
             CheckBox cb = new CheckBox(appName);
-            cb.setLayoutY(checkBoxYValue);
-            cb.setLayoutX(checkBoxXValue);
             cb.setSelected(true);
-            checkBoxYValue += distanceBetweenCheckBoxes;
-            anchorPane.getChildren().add(cb);
+            appListContent.getChildren().add(cb);
+            Region region = new Region();
+            region.setMinHeight(14.0);
+            appListContent.getChildren().add(region);
         }
+
+        CheckBox cb = new CheckBox(last);
+        cb.setSelected(true);
+        appListContent.getChildren().add(cb);
+    }
+
+    private void initScrollPane(ReadOnlyDoubleProperty heightProperty){
+        this.appListScrollPane.setContent(appListContent);
+        this.appListScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.appListScrollPane.setStyle("-fx-background-color:transparent;");
+        this.appListScrollPane.prefHeightProperty().bind(heightProperty.subtract(calculateSpaceTakenByOtherViews()));
+    }
+
+    private double calculateSpaceTakenByOtherViews(){
+        return 236;
+    }
+
+    private void initPathTextField(){
+        pathTextField.setOnMouseClicked(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select report directory");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Comma Separated Values (.csv)", "*.csv"));
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Text File (.txt)", "*.txt"));
+            File file = fileChooser.showSaveDialog(reportsStage);
+            if (file != null) {
+                pathTextField.setText(file.getAbsolutePath());
+            }
+        });
     }
 
     private void makeFieldsDisabledForNow(){
         this.dateFromPicker.setDisable(true);
         this.dateToPicker.setDisable(true);
-        this.pathTextField.setDisable(true);
-        this.nameTextField.setDisable(true);
     }
 
 }
