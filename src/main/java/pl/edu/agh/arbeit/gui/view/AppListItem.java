@@ -52,6 +52,8 @@ public class AppListItem extends Pane {
         this.getChildren().add(settingsIcon);
 
         initDeleteButton(mainWindowController);
+
+        this.getChildren().add(new TimeLine());
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){
