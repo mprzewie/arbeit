@@ -26,7 +26,6 @@ public class CsvReport implements Report {
     private final CSVFormat format;
 
     public CsvReport(List<String> appsToReport, List<Event> events) {
-
         this.appsToReport = appsToReport;
 //        this.predecessors = predecessors;
         this.events = events;
