@@ -56,7 +56,8 @@ public class WindowsSystemHandler implements SystemHandler {
             IntByReference pid = new IntByReference();
             user32.GetWindowThreadProcessId(windowHandle, pid);
             WinNT.HANDLE processHandle = kernel32.OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, true, pid.getValue());
-
+            if (processHandle==null)
+                return ""; //System cannot return focused app name as screen is locked => None app is foreground
             byte[] filename = new byte[512];
             Psapi.INSTANCE.GetModuleBaseNameW(processHandle.getPointer(), Pointer.NULL, filename, filename.length);
             String focusedName = new String(filename);
