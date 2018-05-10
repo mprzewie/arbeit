@@ -11,11 +11,12 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import pl.edu.agh.arbeit.data.EventListener;
 import javafx.stage.Stage;
+import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
-import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
@@ -29,7 +30,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+
+//import pl.edu.agh.arbeit.gui.view.AddCircle;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -44,10 +46,13 @@ public class MainWindowController {
     private Button generateReportButton;
 
     @FXML
-    private ScrollPane appScrollPane;
+    private Button addCustomEventButton;
 
     @FXML
-    private VBox scrollAndButtonVBox;
+    private Button beginCustomEventButton;
+
+    @FXML
+    private ScrollPane appScrollPane;
 
     private AppAdder appAdder;
 
@@ -57,21 +62,28 @@ public class MainWindowController {
 
     private List<ApplicationTracker> applicationTrackerList;
 
+
+    private boolean customEventActive;
+
+    private EventRepository applicationRepository = new DatabaseEventRepository();
+
+    @FXML
     private VBox listContent;
 
     private ConfigProvider appConfig;
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
+        customEventActive = false;
         this.trackerList = new LinkedList<>();
         this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
         this.appConfig = new AppConfig();
 
-        listContent = new VBox();
-        this.appScrollPane.setContent(listContent);
-        listContent.getChildren().add(new SystemListItem());
+        listContent.getChildren().add(0,new SystemListItem());
+        initAppScrollPane();
 
-        this.eventListener = new EventListener();
+        this.eventListener = new EventListener(applicationRepository);
+
         Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
@@ -81,7 +93,15 @@ public class MainWindowController {
         this.initDatePicer();
         this.initReportButton();
         this.initAppAdder();
-        scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+        this.initAddCustomEventButton();
+        this.initBeginCustomEventButton();
+        //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initAppScrollPane(){
+        this.appScrollPane.setContent(listContent);
+        this.appScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.appScrollPane.setStyle("-fx-background-color:transparent;");
     }
 
     private void initAppAdder(){
@@ -122,7 +142,7 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, applicationTrackerList);
+                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty());
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
@@ -130,5 +150,46 @@ public class MainWindowController {
                 }
             }
         );
+    }
+
+    private void initAddCustomEventButton() {
+        addCustomEventButton.setOnAction(
+                event -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(Main.class.getResource("view/CustomEventsPane.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = new Stage();
+                        CustomEventsController customEventsController = loader.getController();
+                        customEventsController.init(stage);
+                        stage.setScene(new Scene(root, 450, 450));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+    }
+
+    private void initBeginCustomEventButton() {
+        beginCustomEventButton.setOnAction(
+                event -> {
+                    if(customEventActive){
+                        beginCustomEventButton.setText("Begin Custom Event");
+                        customEventActive = false;
+                    } else {
+                        beginCustomEventButton.setText("End Custom Event");
+                        customEventActive = true;
+                    }
+                }
+        );
+    }
+
+    public void addToTrackerList(Tracker tracker){
+        this.trackerList.add(tracker);
+    }
+
+    public void stopTrackingAll(){
+        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
     }
 }

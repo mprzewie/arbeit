@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class OverviewController {
     private Stage primaryStage;
-    private final String APP_TITLE = "DiceMaster";
+    private final String APP_TITLE = "Arbe.IT";
     private final String MAIN_PAIN_RPATH = "view/MainWindowPane.fxml";
 
     public OverviewController(Stage primaryStage) {
@@ -29,6 +29,7 @@ public class OverviewController {
             this.primaryStage.setScene(scene);
 
             this.primaryStage.setOnCloseRequest(t -> {
+                mainWindowController.stopTrackingAll();
                 Platform.exit();
                 System.exit(0);
             });
