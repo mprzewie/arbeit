@@ -15,10 +15,12 @@ public class SystemTracker extends AsyncTracker {
 
     MouseTracker mouseTracker;
     KeyboardTracker keyboardTracker = new KeyboardTracker();
-    LockScreenTracker lockScreenTracker = new LockScreenTracker();
+    LockScreenTracker lockScreenTracker;
     int secondsToBecomePassive;
     public SystemTracker(long pingTime, int secondsToBecomePassive) {
         super(pingTime);
+        lockScreenTracker = new LockScreenTracker();
+        lockScreenTracker.start();
         this.secondsToBecomePassive = secondsToBecomePassive;
         try {
             mouseTracker = new MouseTracker(secondsToBecomePassive/4);
@@ -30,7 +32,7 @@ public class SystemTracker extends AsyncTracker {
 
     @Override
     protected void actOnStatus() {
-        if (lockScreenTracker.isScreenLocked())
+        if (!lockScreenTracker.isUserUnlocked())
         {
             bus.post(new SystemEvent(EventType.PASSIVE));
             return;

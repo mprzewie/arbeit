@@ -7,15 +7,16 @@ import static com.sun.jna.Native.getLastError;
 /**
  * Created by Albert Mosiałek on 10.05.2018.
  */
-public class LockScreenTracker implements WinUser.WindowProc{
+public class LockScreenTracker extends Thread implements WinUser.WindowProc{
 
-    public boolean isScreenLocked() {
-        return isScreenLocked;
+    public boolean isUserUnlocked() {
+        return isScreenUnocked && isConsoleConnected;
     }
 
-    boolean isScreenLocked = false;
+    private boolean isScreenUnocked = true;
+    private boolean isConsoleConnected=true;
 
-    public LockScreenTracker() {
+    public void run(){
         // define new window class
         String windowClass = new String("MyWindowClass");
         WinDef.HMODULE hInst = Kernel32.INSTANCE.GetModuleHandle("");
@@ -52,6 +53,8 @@ public class LockScreenTracker implements WinUser.WindowProc{
             User32.INSTANCE.TranslateMessage(msg);
             User32.INSTANCE.DispatchMessage(msg);
         }
+
+
 
         Wtsapi32.INSTANCE.WTSUnRegisterSessionNotification(hWnd);
         User32.INSTANCE.UnregisterClass(windowClass, hInst);
@@ -90,11 +93,24 @@ public class LockScreenTracker implements WinUser.WindowProc{
                 break;
             }
             case Wtsapi32.WTS_SESSION_LOCK: {
-                isScreenLocked=true;
+                System.out.println("lock");
+                isScreenUnocked =false;
                 break;
             }
             case Wtsapi32.WTS_SESSION_UNLOCK: {
-                isScreenLocked=false;
+                System.out.println("unlock");
+                isScreenUnocked =true;
+                break;
+            }
+            case Wtsapi32.WTS_CONSOLE_CONNECT:
+            {
+                System.out.println("connected");
+                isConsoleConnected=true;
+                break;
+            }
+            case Wtsapi32.WTS_CONSOLE_DISCONNECT: {
+                System.out.println("disconnected");
+                isConsoleConnected=false;
                 break;
             }
         }
