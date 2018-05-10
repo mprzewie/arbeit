@@ -3,6 +3,7 @@ package pl.edu.agh.arbeit.tracker.trackers;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import pl.edu.agh.arbeit.tracker.system.KeyboardTracker;
+import pl.edu.agh.arbeit.tracker.system.LockScreenTracker;
 import pl.edu.agh.arbeit.tracker.system.MouseTracker;
 
 import java.awt.*;
@@ -14,6 +15,7 @@ public class SystemTracker extends AsyncTracker {
 
     MouseTracker mouseTracker;
     KeyboardTracker keyboardTracker = new KeyboardTracker();
+    LockScreenTracker lockScreenTracker = new LockScreenTracker();
     int secondsToBecomePassive;
     public SystemTracker(long pingTime, int secondsToBecomePassive) {
         super(pingTime);
@@ -28,6 +30,11 @@ public class SystemTracker extends AsyncTracker {
 
     @Override
     protected void actOnStatus() {
+        if (lockScreenTracker.isScreenLocked())
+        {
+            bus.post(new SystemEvent(EventType.PASSIVE));
+            return;
+        }
         if(mouseTracker.getSecondsSinceLastMoveNoticed()>secondsToBecomePassive
                 && keyboardTracker.getSecondsSinceLastKeyPressed()>secondsToBecomePassive)
             bus.post(new SystemEvent(EventType.PASSIVE));

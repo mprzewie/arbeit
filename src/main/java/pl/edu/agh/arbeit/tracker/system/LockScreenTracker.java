@@ -9,6 +9,12 @@ import static com.sun.jna.Native.getLastError;
  */
 public class LockScreenTracker implements WinUser.WindowProc{
 
+    public boolean isScreenLocked() {
+        return isScreenLocked;
+    }
+
+    boolean isScreenLocked = false;
+
     public LockScreenTracker() {
         // define new window class
         String windowClass = new String("MyWindowClass");
@@ -34,8 +40,6 @@ public class LockScreenTracker implements WinUser.WindowProc{
                         null, hInst, null);
 
         getLastError();
-        System.out.println("window sucessfully created! window hwnd: "
-                + hWnd.getPointer().toString());
 
         Wtsapi32.INSTANCE.WTSRegisterSessionNotification(hWnd,
                 Wtsapi32.NOTIFY_FOR_THIS_SESSION);
@@ -80,19 +84,17 @@ public class LockScreenTracker implements WinUser.WindowProc{
         switch (wParam.intValue()) {
 
             case Wtsapi32.WTS_SESSION_LOGON: {
-                System.out.println("onMachineLogon");
                 break;
             }
             case Wtsapi32.WTS_SESSION_LOGOFF: {
-                System.out.println("onMachineLogoff");
                 break;
             }
             case Wtsapi32.WTS_SESSION_LOCK: {
-                System.out.println("onMachineLocked");
+                isScreenLocked=true;
                 break;
             }
             case Wtsapi32.WTS_SESSION_UNLOCK: {
-                System.out.println("onMachineUnlocked");
+                isScreenLocked=false;
                 break;
             }
         }
@@ -102,11 +104,7 @@ public class LockScreenTracker implements WinUser.WindowProc{
 
 
     protected void onCreate(WinDef.WPARAM wParam, WinDef.LPARAM lParam) {
-        System.out.println("onCreate: WM_CREATE");
+
     }
 
-
-    public static void main(String[] args) {
-        new LockScreenTracker();
-    }
 }
