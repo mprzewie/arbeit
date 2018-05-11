@@ -7,14 +7,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.*;
 import java.util.List;
 
-public class AppConfig implements ConfigProvider{
+public class AppConfig implements ConfigProvider {
 
     private Info info;
     private ObjectMapper mapper = new ObjectMapper();
 
     public AppConfig() {
         InputStream is;
-        TypeReference<Info> mapType = new TypeReference<Info>() {};
+        TypeReference<Info> mapType = new TypeReference<Info>() {
+        };
         try {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
@@ -40,8 +41,8 @@ public class AppConfig implements ConfigProvider{
         File file = new File("config.json");
         try {
             info.addAppToTrack(appInfo);
-            mapper.writeValue(file,info);
-            mapper.writeValue(System.out,info);
+            mapper.writeValue(file, info);
+            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +54,8 @@ public class AppConfig implements ConfigProvider{
         File file = new File("config.json");
         try {
             info.removeAppToTrack(programName);
-            mapper.writeValue(file,info);
-            mapper.writeValue(System.out,info);
+            mapper.writeValue(file, info);
+            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,5 +64,15 @@ public class AppConfig implements ConfigProvider{
     @Override
     public void setSystemPingTime(Long pingTime) {
         this.info.setSystemPingTime(pingTime);
+    }
+
+    @Override
+    public int getSecondsToBecomePassive() {
+        return info.getSecondsToBecomePassive();
+    }
+
+    @Override
+    public void setSecondsToBecomePassive(int secondsToBecomePassive) {
+        this.info.setSecondsToBecomePassive(secondsToBecomePassive);
     }
 }

@@ -8,4 +8,6 @@ public interface ConfigProvider {
     void addAppToTrack(AppInfo appInfo);
     void removeAppToTrack(String programName);
     void setSystemPingTime(Long pingTime);
+    int getSecondsToBecomePassive();
+    void setSecondsToBecomePassive(int secondsToBecomePassive);
 }

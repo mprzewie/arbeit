@@ -3,6 +3,7 @@ import java.util.List;
 
 public class Info {
     private Long systemPingTime;
+    private int secondsToBecomePassive;
     private List<AppInfo> appsToTrack;
 
     public Info(){
@@ -19,6 +20,14 @@ public class Info {
 
     public void setSystemPingTime(Long systemPingTime) {
         this.systemPingTime = systemPingTime;
+    }
+
+    public int getSecondsToBecomePassive() {
+        return this.secondsToBecomePassive;
+    }
+
+    public void setSecondsToBecomePassive(int secondsToBecomePassive) {
+        this.secondsToBecomePassive=secondsToBecomePassive;
     }
 
     public List<AppInfo> getAppsToTrack() {
