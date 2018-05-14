@@ -43,12 +43,14 @@ public class AppListItem extends Pane {
         deleteAppButton.setLayoutX(98);
         deleteAppButton.setLayoutY(44);
         deleteAppButton.setSize("22px");
+        deleteAppButton.setStyleClass("icon");
         this.getChildren().add(deleteAppButton);
 
         this.settingsIcon = new FontAwesomeIconView(FontAwesomeIcon.COG);
         this.settingsIcon.setSize("22px");
         this.settingsIcon.setLayoutX(97);
         this.settingsIcon.setLayoutY(20);
+        this.settingsIcon.setStyleClass("icon");
         this.getChildren().add(settingsIcon);
 
         initDeleteButton(mainWindowController);
