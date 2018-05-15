@@ -24,16 +24,21 @@ public class CsvReport implements Report {
     private final List<LocalDate> dates;
     private final List<String> appsToReport;
     private final CSVFormat format;
+    private final LocalDateTime finalDateTime;
 
     public CsvReport(List<String> appsToReport, List<Event> events) {
         this.appsToReport = appsToReport;
 //        this.predecessors = predecessors;
         this.events = events;
         // list of distinct LocalDates when systemEvents happened
-        this.dates = getSortedRelevantEvents("system")
+
+        List<Event> systemEvents = getSortedRelevantEvents("system");
+        finalDateTime = systemEvents.get(systemEvents.size() - 1).getDateTime();
+        this.dates = systemEvents.stream()
                 .map(Event::getLocalDate)
                 .distinct()
                 .collect(Collectors.toList());
+
 
         ArrayList<String> headerList = new ArrayList<>();
         headerList.add("topic");
@@ -52,8 +57,8 @@ public class CsvReport implements Report {
                     .forEach(topic -> {
                         DurationCalculator calculator = new DurationCalculator(
                                 topic,
-                                getSortedRelevantEvents(topic)
-                                        .collect(Collectors.toList())
+                                getSortedRelevantEvents(topic),
+                                finalDateTime
                         );
                         Arrays.asList(EventType.ACTIVE, EventType.PASSIVE)
                                 .forEach(activityType -> {
@@ -78,16 +83,16 @@ public class CsvReport implements Report {
     }
 
     // This method returns a stream of events relevant to given topic sorted by datetime.
-    // As SystemEvents are relevant to every topic, they are included there too
-    private Stream<Event> getSortedRelevantEvents(String topic){
+    private List<Event> getSortedRelevantEvents(String topic){
        return events
                 .parallelStream()
-                .filter(event -> event.getTopic().equals(topic) || event.getTopic().equals("system"))
+                .filter(event -> event.getTopic().equals(topic))
                 .sorted((o1, o2) -> {
                     if(o1.getDateTime().isBefore(o2.getDateTime())) return -1;
                     else if(o2.getDateTime().isBefore(o1.getDateTime())) return 1;
                     else return 0;
-                });
+                })
+               .collect(Collectors.toList());
     }
 
     @Override

@@ -16,10 +16,12 @@ public class DurationCalculator {
     private final String topic;
     private final List<Event> relevantEvents;
     private final Map<EventType, Map<LocalDateTime, Duration>> durationMaps;
+    private final LocalDateTime finalDateTime;
 
-    public DurationCalculator(String topic, List<Event> events) {
+    public DurationCalculator(String topic, List<Event> events, LocalDateTime finalDateTime) {
         this.topic = topic;
         this.relevantEvents = events;
+        this.finalDateTime = finalDateTime;
         this.durationMaps = new HashMap<>();
         durationMaps.put(
                 EventType.ACTIVE,
@@ -32,7 +34,6 @@ public class DurationCalculator {
     }
 
     public Duration activityLength(LocalDate date, EventType activityType){
-
         return Duration.ofSeconds(
                 durationMaps.get(activityType)
                 .keySet().stream()
@@ -68,26 +69,21 @@ public class DurationCalculator {
 
         Map<LocalDateTime, Duration> result = new HashMap<>();
 
-        for (Event event : relevantEvents) {
-            // systemEvents are currently ignored
-            // let's assume for now that when AppEvents are happening,
-            // system is active
-            // below: because could be sdystem event
-            if(event.getTopic().equals(topic)){
-                // activity stops when passive mode is entered or app has been stopped
-                // if current event is not active (one of three remaining) and previous event is active event
-                if(!event.getType().equals(EventType.ACTIVE)
-                        && previousEvent.getType().equals(EventType.ACTIVE)){
-                    result.put(previousEvent.getDateTime(),
-                            Duration.ofSeconds(
-                                    previousEvent
-                                            .getDateTime()
-                                            .until(event.getDateTime(), ChronoUnit.SECONDS)
-                            )
-                    );
-                }
-                previousEvent = event;
+        for (Event currentEvent : relevantEvents) {
+
+            // activity stops when passive mode is entered or app has been stopped
+            // if current event is not active (one of three remaining) and previous event is active event
+            if(!currentEvent.getType().equals(EventType.ACTIVE)
+                    && previousEvent.getType().equals(EventType.ACTIVE)){
+                result.put(previousEvent.getDateTime(),
+                        Duration.ofSeconds(
+                                previousEvent
+                                        .getDateTime()
+                                        .until(currentEvent.getDateTime(), ChronoUnit.SECONDS)
+                        )
+                );
             }
+            previousEvent = currentEvent;
         }
         // after iteration
         // if previous event is active it means that we still use this application
@@ -96,10 +92,7 @@ public class DurationCalculator {
             result.put(previousEvent.getDateTime(),
                     Duration.ofSeconds(
                             previousEvent.getDateTime()
-                                    .until(
-                                            relevantEvents.get(relevantEvents.size() - 1)
-                                                    .getDateTime(),
-                                            ChronoUnit.SECONDS)
+                                    .until(finalDateTime, ChronoUnit.SECONDS)
                     ));
         }
         return result;
@@ -111,7 +104,7 @@ public class DurationCalculator {
     private Map<LocalDateTime, Duration> passiveDurations() {
         // for now I assume that the application has been previously closed
         // TODO use initialStates
-        Event currentTopic = new Event() {
+        Event previousEvent = new Event() {
             @Override
             public String getTopic() {
                 return topic;
@@ -125,36 +118,29 @@ public class DurationCalculator {
 
         Map<LocalDateTime, Duration> result = new HashMap<>();
 
-        for (Event event : relevantEvents) {
-            // systemEvents are currently ignored
-            // let's assume for now that when AppEvents are happening,
-            // system is active
-            if(event.getTopic().equals(topic)){
-                // passiveness stops when passive mode is entered or app has been stopped
-                if(!event.getTopic().equals("system")) System.out.println("-" + event);
+        for (Event currentEvent : relevantEvents) {
+            // passiveness stops when passive mode is entered or app has been stopped
+            System.out.println("-" + currentEvent);
 
-                if(!event.getType().equals(EventType.PASSIVE)
-                        && currentTopic.getType().equals(EventType.PASSIVE)){
-                    result.put(currentTopic.getDateTime(),
-                            Duration.ofSeconds(
-                                    currentTopic
-                                            .getDateTime()
-                                            .until(event.getDateTime(), ChronoUnit.SECONDS)
-                            )
-                    );
-                }
-                currentTopic = event;
+            if(!currentEvent.getType().equals(EventType.PASSIVE)
+                    && previousEvent.getType().equals(EventType.PASSIVE)){
+                result.put(previousEvent.getDateTime(),
+                        Duration.ofSeconds(
+                                previousEvent
+                                        .getDateTime()
+                                        .until(currentEvent.getDateTime(), ChronoUnit.SECONDS)
+                        )
+                );
             }
+            previousEvent = currentEvent;
         }
+
         // if app is currently passive
-        if(currentTopic.getType().equals(EventType.PASSIVE)){
-            result.put(currentTopic.getDateTime(),
+        if(previousEvent.getType().equals(EventType.PASSIVE)){
+            result.put(previousEvent.getDateTime(),
                     Duration.ofSeconds(
-                            currentTopic.getDateTime()
-                                    .until(
-                                            relevantEvents.get(relevantEvents.size()-1)
-                                                    .getDateTime(),
-                                            ChronoUnit.SECONDS)
+                            previousEvent.getDateTime()
+                                    .until(finalDateTime, ChronoUnit.SECONDS)
                     ));
         }
         return result;
