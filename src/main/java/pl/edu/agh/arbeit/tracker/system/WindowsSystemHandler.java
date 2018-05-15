@@ -9,6 +9,8 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
+import pl.edu.agh.arbeit.tracker.events.EventType;
+import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -37,6 +39,8 @@ public class WindowsSystemHandler implements SystemHandler {
         }
         return result;
     }
+
+
 
     private interface Psapi extends StdCallLibrary {
         Psapi INSTANCE = (Psapi) Native.loadLibrary("Psapi", Psapi.class);
@@ -74,4 +78,6 @@ public class WindowsSystemHandler implements SystemHandler {
             //UNIX code
             throw new NotImplementedException();
         }    }
+
+
 }

@@ -2,28 +2,26 @@ package pl.edu.agh.arbeit.tracker.system;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.Duration;
 
-    public class MouseTracker  {
-        private int secondsSinceLastMoveNoticed=0;
+public class MouseTracker  {
+        private LocalDateTime lastMoveNoticedTime = LocalDateTime.now();
         private Point lastMouseLocation = getCurrentMouseLocation();
-        public MouseTracker(int intervalInSeconds) throws AWTException {
-            ActionListener actionListener = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if(!checkAndUpdateLocation()){
-                        secondsSinceLastMoveNoticed+=intervalInSeconds;
-                    }
-                }
+
+        public MouseTracker(Duration timeToBecomePassive) {
+            ActionListener actionListener = e -> {
+                checkAndUpdateLocation();
+
             };
-            Timer timer = new Timer(intervalInSeconds*1000, actionListener);
+            Timer timer = new Timer((int)timeToBecomePassive.getSeconds() * 1000, actionListener);
             timer.start();
         }
 
-        public int getSecondsSinceLastMoveNoticed() {
+        public Duration getTimeSinceLastMoveNoticed() {
             checkAndUpdateLocation();
-            return secondsSinceLastMoveNoticed;
+            return Duration.between(lastMoveNoticedTime, LocalDateTime.now());
         }
 
         private Point getCurrentMouseLocation(){
@@ -32,7 +30,7 @@ import java.awt.event.ActionListener;
 
         private boolean checkAndUpdateLocation(){
             if (!lastMouseLocation.equals(getCurrentMouseLocation())) {
-                secondsSinceLastMoveNoticed=0;
+                lastMoveNoticedTime = LocalDateTime.now();
                 lastMouseLocation = getCurrentMouseLocation();
                 return true;
             }
