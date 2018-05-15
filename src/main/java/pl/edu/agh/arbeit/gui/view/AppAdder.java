@@ -16,6 +16,7 @@ import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
+import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,6 @@ public class AppAdder extends Pane {
         this.applicationTrackers = applicationTrackers;
         this.eventListener = eventListener;
         this.appConfig = new AppConfig();
-
         addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
@@ -64,7 +64,7 @@ public class AppAdder extends Pane {
     private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){
         List<AppInfo> tempList= new LinkedList<>();
         tempList.addAll(appInfos);
-        tempList.forEach(e -> addApp(mainWindowController, new Application(e.getName(),e.getProgramName()), e.getPingTime()));
+        tempList.forEach(e -> addApp(mainWindowController, new Application(e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()), e.getPingTime()));
     }
 
     private boolean isAppNotTracked(Application application){
@@ -83,7 +83,7 @@ public class AppAdder extends Pane {
 
     private void initAddButton(MainWindowController mainWindowController){
         addCircle.setOnMouseClicked(event ->{
-            Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
+            Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText(), mainWindowController.getSystemTracker());
             if(isAppNotTracked(newApp))
                 appConfig.addAppToTrack(new AppInfo(newApp.getName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
             addApp(mainWindowController,newApp,APP_TRACKER_PING_TIME);

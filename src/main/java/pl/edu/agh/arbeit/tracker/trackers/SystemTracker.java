@@ -13,12 +13,13 @@ import java.awt.*;
  **/
 public class SystemTracker extends AsyncTracker {
 
-    MouseTracker mouseTracker;
-    KeyboardTracker keyboardTracker = new KeyboardTracker();
-    LockScreenTracker lockScreenTracker;
-    int secondsToBecomePassive;
+    private MouseTracker mouseTracker;
+    private KeyboardTracker keyboardTracker;
+    private LockScreenTracker lockScreenTracker;
+    private int secondsToBecomePassive;
     public SystemTracker(long pingTime, int secondsToBecomePassive) {
         super(pingTime);
+        keyboardTracker = new KeyboardTracker();
         lockScreenTracker = new LockScreenTracker();
         lockScreenTracker.start();
         this.secondsToBecomePassive = secondsToBecomePassive;
@@ -32,19 +33,23 @@ public class SystemTracker extends AsyncTracker {
 
     @Override
     protected void actOnStatus() {
-        if (!lockScreenTracker.isUserUnlocked())
-        {
-            bus.post(new SystemEvent(EventType.PASSIVE));
-            return;
-        }
-        if(mouseTracker.getSecondsSinceLastMoveNoticed()>secondsToBecomePassive
-                && keyboardTracker.getSecondsSinceLastKeyPressed()>secondsToBecomePassive)
-            bus.post(new SystemEvent(EventType.PASSIVE));
-        else {
-            bus.post(new SystemEvent(EventType.ACTIVE));
-        }
+        bus.post(currentStateEvent());
     }
 
+    public SystemEvent currentStateEvent(){
+        if (lockScreenTracker.isUserUnlocked()){
+            if(mouseTracker.getSecondsSinceLastMoveNoticed() > secondsToBecomePassive
+                    && keyboardTracker.getSecondsSinceLastKeyPressed() > secondsToBecomePassive) {
+                return new SystemEvent(EventType.PASSIVE);
+            }
+            else {
+                return new SystemEvent(EventType.ACTIVE);
+            }
+        }
+        else {
+            return new SystemEvent(EventType.PASSIVE);
+        }
+    }
     @Override
     protected void stopTracking() {
         bus.post(new SystemEvent(EventType.STOP));
