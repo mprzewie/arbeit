@@ -18,12 +18,13 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class AppAdder extends Pane {
-    private final static long APP_TRACKER_PING_TIME = 5;
+    private final Duration APP_TRACKER_PING_TIME = Duration.ofSeconds(5);
 
     private FontAwesomeIconView addCircle;
     private TextField appNameTextField;
@@ -90,14 +91,14 @@ public class AppAdder extends Pane {
         });
     }
 
-    private void addApp(MainWindowController mainWindowController, Application application, Long pingTime){
+    private void addApp(MainWindowController mainWindowController, Application application, Duration pingTime){
         if(isAppNotTracked(application)) {
             this.applicationTrackers.add(createTracker(pingTime, application, mainWindowController));
             mainWindowController.addNewAppView(application);
         }
     }
 
-    private ApplicationTracker createTracker(long pingTime,  Application application, MainWindowController mainWindowController){
+    private ApplicationTracker createTracker(Duration pingTime, Application application, MainWindowController mainWindowController){
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();

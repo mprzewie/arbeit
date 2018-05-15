@@ -19,11 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class ApplicationTest {
     @Mock
     private SystemHandler handlerMock;
+
+    @Mock
     private SystemTracker trackerMock;
     private Application activeApp;
     private Application passiveApp;
     private Application stoppedApp;
-    private SystemEvent eventMock = new SystemEvent(EventType.ACTIVE);
 
 
     public ApplicationTest(){
@@ -35,6 +36,7 @@ class ApplicationTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(handlerMock.getFocusedApplicationName()).thenReturn(activeAppName);
         Mockito.when(handlerMock.getRunningApplications()).thenReturn(mockedRunningApplications);
+        SystemEvent eventMock = new SystemEvent(EventType.ACTIVE);
         Mockito.when(trackerMock.currentStateEvent()).thenReturn(eventMock);
 
         activeApp = new Application("Active App", activeAppName, handlerMock, trackerMock);

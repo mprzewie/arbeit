@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.*;
+import java.time.Duration;
 import java.util.List;
 
 public class AppConfig implements ConfigProvider {
@@ -30,8 +31,8 @@ public class AppConfig implements ConfigProvider {
     }
 
     @Override
-    public Long getSystemPingTime() {
-        return info.getSystemPingTime();
+    public Duration getSystemPingTime() {
+        return info.getSystemPingTimeInSeconds();
     }
 
 
@@ -62,17 +63,17 @@ public class AppConfig implements ConfigProvider {
     }
 
     @Override
-    public void setSystemPingTime(Long pingTime) {
-        this.info.setSystemPingTime(pingTime);
+    public void setSystemPingTime(Duration pingTime) {
+        this.info.setSystemPingTimeInSeconds(pingTime.getSeconds());
     }
 
     @Override
-    public int getSecondsToBecomePassive() {
-        return info.getSecondsToBecomePassive();
+    public Duration getTimeToBecomePassive() {
+        return info.getTimeToBecomePassiveInSeconds();
     }
 
     @Override
-    public void setSecondsToBecomePassive(int secondsToBecomePassive) {
-        this.info.setSecondsToBecomePassive(secondsToBecomePassive);
+    public void setTimeToBecomePassive(Duration timeToBecomePassive) {
+        this.info.setTimeToBecomePassiveInSeconds(timeToBecomePassive.getSeconds());
     }
 }
