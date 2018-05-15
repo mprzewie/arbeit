@@ -27,6 +27,7 @@ import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,8 @@ public class MainWindowController {
 
     private List<Tracker> trackerList;
 
+    private SystemTracker systemTracker;
+
     private List<ApplicationTracker> applicationTrackerList;
 
 
@@ -84,7 +87,7 @@ public class MainWindowController {
 
         this.eventListener = new EventListener(applicationRepository);
 
-        Tracker systemTracker = new SystemTracker(appConfig.getSystemPingTime(), 10);
+        systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
@@ -191,5 +194,9 @@ public class MainWindowController {
 
     public void stopTrackingAll(){
         this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
+    }
+
+    public SystemTracker getSystemTracker() {
+        return systemTracker;
     }
 }

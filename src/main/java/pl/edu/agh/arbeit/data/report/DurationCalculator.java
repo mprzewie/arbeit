@@ -53,7 +53,8 @@ public class DurationCalculator {
 
         // for now I assume that the application has been previously closed
         // TODO use initialStates
-        Event currentTopic = new Event() {
+        // the event below is for comparing
+        Event previousEvent = new Event() {
             @Override
             public String getTopic() {
                 return topic;
@@ -71,25 +72,30 @@ public class DurationCalculator {
             // systemEvents are currently ignored
             // let's assume for now that when AppEvents are happening,
             // system is active
+            // below: because could be sdystem event
             if(event.getTopic().equals(topic)){
                 // activity stops when passive mode is entered or app has been stopped
+                // if current event is not active (one of three remaining) and previous event is active event
                 if(!event.getType().equals(EventType.ACTIVE)
-                        && currentTopic.getType().equals(EventType.ACTIVE)){
-                    result.put(currentTopic.getDateTime(),
+                        && previousEvent.getType().equals(EventType.ACTIVE)){
+                    result.put(previousEvent.getDateTime(),
                             Duration.ofSeconds(
-                                    currentTopic
+                                    previousEvent
                                             .getDateTime()
                                             .until(event.getDateTime(), ChronoUnit.SECONDS)
                             )
                     );
                 }
-                currentTopic = event;
+                previousEvent = event;
             }
         }
-        if(currentTopic.getType().equals(EventType.ACTIVE)) {
-            result.put(currentTopic.getDateTime(),
+        // after iteration
+        // if previous event is active it means that we still use this application
+        // it must be considered in report as additional but non existing event (only adding duration in time vector)
+        if(previousEvent.getType().equals(EventType.ACTIVE)) {
+            result.put(previousEvent.getDateTime(),
                     Duration.ofSeconds(
-                            currentTopic.getDateTime()
+                            previousEvent.getDateTime()
                                     .until(
                                             relevantEvents.get(relevantEvents.size() - 1)
                                                     .getDateTime(),
@@ -174,3 +180,4 @@ public class DurationCalculator {
     }
 
 }
+

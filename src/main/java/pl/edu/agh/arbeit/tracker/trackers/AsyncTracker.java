@@ -2,14 +2,16 @@ package pl.edu.agh.arbeit.tracker.trackers;
 
 import com.google.common.eventbus.EventBus;
 
+import java.time.Duration;
+
 public abstract class AsyncTracker implements Tracker {
 
     protected final EventBus bus = new EventBus();
-    private final long pingTime;
+    private final Duration pingTime;
     private final Thread trackingThread = new Thread(this::performTracking);
 
 
-    public AsyncTracker(Long pingTime) {
+    public AsyncTracker(Duration pingTime) {
         this.pingTime = pingTime;
     }
 
@@ -27,7 +29,7 @@ public abstract class AsyncTracker implements Tracker {
         while (true){
             try {
                 actOnStatus();
-                Thread.sleep(pingTime * 1000);
+                Thread.sleep(pingTime.getSeconds() * 1000);
             } catch (InterruptedException e){
                 stopTracking();
                 return;
@@ -38,7 +40,7 @@ public abstract class AsyncTracker implements Tracker {
     protected abstract void actOnStatus();
     protected abstract void stopTracking();
 
-    public Long getPingTime() {
+    public Duration getPingTime() {
         return pingTime;
     }
 
