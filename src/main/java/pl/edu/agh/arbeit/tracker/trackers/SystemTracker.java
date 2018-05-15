@@ -6,7 +6,7 @@ import pl.edu.agh.arbeit.tracker.system.KeyboardTracker;
 import pl.edu.agh.arbeit.tracker.system.LockScreenTracker;
 import pl.edu.agh.arbeit.tracker.system.MouseTracker;
 
-import java.awt.*;
+import java.time.Duration;
 
 /**
  * @author marcin on 4/8/18
@@ -16,18 +16,14 @@ public class SystemTracker extends AsyncTracker {
     private MouseTracker mouseTracker;
     private KeyboardTracker keyboardTracker;
     private LockScreenTracker lockScreenTracker;
-    private int secondsToBecomePassive;
-    public SystemTracker(long pingTime, int secondsToBecomePassive) {
+    private Duration timeToBecomePassive;
+    public SystemTracker(Duration pingTime, Duration timeToBecomePassive) {
         super(pingTime);
         keyboardTracker = new KeyboardTracker();
         lockScreenTracker = new LockScreenTracker();
         lockScreenTracker.start();
-        this.secondsToBecomePassive = secondsToBecomePassive;
-        try {
-            mouseTracker = new MouseTracker(secondsToBecomePassive/4);
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
+        this.timeToBecomePassive = timeToBecomePassive;
+        mouseTracker = new MouseTracker(timeToBecomePassive);
         keyboardTracker.start();
     }
 
@@ -38,8 +34,8 @@ public class SystemTracker extends AsyncTracker {
 
     public SystemEvent currentStateEvent(){
         if (lockScreenTracker.isUserUnlocked()){
-            if(mouseTracker.getSecondsSinceLastMoveNoticed() > secondsToBecomePassive
-                    && keyboardTracker.getSecondsSinceLastKeyPressed() > secondsToBecomePassive) {
+            if(mouseTracker.getTimeSinceLastMoveNoticed().compareTo(timeToBecomePassive) > 0
+                    && keyboardTracker.getTimeSinceLastKeyPressed().compareTo(timeToBecomePassive) > 0) {
                 return new SystemEvent(EventType.PASSIVE);
             }
             else {
