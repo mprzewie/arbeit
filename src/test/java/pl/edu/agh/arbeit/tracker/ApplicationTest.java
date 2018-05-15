@@ -4,8 +4,11 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
+import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import pl.edu.agh.arbeit.tracker.system.SystemHandler;
+import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +20,8 @@ class ApplicationTest {
     @Mock
     private SystemHandler handlerMock;
 
+    @Mock
+    private SystemTracker trackerMock;
     private Application activeApp;
     private Application passiveApp;
     private Application stoppedApp;
@@ -31,10 +36,12 @@ class ApplicationTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(handlerMock.getFocusedApplicationName()).thenReturn(activeAppName);
         Mockito.when(handlerMock.getRunningApplications()).thenReturn(mockedRunningApplications);
+        SystemEvent eventMock = new SystemEvent(EventType.ACTIVE);
+        Mockito.when(trackerMock.currentStateEvent()).thenReturn(eventMock);
 
-        activeApp = new Application("Active App", activeAppName, handlerMock);
-        passiveApp = new Application("Passive App", passiveAppName, handlerMock);
-        stoppedApp = new Application("Stopped App", stoppedAppName, handlerMock);
+        activeApp = new Application("Active App", activeAppName, handlerMock, trackerMock);
+        passiveApp = new Application("Passive App", passiveAppName, handlerMock, trackerMock);
+        stoppedApp = new Application("Stopped App", stoppedAppName, handlerMock, trackerMock);
     }
     @Test
     void isRunningActive() {

@@ -7,16 +7,17 @@ import com.sun.jna.platform.win32.WinUser;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class KeyboardTracker extends Thread{
     WinUser.HHOOK hhk;
-    Instant lastCheckTimestamp = Instant.now();
+    LocalDateTime lastCheckTimestamp = LocalDateTime.now();
     public void run(){
         User32 lib = User32.INSTANCE;
         WinDef.HMODULE hMod = Kernel32.INSTANCE.GetModuleHandle(null);
         WinUser.LowLevelKeyboardProc keyboardHook = (int nCode, WinDef.WPARAM wParam, WinUser.KBDLLHOOKSTRUCT info) -> {
-            lastCheckTimestamp=Instant.now();
+            lastCheckTimestamp = LocalDateTime.now();
             return lib.CallNextHookEx(hhk, nCode, wParam, null);
         };
         hhk = lib.SetWindowsHookEx(13, keyboardHook, hMod, 0);
@@ -33,7 +34,7 @@ public class KeyboardTracker extends Thread{
         lib.UnhookWindowsHookEx(hhk);
     }
 
-    public long getSecondsSinceLastKeyPressed() {
-        return Duration.between(lastCheckTimestamp,Instant.now()).get(ChronoUnit.SECONDS);
+    public Duration getTimeSinceLastKeyPressed() {
+        return Duration.between(lastCheckTimestamp, LocalDateTime.now());
     }
 }

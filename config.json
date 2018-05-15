@@ -1,52 +1,13 @@
 {
-  "systemPingTime" : 5,
+  "systemPingTimeInSeconds" : 5,
+  "timeToBecomePassiveInSeconds" : 900,
   "appsToTrack" : [ {
-    "name" : "asds",
-    "programName" : "asds",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsd",
-    "programName" : "asdsd",
-    "pingTime" : 5
-  }, {
-    "name" : "asd",
-    "programName" : "asd",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsa",
-    "programName" : "asdsa",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsad",
-    "programName" : "asdsad",
-    "pingTime" : 5
-  }, {
     "name" : "Google Chrome",
     "programName" : "chrome.exe",
-    "pingTime" : 5
+    "pingTimeInSeconds" : 5
   }, {
-    "name" : "asd",
-    "programName" : "asd",
-    "pingTime" : 5
-  }, {
-    "name" : "asds",
-    "programName" : "asds",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsf",
-    "programName" : "asdsf",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsfg",
-    "programName" : "asdsfg",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsfgg",
-    "programName" : "asdsfgg",
-    "pingTime" : 5
-  }, {
-    "name" : "asdsfghg",
-    "programName" : "asdsfghg",
-    "pingTime" : 5
+    "name" : "idea64.exe",
+    "programName" : "idea64.exe",
+    "pingTimeInSeconds" : 5
   } ]
 }

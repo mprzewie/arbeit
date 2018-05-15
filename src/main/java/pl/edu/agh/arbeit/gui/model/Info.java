@@ -1,24 +1,34 @@
 package pl.edu.agh.arbeit.gui.model;
+import java.time.Duration;
 import java.util.List;
 
 public class Info {
-    private Long systemPingTime;
+    private long systemPingTimeInSeconds;
+    private long timeToBecomePassiveInSeconds;
     private List<AppInfo> appsToTrack;
 
     public Info(){
     }
 
-    public Info(Long systemPingTime, List<AppInfo> appsToTrack) {
-        this.systemPingTime = systemPingTime;
+    public Info(long systemPingTime, List<AppInfo> appsToTrack) {
+        this.systemPingTimeInSeconds = systemPingTime;
         this.appsToTrack = appsToTrack;
     }
 
-    public Long getSystemPingTime() {
-        return systemPingTime;
+    public Duration getSystemPingTimeInSeconds() {
+        return Duration.ofSeconds(systemPingTimeInSeconds);
     }
 
-    public void setSystemPingTime(Long systemPingTime) {
-        this.systemPingTime = systemPingTime;
+    public void setSystemPingTimeInSeconds(long systemPingTimeInSeconds) {
+        this.systemPingTimeInSeconds = systemPingTimeInSeconds;
+    }
+
+    public Duration getTimeToBecomePassiveInSeconds() {
+        return Duration.ofSeconds(timeToBecomePassiveInSeconds);
+    }
+
+    public void setTimeToBecomePassiveInSeconds(long timeToBecomePassiveInSeconds) {
+        this.timeToBecomePassiveInSeconds = timeToBecomePassiveInSeconds;
     }
 
     public List<AppInfo> getAppsToTrack() {
@@ -40,7 +50,7 @@ public class Info {
     @Override
     public String toString() {
         return "Info{" +
-                "systemPingTime=" + systemPingTime +
+                "systemPingTimeInSeconds=" + systemPingTimeInSeconds +
                 ", appsToTrack=" + appsToTrack +
                 '}';
     }
