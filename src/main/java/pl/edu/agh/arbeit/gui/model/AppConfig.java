@@ -32,7 +32,7 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public Duration getSystemPingTime() {
-        return info.getSystemPingTimeInSeconds();
+        return Duration.ofSeconds(info.getSystemPingTimeInSeconds());
     }
 
 
@@ -69,7 +69,7 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public Duration getTimeToBecomePassive() {
-        return info.getTimeToBecomePassiveInSeconds();
+        return Duration.ofSeconds(info.getTimeToBecomePassiveInSeconds());
     }
 
     @Override
