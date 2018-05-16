@@ -57,7 +57,7 @@ public class DurationCalculator {
         // for now I assume that the application has been previously closed
         // TODO use initialStates
         // the event below is for comparing
-        Event previousEvent = new Event() {
+        Event previousEvent = eventBefore.orElseGet(() -> new Event() {
             @Override
             public String getTopic() {
                 return topic;
@@ -67,7 +67,7 @@ public class DurationCalculator {
             public EventType getType() {
                 return EventType.STOP;
             }
-        };
+        });
 
         Map<LocalDateTime, Duration> result = new HashMap<>();
 
