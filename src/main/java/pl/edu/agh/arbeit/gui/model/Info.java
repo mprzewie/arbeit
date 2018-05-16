@@ -15,16 +15,16 @@ public class Info {
         this.appsToTrack = appsToTrack;
     }
 
-    public Duration getSystemPingTimeInSeconds() {
-        return Duration.ofSeconds(systemPingTimeInSeconds);
+    public long getSystemPingTimeInSeconds() {
+        return systemPingTimeInSeconds;
     }
 
     public void setSystemPingTimeInSeconds(long systemPingTimeInSeconds) {
         this.systemPingTimeInSeconds = systemPingTimeInSeconds;
     }
 
-    public Duration getTimeToBecomePassiveInSeconds() {
-        return Duration.ofSeconds(timeToBecomePassiveInSeconds);
+    public long getTimeToBecomePassiveInSeconds() {
+        return timeToBecomePassiveInSeconds;
     }
 
     public void setTimeToBecomePassiveInSeconds(long timeToBecomePassiveInSeconds) {

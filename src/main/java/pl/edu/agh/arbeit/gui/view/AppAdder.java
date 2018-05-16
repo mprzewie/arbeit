@@ -2,13 +2,9 @@ package pl.edu.agh.arbeit.gui.view;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.scene.Group;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
-import org.controlsfx.glyphfont.FontAwesome;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
@@ -16,7 +12,6 @@ import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
-import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.time.Duration;
 import java.util.LinkedList;
@@ -65,7 +60,10 @@ public class AppAdder extends Pane {
     private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){
         List<AppInfo> tempList= new LinkedList<>();
         tempList.addAll(appInfos);
-        tempList.forEach(e -> addApp(mainWindowController, new Application(e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()), e.getPingTime()));
+        tempList.forEach(e -> addApp(mainWindowController, new Application(
+                e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()),
+                Duration.ofSeconds(e.getPingTimeInSeconds())
+        ));
     }
 
     private boolean isAppNotTracked(Application application){
