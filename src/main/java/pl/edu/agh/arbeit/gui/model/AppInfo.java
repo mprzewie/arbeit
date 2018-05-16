@@ -5,7 +5,7 @@ import java.time.Duration;
 public class AppInfo {
     private String name;
     private String programName;
-    private Duration pingTime;
+    private long pingTimeInSeconds;
 
     public AppInfo() {}
 
@@ -13,7 +13,7 @@ public class AppInfo {
     public AppInfo(String name, String programName, Duration pingTime) {
         this.name = name;
         this.programName = programName;
-        this.pingTime = pingTime;
+        this.pingTimeInSeconds = pingTime.getSeconds();
     }
 
     public String getName() {
@@ -32,12 +32,12 @@ public class AppInfo {
         this.programName = programName;
     }
 
-    public Duration getPingTime() {
-        return pingTime;
+    public long getPingTimeInSeconds() {
+        return pingTimeInSeconds;
     }
 
     public void setPingTimeInSeconds(long pingTimeInSeconds) {
-        this.pingTime = Duration.ofSeconds(pingTimeInSeconds);
+        this.pingTimeInSeconds = pingTimeInSeconds;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AppInfo {
         return "AppInfo{" +
                 "name='" + name + '\'' +
                 ", programName='" + programName + '\'' +
-                ", pingTime=" + pingTime +
+                ", pingTimeInSeconds=" + pingTimeInSeconds +
                 '}';
     }
 }
