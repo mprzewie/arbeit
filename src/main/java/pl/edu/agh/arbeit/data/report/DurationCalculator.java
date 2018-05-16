@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DurationCalculator {
 
@@ -17,7 +18,7 @@ public class DurationCalculator {
     private final List<Event> relevantEvents;
     private final Map<EventType, Map<LocalDateTime, Duration>> durationMaps;
 
-    public DurationCalculator(String topic, List<Event> events) {
+    public DurationCalculator(String topic, List<Event> events, Optional<Event> eventBefore) {
         this.topic = topic;
         this.relevantEvents = events;
         this.durationMaps = new HashMap<>();

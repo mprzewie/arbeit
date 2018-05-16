@@ -2,6 +2,7 @@ package pl.edu.agh.arbeit.data.report;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 
@@ -50,10 +51,14 @@ public class CsvReport implements Report {
             appsToReport.stream()
                     .distinct()
                     .forEach(topic -> {
+                        DatabaseEventRepository repo = new DatabaseEventRepository();
+                        Optional<Event> opt = repo.getPreviousEventTypeForApp(getSortedRelevantEvents(topic)
+                                .collect(Collectors.toList()));
                         DurationCalculator calculator = new DurationCalculator(
                                 topic,
                                 getSortedRelevantEvents(topic)
-                                        .collect(Collectors.toList())
+                                        .collect(Collectors.toList()),
+                                opt
                         );
                         Arrays.asList(EventType.ACTIVE, EventType.PASSIVE)
                                 .forEach(activityType -> {
@@ -82,7 +87,7 @@ public class CsvReport implements Report {
     private Stream<Event> getSortedRelevantEvents(String topic){
        return events
                 .parallelStream()
-                .filter(event -> event.getTopic().equals(topic) || event.getTopic().equals("system"))
+                .filter(event -> event.getTopic().equals(topic))
                 .sorted((o1, o2) -> {
                     if(o1.getDateTime().isBefore(o2.getDateTime())) return -1;
                     else if(o2.getDateTime().isBefore(o1.getDateTime())) return 1;
