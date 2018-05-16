@@ -76,6 +76,10 @@ public class DatabaseEventRepository implements EventRepository {
         return result;
     }
 
+    public Optional<Event> getPreviousEventTypeForApp(List<Event> events) {
+        return Optional.empty();
+    }
+
     public List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate){
         String formatStartDate = dateFormat.format(startDate);
         String formatEndDate = dateFormat.format(endDate);
