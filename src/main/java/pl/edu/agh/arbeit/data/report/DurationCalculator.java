@@ -17,6 +17,7 @@ public class DurationCalculator {
     private final String topic;
     private final List<Event> relevantEvents;
     private final Map<EventType, Map<LocalDateTime, Duration>> durationMaps;
+    private Optional<Event> eventBefore;
 
     public DurationCalculator(String topic, List<Event> events, Optional<Event> eventBefore) {
         this.topic = topic;
@@ -30,6 +31,7 @@ public class DurationCalculator {
                 EventType.PASSIVE,
                 splitAtMidnight(passiveDurations())
         );
+        this.eventBefore = eventBefore;
     }
 
     public Duration activityLength(LocalDate date, EventType activityType){
