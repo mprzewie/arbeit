@@ -115,7 +115,7 @@ public class DurationCalculator {
             if(event.getTopic().equals(topic)){
                 // activity stops when passive mode is entered or app has been stopped
                 // if current event is not active (one of three remaining) and previous event is active event
-                if((event.getType().equals(EventType.PASSIVE)|| event.getType().equals(EventType.STOP))
+                if((event.getType().equals(EventType.PASSIVE)|| event.getType().equals(EventType.STOP) || event.getType().equals(EventType.START))
                         && localPreviousEvent.getType().equals(EventType.ACTIVE)){
                     result.put(localPreviousEvent.getDateTime(),
                             Duration.ofSeconds(
@@ -158,7 +158,7 @@ public class DurationCalculator {
                 // passiveness stops when passive mode is entered or app has been stopped
                 if(!event.getTopic().equals("system")) System.out.println("-" + event);
 
-                if((event.getType().equals(EventType.ACTIVE) || event.getType().equals(EventType.START) )
+                if((event.getType().equals(EventType.ACTIVE) || event.getType().equals(EventType.START) || event.getType().equals(EventType.STOP))
                         && localPreviousEvent.getType().equals(EventType.PASSIVE)){
                     result.put(localPreviousEvent.getDateTime(),
                             Duration.ofSeconds(
