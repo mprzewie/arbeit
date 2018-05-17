@@ -10,8 +10,6 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
  **/
 public class EventListener {
 
-
-
     private EventRepository repository;
 
     public void subscribe(Tracker tracker){
