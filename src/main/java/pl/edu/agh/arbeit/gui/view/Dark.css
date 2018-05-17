@@ -6,3 +6,13 @@
     -fx-stroke: #6838ff;
     -fx-fill: #6838ff;
 }
+
+.icon-plus {
+    -fx-stroke: #6838ff;
+    -fx-fill: #6838ff;
+}
+
+.button{
+    -fx-background-color: #6838ff;
+    -fx-text-fill: #497fff;
+}

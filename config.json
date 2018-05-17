@@ -44,5 +44,9 @@
     "name" : "asdsfghg",
     "programName" : "asdsfghg",
     "pingTime" : 5
+  }, {
+    "name" : "qasd",
+    "programName" : "qasd",
+    "pingTime" : 5
   } ]
 }
