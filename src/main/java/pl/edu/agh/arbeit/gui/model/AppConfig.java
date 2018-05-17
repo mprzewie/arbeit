@@ -5,16 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.*;
+import java.time.Duration;
 import java.util.List;
 
-public class AppConfig implements ConfigProvider{
+public class AppConfig implements ConfigProvider {
 
     private Info info;
     private ObjectMapper mapper = new ObjectMapper();
 
     public AppConfig() {
         InputStream is;
-        TypeReference<Info> mapType = new TypeReference<Info>() {};
+        TypeReference<Info> mapType = new TypeReference<Info>() {
+        };
         try {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
@@ -35,8 +37,8 @@ public class AppConfig implements ConfigProvider{
     }
 
     @Override
-    public Long getSystemPingTime() {
-        return info.getSystemPingTime();
+    public Duration getSystemPingTime() {
+        return Duration.ofSeconds(info.getSystemPingTimeInSeconds());
     }
 
 
@@ -46,8 +48,8 @@ public class AppConfig implements ConfigProvider{
         File file = new File("config.json");
         try {
             info.addAppToTrack(appInfo);
-            mapper.writeValue(file,info);
-            mapper.writeValue(System.out,info);
+            mapper.writeValue(file, info);
+            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,15 +61,25 @@ public class AppConfig implements ConfigProvider{
         File file = new File("config.json");
         try {
             info.removeAppToTrack(programName);
-            mapper.writeValue(file,info);
-            mapper.writeValue(System.out,info);
+            mapper.writeValue(file, info);
+            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void setSystemPingTime(Long pingTime) {
-        this.info.setSystemPingTime(pingTime);
+    public void setSystemPingTime(Duration pingTime) {
+        this.info.setSystemPingTimeInSeconds(pingTime.getSeconds());
+    }
+
+    @Override
+    public Duration getTimeToBecomePassive() {
+        return Duration.ofSeconds(info.getTimeToBecomePassiveInSeconds());
+    }
+
+    @Override
+    public void setTimeToBecomePassive(Duration timeToBecomePassive) {
+        this.info.setTimeToBecomePassiveInSeconds(timeToBecomePassive.getSeconds());
     }
 }

@@ -58,8 +58,6 @@ public class AppListItem extends Pane {
                             e.printStackTrace();
                         }
         });
-
-        this.getChildren().add(settingsIcon);
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){

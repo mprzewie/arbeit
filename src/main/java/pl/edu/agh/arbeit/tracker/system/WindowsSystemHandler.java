@@ -9,6 +9,8 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
+import pl.edu.agh.arbeit.tracker.events.EventType;
+import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -38,6 +40,8 @@ public class WindowsSystemHandler implements SystemHandler {
         return result;
     }
 
+
+
     private interface Psapi extends StdCallLibrary {
         Psapi INSTANCE = (Psapi) Native.loadLibrary("Psapi", Psapi.class);
 
@@ -56,7 +60,8 @@ public class WindowsSystemHandler implements SystemHandler {
             IntByReference pid = new IntByReference();
             user32.GetWindowThreadProcessId(windowHandle, pid);
             WinNT.HANDLE processHandle = kernel32.OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, true, pid.getValue());
-
+            if (processHandle==null)
+                return ""; //System cannot return focused app name as screen is locked => None app is foreground
             byte[] filename = new byte[512];
             Psapi.INSTANCE.GetModuleBaseNameW(processHandle.getPointer(), Pointer.NULL, filename, filename.length);
             String focusedName = new String(filename);
@@ -73,4 +78,6 @@ public class WindowsSystemHandler implements SystemHandler {
             //UNIX code
             throw new NotImplementedException();
         }    }
+
+
 }

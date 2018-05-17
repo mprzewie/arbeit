@@ -1,5 +1,5 @@
 .root {
-    -fx-base: rgba(60, 63, 65, 255); // dark
+    -fx-base: rgba(30, 31, 32, 255); // dark
 }
 
 .icon-arrow {
@@ -16,3 +16,5 @@
     -fx-background-color: #6838ff;
     -fx-text-fill: #497fff;
 }
+
+

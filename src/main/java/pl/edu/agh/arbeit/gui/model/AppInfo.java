@@ -1,18 +1,19 @@
 package pl.edu.agh.arbeit.gui.model;
 
+import java.time.Duration;
+
 public class AppInfo {
     private String name;
     private String programName;
-    private Long pingTime;
+    private long pingTimeInSeconds;
 
-    public AppInfo(){
+    public AppInfo() {}
 
-    }
 
-    public AppInfo(String name, String programName, Long pingTime) {
+    public AppInfo(String name, String programName, Duration pingTime) {
         this.name = name;
         this.programName = programName;
-        this.pingTime = pingTime;
+        this.pingTimeInSeconds = pingTime.getSeconds();
     }
 
     public String getName() {
@@ -31,12 +32,12 @@ public class AppInfo {
         this.programName = programName;
     }
 
-    public Long getPingTime() {
-        return pingTime;
+    public long getPingTimeInSeconds() {
+        return pingTimeInSeconds;
     }
 
-    public void setPingTime(Long pingTime) {
-        this.pingTime = pingTime;
+    public void setPingTimeInSeconds(long pingTimeInSeconds) {
+        this.pingTimeInSeconds = pingTimeInSeconds;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class AppInfo {
         return "AppInfo{" +
                 "name='" + name + '\'' +
                 ", programName='" + programName + '\'' +
-                ", pingTime=" + pingTime +
+                ", pingTimeInSeconds=" + pingTimeInSeconds +
                 '}';
     }
 }
