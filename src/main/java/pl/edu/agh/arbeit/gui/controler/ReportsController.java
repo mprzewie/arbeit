@@ -82,20 +82,22 @@ public class ReportsController {
         System.out.println(calculateSpaceTakenByOtherViews());
         List<String> apps = new LinkedList<>();
         trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
-        final String last = apps.remove(apps.size() - 1);
+        if(apps.size() > 0) {
+            final String last = apps.remove(apps.size() - 1);
 
-        for (String appName : apps){
-            CheckBox cb = new CheckBox(appName);
+            for (String appName : apps) {
+                CheckBox cb = new CheckBox(appName);
+                cb.setSelected(true);
+                appListContent.getChildren().add(cb);
+                Region region = new Region();
+                region.setMinHeight(14.0);
+                appListContent.getChildren().add(region);
+            }
+
+            CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
             appListContent.getChildren().add(cb);
-            Region region = new Region();
-            region.setMinHeight(14.0);
-            appListContent.getChildren().add(region);
         }
-
-        CheckBox cb = new CheckBox(last);
-        cb.setSelected(true);
-        appListContent.getChildren().add(cb);
     }
 
     private void initScrollPane(ReadOnlyDoubleProperty heightProperty){

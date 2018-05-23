@@ -2,7 +2,6 @@ package pl.edu.agh.arbeit.gui.view;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,7 +12,6 @@ import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.controler.AppSettingsController;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
-import pl.edu.agh.arbeit.gui.controler.ReportsController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
