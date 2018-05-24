@@ -17,4 +17,9 @@ public interface EventRepository {
     List<Event> getEventsForGivenApps(String[] applications);
 
     List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate);
+    List<Event> getBy(Date date, String topic);
+    List<Event> getBy(Date date);
+    List<Event> getBy(String topic);
+    List<Event> getAll();
+
 }
