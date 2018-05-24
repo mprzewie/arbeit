@@ -1,7 +1,8 @@
 #---------------------------------------#
 # Project Ignores                       #
 #---------------------------------------#
-
+test.db
+config.json
 # Maven
 target/
 pom.xml.tag

@@ -1,12 +1,14 @@
 package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.beans.binding.DoubleBinding;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
@@ -18,6 +20,7 @@ import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
+import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
@@ -55,6 +58,9 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
+    @FXML
+    private ChoiceBox styleChoiceBox;
+
     private AppAdder appAdder;
 
     private EventListener eventListener;
@@ -75,9 +81,12 @@ public class MainWindowController {
 
     private ConfigProvider appConfig;
 
-    public void init(OverviewController overviewController, DoubleBinding heightProperty) {
+    private Scene scene;
+
+    public void init(OverviewController overviewController, DoubleBinding heightProperty, Scene scene) {
         customEventActive = false;
         this.trackerList = new LinkedList<>();
+        this.scene = scene;
         this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
         this.appConfig = new AppConfig();
@@ -98,7 +107,26 @@ public class MainWindowController {
         this.initAppAdder();
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
+        this.initStyleChocieBox();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initStyleChocieBox() {
+        styleChoiceBox.setItems(FXCollections.observableArrayList(
+                StyleType.values()));
+        styleChoiceBox.getSelectionModel().select(StyleType.STANDARD);
+
+        String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+        String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+
+        styleChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    anchorPane.getStylesheets().clear();
+                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK))
+                            anchorPane.getStylesheets().add(dark);
+                        else
+                            anchorPane.getStylesheets().add(standard);
+                });
     }
 
     private void initAppScrollPane(){

@@ -21,7 +21,13 @@ public class AppConfig implements ConfigProvider {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
         } catch (IOException e) {
-            e.printStackTrace();
+            File f = new File("config.json");
+            try {
+                f.createNewFile();
+                info = new Info();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

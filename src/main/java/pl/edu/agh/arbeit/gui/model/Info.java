@@ -1,4 +1,5 @@
 package pl.edu.agh.arbeit.gui.model;
+import java.util.LinkedList;
 import java.time.Duration;
 import java.util.List;
 
@@ -8,6 +9,8 @@ public class Info {
     private List<AppInfo> appsToTrack;
 
     public Info(){
+        this.systemPingTimeInSeconds = 5L;
+        this.appsToTrack = new LinkedList<>();
     }
 
     public Info(long systemPingTime, List<AppInfo> appsToTrack) {
