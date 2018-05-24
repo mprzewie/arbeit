@@ -1,0 +1,18 @@
+.root {
+    -fx-base: rgb(255, 255, 255);
+}
+
+.icon-arrow {
+    -fx-stroke: #497fff;
+    -fx-fill: #497fff;
+}
+
+.icon-plus {
+    -fx-stroke: #497fff;
+    -fx-fill: #497fff;
+}
+
+.button{
+    -fx-background-color: #497fff;
+    -fx-text-fill: #FFFFFF;
+}

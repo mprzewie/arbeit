@@ -5,8 +5,11 @@ import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Date;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DatabaseEventRepository implements EventRepository {
 
@@ -19,13 +22,13 @@ public class DatabaseEventRepository implements EventRepository {
 
     public void put(Event event){
         String dateToInsert = dateFormat.format(event.getDate());
-        String sql = "INSERT INTO Event (appName, eventType, eventDate) " +
+        String sql = "INSERT INTO Event (topic, eventType, eventDate) " +
                 "VALUES (" +
                 "'" + event.getTopic() +  "'" + ", " +
                 "'" + event.getType() + "'" +
                 ", " + "'" +  dateToInsert + "'" + ")"
                 ;
-        System.out.println("SQL:   " + sql);
+//        System.out.println("SQL:   " + sql);
 
         try (Connection connection = DriverManager.getConnection(url)) {
             Statement stmt = connection.createStatement();
@@ -36,11 +39,10 @@ public class DatabaseEventRepository implements EventRepository {
     }
 
     //TODO change to stream maybe?
-    public List<Event> getEvents(){
-        String sql = "SELECT rowid, appName, eventType, eventDate\n" +
+    public List<Event> getAllEvents(){
+        String sql = "SELECT rowid, topic, eventType, eventDate\n" +
                 "FROM Event";
-
-        System.out.println("SQL:   " + sql);
+//        System.out.println("SQL:   " + sql);
         LinkedList<Event> result = new LinkedList<>();
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()
@@ -49,7 +51,88 @@ public class DatabaseEventRepository implements EventRepository {
             while (rs.next()) {
                 fromResultSet(rs).ifPresent(result::addLast);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
+    public List<Event> getEventsForGivenApps(String[] applications) {
+        String sql = "SELECT rowid, topic, eventType, eventDate\n" +
+                "FROM Event where topic = ?";
+        LinkedList<Event> result = new LinkedList<>();
+        try (Connection conn = DriverManager.getConnection(url)
+        ) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            for (String name: applications) {
+                statement.setString(1, name);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    fromResultSet(rs).ifPresent(result::addLast);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Optional<Event> getPreviousEventTypeForApp(List<Event> events) {
+
+        Optional<Event> firstEvent = events
+                .stream()
+                .min(Comparator.comparing(Event::getDate));
+
+        if (!firstEvent.isPresent()) {
+            return Optional.empty();
+        }
+
+        Date firstEventDate = firstEvent.get().getDate();
+
+        String dateToDb = dateFormat.format(firstEventDate);
+        String firstEventTopic = firstEvent.get().getTopic();
+
+        String sql = "SELECT * " +
+                "FROM Event " +
+                "WHERE (eventType='START' or eventType='STOP') and topic='" + firstEventTopic + "' and eventDate < datetime('" + dateToDb + "') " +
+                "order by datetime(eventDate) DESC " +
+                " LIMIT 1";
+
+        Optional<Event> result = Optional.empty();
+        try (Connection conn = DriverManager.getConnection(url)
+        ) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                result = fromResultSet(rs);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate){
+        String formatStartDate = dateFormat.format(startDate);
+        String formatEndDate = dateFormat.format(endDate);
+
+        String sql = "SELECT rowid, topic, eventType, eventDate\n" +
+                "FROM Event where topic = ? AND eventDate > ? AND eventDate < ?";
+
+        LinkedList<Event> result = new LinkedList<>();
+        try (Connection conn = DriverManager.getConnection(url)
+        ) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, application);
+            statement.setString(2, formatStartDate);
+            statement.setString(3, formatEndDate);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+               fromResultSet(rs).ifPresent(result::addLast);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -82,7 +165,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     private Optional<Event> fromResultSet(ResultSet set){
         try {
-            String topic = set.getString("appName");
+            String topic = set.getString("topic");
             Date parsedDate = dateFormat.parse(set.getString("eventDate"));
             EventType type = EventType.valueOf(EventType.class, set.getString("eventType"));
 
@@ -133,7 +216,7 @@ public class DatabaseEventRepository implements EventRepository {
 
     private void setupTables(Connection connection) throws SQLException{
         String sql = "CREATE TABLE IF NOT EXISTS Event (\n"
-                + " appName text NOT NULL,\n"
+                + " topic text NOT NULL,\n"
                 + "	eventType text NOT NULL,\n"
                 + " eventDate datetime NOT NULL\n"
                 + ");";

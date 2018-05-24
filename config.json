@@ -1,0 +1,13 @@
+{
+  "systemPingTimeInSeconds" : 5,
+  "timeToBecomePassiveInSeconds" : 900,
+  "appsToTrack" : [ {
+    "name" : "Google Chrome",
+    "programName" : "chrome.exe",
+    "pingTimeInSeconds" : 5
+  }, {
+    "name" : "idea64.exe",
+    "programName" : "idea64.exe",
+    "pingTimeInSeconds" : 5
+  } ]
+}

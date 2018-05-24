@@ -1,27 +1,38 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import javafx.beans.binding.DoubleBinding;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
-import pl.edu.agh.arbeit.data.report.CsvReport;
-import pl.edu.agh.arbeit.data.report.Report;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
-import pl.edu.agh.arbeit.gui.view.AddCircle;
+import pl.edu.agh.arbeit.gui.Main;
+import pl.edu.agh.arbeit.gui.model.AppConfig;
+import pl.edu.agh.arbeit.gui.model.ConfigProvider;
+import pl.edu.agh.arbeit.gui.view.AppAdder;
+import pl.edu.agh.arbeit.gui.view.AppListItem;
+import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+
+//import pl.edu.agh.arbeit.gui.view.AddCircle;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -36,104 +47,85 @@ public class MainWindowController {
     private Button generateReportButton;
 
     @FXML
-    private TextField appNameTextField;
+    private Button addCustomEventButton;
 
-    private AddCircle addCircle;
+    @FXML
+    private Button beginCustomEventButton;
+
+    @FXML
+    private ScrollPane appScrollPane;
+
+    private AppAdder appAdder;
 
     private EventListener eventListener;
 
     private List<Tracker> trackerList;
 
-    private Line verticalLine;
+    private SystemTracker systemTracker;
 
-    private Line timeLine;
+    private List<ApplicationTracker> applicationTrackerList;
 
-    private EventRepository applicationRepository;
-    
-    public void init(OverviewController overviewController) {
-        this.applicationRepository = new DatabaseEventRepository();
+
+    private boolean customEventActive;
+
+    private EventRepository applicationRepository = new DatabaseEventRepository();
+
+    @FXML
+    private VBox listContent;
+
+    private ConfigProvider appConfig;
+
+    public void init(OverviewController overviewController, DoubleBinding heightProperty) {
+        customEventActive = false;
         this.trackerList = new LinkedList<>();
+        this.applicationTrackerList = new LinkedList<>();
         this.overviewController=overviewController;
-        this.addCircle = new AddCircle();
-        this.addCircle.setDisable(true);
-        this.anchorPane.getChildren().add(this.addCircle);
+        this.appConfig = new AppConfig();
 
-        this.verticalLine = new Line();
-        this.verticalLine.setStartX(120);
-        this.verticalLine.setEndX(120);
-        this.verticalLine.setStartY(0);
-        this.verticalLine.setEndY(150);
-        this.anchorPane.getChildren().add(this.verticalLine);
-
-        timeLine = new Line();
-        timeLine.setStartX(0);
-        timeLine.setEndX(800);
-        timeLine.setStartY(50);
-        timeLine.setEndY(50);
-        this.anchorPane.getChildren().add(timeLine);
-
-        Line f1 = new Line();
-        f1.setStartX(0);
-        f1.setEndX(120);
-        f1.setStartY(100);
-        f1.setEndY(100);
-        this.anchorPane.getChildren().add(f1);
-
-        Text systemText = new Text("System");
-        systemText.setLayoutX(10);
-        systemText.setLayoutY(80);
-        this.anchorPane.getChildren().add(systemText);
+        listContent.getChildren().add(0,new SystemListItem());
+        initAppScrollPane();
 
         this.eventListener = new EventListener(applicationRepository);
-        Tracker systemTracker = new SystemTracker(10);
+
+        systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
         trackerList.add(systemTracker);
 
-        generateReportButton.setOnMouseClicked(event -> {
-            try {
-                CsvReport report = new CsvReport(applicationRepository.getEvents());
-                report.writeCsv(Paths.get("."));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        });
-
-        addCircle.setOnMouseClicked(event ->{
-            Application app = new Application(this.appNameTextField.getText(), this.appNameTextField.getText());
-
-            Tracker appTracker = new ApplicationTracker(5, app);
-            eventListener.subscribe(appTracker);
-            appTracker.start();
-            trackerList.add(appTracker);
-
-            this.verticalLine.setEndY(this.verticalLine.getEndY()+50);
-
-            Line ft = new Line();
-            ft.setStartX(0);
-            ft.setEndX(120);
-            ft.setStartY(100+50*(trackerList.size()-1));
-            ft.setEndY(100+50*(trackerList.size()-1));
-            this.anchorPane.getChildren().add(ft);
-
-            Text appName = new Text(appNameTextField.getText());
-            appName.setLayoutX(10);
-            appName.setLayoutY(80+50*(trackerList.size()-1));
-            this.anchorPane.getChildren().add(appName);
-
-            addCircle.setLayoutY(addCircle.getLayoutY()+50);
-            appNameTextField.setLayoutY(appNameTextField.getLayoutY()+50);
-        });
-
-        appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals(""))
-                addCircle.setDisable(true);
-            else
-                addCircle.setDisable(false);
-        });
         this.bindSizeProperties();
         this.initDatePicer();
+        this.initReportButton();
+        this.initAppAdder();
+        this.initAddCustomEventButton();
+        this.initBeginCustomEventButton();
+        //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initAppScrollPane(){
+        this.appScrollPane.setContent(listContent);
+        this.appScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        this.appScrollPane.setStyle("-fx-background-color:transparent;");
+    }
+
+    private void initAppAdder(){
+        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        listContent.getChildren().add(this.appAdder);
+    }
+
+    public void addNewAppView(Application application){
+        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
+        int listContentIndex = listContent.getChildren().size() - 1;
+        if(listContentIndex == 0)
+            listContentIndex++;
+        this.listContent.getChildren().add(listContentIndex, appListItem);
+    }
+
+    public void removeAppView(AppListItem appListItem){
+        this.listContent.getChildren().removeIf(view -> view.equals(appListItem));
+    }
+
+    public void removeApp(String programName){
+        this.appConfig.removeAppToTrack(programName);
     }
 
     private void bindSizeProperties() {
@@ -142,5 +134,69 @@ public class MainWindowController {
     private void initDatePicer(){
         datePicker.setValue(LocalDate.now());
         datePicker.setDisable(true);
+    }
+
+    private void initReportButton() {
+        generateReportButton.setOnAction(
+            (ActionEvent event) -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(Main.class.getResource("view/ReportsPane.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = new Stage();
+                    ReportsController reportsController = loader.getController();
+                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty());
+                    stage.setScene(new Scene(root, 450, 450));
+                    stage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        );
+    }
+
+    private void initAddCustomEventButton() {
+        addCustomEventButton.setOnAction(
+                event -> {
+                    try {
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(Main.class.getResource("view/CustomEventsPane.fxml"));
+                        Parent root = loader.load();
+                        Stage stage = new Stage();
+                        CustomEventsController customEventsController = loader.getController();
+                        customEventsController.init(stage);
+                        stage.setScene(new Scene(root, 450, 450));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+    }
+
+    private void initBeginCustomEventButton() {
+        beginCustomEventButton.setOnAction(
+                event -> {
+                    if(customEventActive){
+                        beginCustomEventButton.setText("Begin Custom Event");
+                        customEventActive = false;
+                    } else {
+                        beginCustomEventButton.setText("End Custom Event");
+                        customEventActive = true;
+                    }
+                }
+        );
+    }
+
+    public void addToTrackerList(Tracker tracker){
+        this.trackerList.add(tracker);
+    }
+
+    public void stopTrackingAll(){
+        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
+    }
+
+    public SystemTracker getSystemTracker() {
+        return systemTracker;
     }
 }

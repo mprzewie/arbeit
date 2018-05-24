@@ -11,6 +11,7 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 public class EventListener {
 
 
+
     private EventRepository repository;
 
     public void subscribe(Tracker tracker){
@@ -25,9 +26,13 @@ public class EventListener {
         this.repository = repository;
     }
 
+    public EventRepository getRepository() {
+        return repository;
+    }
+
     @Subscribe
     public void acceptEvent(Event event){
-        System.out.println(event.getTopic() + " " + event.getDate() + " " + event.getType());
+        System.out.println(event);
         repository.put(event);
     }
 
