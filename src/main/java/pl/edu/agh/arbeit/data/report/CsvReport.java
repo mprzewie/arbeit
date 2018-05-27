@@ -95,49 +95,48 @@ public class CsvReport implements Report {
                                             .collect(Collectors.toList()));
 
                         });
-                });
-                printer.printRecord(record);
-                record.clear();
+            });
+            printer.printRecord(record);
+            record.clear();
         }
-
 
         printer.close();
+//
+//        CSVFormat format = CSVFormat.EXCEL;
+//        try(CSVPrinter printer = new CSVPrinter(writer, format )){
+//            appsToReport.stream()
+//                    .distinct()
+//                    .forEach(topic -> {
+//                        DatabaseEventRepository repo = new DatabaseEventRepository(false);
+//                        Optional<Event> opt = repo.getPreviousEventTypeForApp(getSortedRelevantEvents(topic)
+//                                .collect(Collectors.toList()));
+//                        DurationCalculator calculator = new DurationCalculator(
+//                                topic,
+//                                getSortedRelevantEvents(topic)
+//                                        .collect(Collectors.toList()),
+//                                opt
+//                        );
+//                        Arrays.asList(EventType.ACTIVE, EventType.PASSIVE)
+//                                .forEach(activityType -> {
+//                                    LinkedList<String> record = new LinkedList<>();
+//                                    record.addLast(topic);
+//                                    record.addLast(activityType.toString());
+//
+//                                    record.addAll(
+//                                            dates.stream()
+//                                            .map(date -> calculator.activityLength(date, activityType))
+//                                            .map(Duration::toMinutes)
+//                                            .map(String::valueOf)
+//                                            .collect(Collectors.toList()));
+//                                        try {
+//                                            printer.printRecord(record);
+//                                        } catch (IOException e) {
+//                                        e.printStackTrace();
+//                                        }
+//                                });
+//                        });
+//        }
 
-        /*
-        try(CSVPrinter printer = new CSVPrinter(writer, format)){
-            appsToReport.stream()
-                    .distinct()
-                    .forEach(topic -> {
-                        DatabaseEventRepository repo = new DatabaseEventRepository();
-                        Optional<Event> opt = repo.getPreviousEventTypeForApp(getSortedRelevantEvents(topic)
-                                .collect(Collectors.toList()));
-                        DurationCalculator calculator = new DurationCalculator(
-                                topic,
-                                getSortedRelevantEvents(topic)
-                                        .collect(Collectors.toList()),
-                                opt
-                        );
-                        Arrays.asList(EventType.ACTIVE, EventType.PASSIVE)
-                                .forEach(activityType -> {
-                                    LinkedList<String> record = new LinkedList<>();
-                                    record.addLast(topic);
-                                    record.addLast(activityType.toString());
-
-                                    record.addAll(
-                                            dates.stream()
-                                            .map(date -> calculator.activityLength(date, activityType))
-                                            .map(Duration::toMinutes)
-                                            .map(String::valueOf)
-                                            .collect(Collectors.toList()));
-                                        try {
-                                            printer.printRecord(record);
-                                        } catch (IOException e) {
-                                        e.printStackTrace();
-                                        }
-                                });
-                        });
-        }
-        */
     }
 
     // This method returns a stream of events relevant to given topic sorted by datetime.

@@ -74,7 +74,7 @@ public class MainWindowController {
 
     private boolean customEventActive;
 
-    private EventRepository applicationRepository = new DatabaseEventRepository();
+    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
     @FXML
     private VBox listContent;

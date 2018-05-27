@@ -1,0 +1,13 @@
+{
+  "systemPingTimeInSeconds" : 5,
+  "timeToBecomePassiveInSeconds" : 0,
+  "appsToTrack" : [ {
+    "name" : "chrome.exe",
+    "programName" : "chrome.exe",
+    "pingTimeInSeconds" : 5
+  }, {
+    "name" : "pycharm64.exe",
+    "programName" : "pycharm64.exe",
+    "pingTimeInSeconds" : 5
+  } ]
+}
