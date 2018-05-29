@@ -1,5 +1,7 @@
 package pl.edu.agh.arbeit.gui.model;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,9 +13,10 @@ import java.util.List;
 public class AppConfig implements ConfigProvider {
 
     private Info info;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     public AppConfig() {
+        mapper = new ObjectMapper();
         InputStream is;
         TypeReference<Info> mapType = new TypeReference<Info>() {
         };
@@ -49,7 +52,6 @@ public class AppConfig implements ConfigProvider {
         try {
             info.addAppToTrack(appInfo);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,9 +62,9 @@ public class AppConfig implements ConfigProvider {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
+            System.out.println("tu");
             info.removeAppToTrack(programName);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
