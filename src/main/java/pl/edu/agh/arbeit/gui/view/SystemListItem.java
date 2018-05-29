@@ -2,7 +2,6 @@ package pl.edu.agh.arbeit.gui.view;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -33,6 +32,7 @@ public class SystemListItem extends Pane {
         this.getChildren().add(systemText);
 
         this.settingsIcon = new FontAwesomeIconView(FontAwesomeIcon.COG);
+        this.settingsIcon.setStyleClass("icon");
         this.settingsIcon.setSize("22px");
         this.settingsIcon.setLayoutX(97);
         this.settingsIcon.setLayoutY(22);
