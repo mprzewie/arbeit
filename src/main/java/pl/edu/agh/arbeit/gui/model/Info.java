@@ -11,6 +11,7 @@ public class Info {
     public Info(){
         this.systemPingTimeInSeconds = 5L;
         this.appsToTrack = new LinkedList<>();
+        this.timeToBecomePassiveInSeconds = 900;
     }
 
     public Info(long systemPingTime, List<AppInfo> appsToTrack) {
