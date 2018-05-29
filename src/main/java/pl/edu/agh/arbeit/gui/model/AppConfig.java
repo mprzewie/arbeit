@@ -1,5 +1,7 @@
 package pl.edu.agh.arbeit.gui.model;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,9 +13,10 @@ import java.util.List;
 public class AppConfig implements ConfigProvider {
 
     private Info info;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     public AppConfig() {
+        mapper = new ObjectMapper();
         InputStream is;
         TypeReference<Info> mapType = new TypeReference<Info>() {
         };
@@ -21,7 +24,13 @@ public class AppConfig implements ConfigProvider {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
         } catch (IOException e) {
-            e.printStackTrace();
+            File f = new File("config.json");
+            try {
+                f.createNewFile();
+                info = new Info();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
@@ -32,7 +41,7 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public Duration getSystemPingTime() {
-        return info.getSystemPingTimeInSeconds();
+        return Duration.ofSeconds(info.getSystemPingTimeInSeconds());
     }
 
 
@@ -43,7 +52,6 @@ public class AppConfig implements ConfigProvider {
         try {
             info.addAppToTrack(appInfo);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +64,6 @@ public class AppConfig implements ConfigProvider {
         try {
             info.removeAppToTrack(programName);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,7 +76,7 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public Duration getTimeToBecomePassive() {
-        return info.getTimeToBecomePassiveInSeconds();
+        return Duration.ofSeconds(info.getTimeToBecomePassiveInSeconds());
     }
 
     @Override

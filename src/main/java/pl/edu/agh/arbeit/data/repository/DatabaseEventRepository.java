@@ -8,13 +8,26 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.Date;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DatabaseEventRepository implements EventRepository {
 
-    public DatabaseEventRepository() {
-        initialize(true);
+    public static DatabaseEventRepository initializeDBWithDrop(){
+        DatabaseEventRepository databaseEventRepository = new DatabaseEventRepository();
+        databaseEventRepository.initialize(true);
+        return databaseEventRepository;
     }
+
+    public static DatabaseEventRepository initializeDBOrConnectToExisting(){
+        DatabaseEventRepository databaseEventRepository = new DatabaseEventRepository();
+        databaseEventRepository.initialize(false);
+        return databaseEventRepository;
+    }
+//    public DatabaseEventRepository() {
+//        initialize(true);
+//    }
+//    public DatabaseEventRepository(boolean drop) {initialize(drop);}
 
     private final String url = "jdbc:sqlite:test.db";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -76,6 +89,44 @@ public class DatabaseEventRepository implements EventRepository {
         return result;
     }
 
+    public Optional<Event> getPreviousEventTypeForApp(List<Event> events) {
+
+        Optional<Event> firstEvent = events
+                .stream()
+                .min(Comparator.comparing(Event::getDate));
+
+        if (!firstEvent.isPresent()) {
+            return Optional.empty();
+        }
+
+        Date firstEventDate = firstEvent.get().getDate();
+
+        String dateToDb = dateFormat.format(firstEventDate);
+        String firstEventTopic = firstEvent.get().getTopic();
+
+        String sql = "SELECT * " +
+                "FROM Event " +
+                "WHERE (eventType='START' or eventType='STOP') and topic='" + firstEventTopic + "' and eventDate < datetime('" + dateToDb + "') " +
+                "order by datetime(eventDate) DESC " +
+                " LIMIT 1";
+
+        Optional<Event> result = Optional.empty();
+        try (Connection conn = DriverManager.getConnection(url)
+        ) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                result = fromResultSet(rs);
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     public List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate){
         String formatStartDate = dateFormat.format(startDate);
         String formatEndDate = dateFormat.format(endDate);
@@ -98,6 +149,30 @@ public class DatabaseEventRepository implements EventRepository {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public List<Event> getBy(Date date, String topic) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getBy(Date date) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getBy(String topic) {
+        // TODO implement this method
+        return null;
+    }
+
+    @Override
+    public List<Event> getAll() {
+        // TODO implement this method
+        return null;
     }
 
     private Optional<Event> fromResultSet(ResultSet set){
@@ -127,9 +202,6 @@ public class DatabaseEventRepository implements EventRepository {
         }
     }
 
-    private void initialize(){
-        initialize(false);
-    }
     private void initialize(boolean drop){
         try(Connection connection = DriverManager.getConnection(url)) {
             System.out.println("Connection to SQLite has been established.");

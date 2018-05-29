@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class OverviewController {
     private Stage primaryStage;
+    private Scene scene;
     private final String APP_TITLE = "Arbe.IT";
     private final String MAIN_PAIN_RPATH = "view/MainWindowPane.fxml";
 
@@ -23,8 +24,8 @@ public class OverviewController {
             System.out.print(Main.class.getResource(MAIN_PAIN_RPATH));
             AnchorPane rootLayout = loader.load();
             MainWindowController mainWindowController = loader.getController();
-            mainWindowController.init(this, primaryStage.heightProperty().multiply(0.85));
-            Scene scene = new Scene(rootLayout);
+            scene = new Scene(rootLayout);
+            mainWindowController.init(this, primaryStage.heightProperty().multiply(0.85), scene);
             this.primaryStage.setResizable(false);
             this.primaryStage.setScene(scene);
 
@@ -42,5 +43,9 @@ public class OverviewController {
 
     public Stage getPrimaryStage() {
         return primaryStage;
+    }
+
+    public Scene getScene() {
+        return scene;
     }
 }
