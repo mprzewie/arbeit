@@ -136,7 +136,7 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
         listContent.getChildren().add(this.appAdder);
     }
 

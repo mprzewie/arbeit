@@ -62,7 +62,6 @@ public class AppConfig implements ConfigProvider {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
-            System.out.println("tu");
             info.removeAppToTrack(programName);
             mapper.writeValue(file, info);
         } catch (IOException e) {
