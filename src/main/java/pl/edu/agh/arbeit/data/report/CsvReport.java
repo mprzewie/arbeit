@@ -71,6 +71,9 @@ public class CsvReport implements Report {
         // no need to calculate the same stuff for each date
         DatabaseEventRepository repo = new DatabaseEventRepository();
 
+        List<Event> systemEvents = getSortedRelevantEvents("system");
+        Event lastSystemEvent = systemEvents.get(systemEvents.size()-1);
+
         List<DurationCalculator> appDurationCalculators = appsToReport.stream()
                 .map(app -> {
                     Optional<Event> previousEvent =
@@ -78,7 +81,8 @@ public class CsvReport implements Report {
                     return new DurationCalculator(
                             app,
                             getSortedRelevantEvents(app),
-                            previousEvent
+                            previousEvent,
+                            lastSystemEvent
                     );
         }).collect(Collectors.toList());
 
