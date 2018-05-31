@@ -13,7 +13,7 @@ import java.util.List;
 public class AppConfig implements ConfigProvider {
 
     private Info info;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     public AppConfig() {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);

@@ -75,6 +75,8 @@ public class MainWindowController {
     @FXML
     private VBox listContent;
 
+    private ConfigProvider appConfig = new AppConfig();
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
         listContent.getChildren().add(0,new SystemListItem());
@@ -120,7 +122,7 @@ public class MainWindowController {
 
     private void initAppAdder(){
 
-        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
         listContent.getChildren().add(appAdder);
 
     }

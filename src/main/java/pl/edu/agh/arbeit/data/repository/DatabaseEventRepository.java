@@ -37,7 +37,7 @@ public class DatabaseEventRepository implements EventRepository {
                 "'" + event.getType() + "'" +
                 ", " + "'" +  dateToInsert + "'" + ")"
                 ;
-        System.out.println("SQL:   " + sql);
+//        System.out.println("SQL:   " + sql);
 
         try (Connection connection = DriverManager.getConnection(url)) {
             Statement stmt = connection.createStatement();
