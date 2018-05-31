@@ -19,15 +19,12 @@ public class DatabaseEventRepository implements EventRepository {
         return databaseEventRepository;
     }
 
+
     public static DatabaseEventRepository initializeDBOrConnectToExisting(){
         DatabaseEventRepository databaseEventRepository = new DatabaseEventRepository();
         databaseEventRepository.initialize(false);
         return databaseEventRepository;
     }
-//    public DatabaseEventRepository() {
-//        initialize(true);
-//    }
-//    public DatabaseEventRepository(boolean drop) {initialize(drop);}
 
     private final String url = "jdbc:sqlite:test.db";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

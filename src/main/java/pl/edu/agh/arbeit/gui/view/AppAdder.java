@@ -100,7 +100,6 @@ public class AppAdder extends Pane {
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();
-        mainWindowController.addToTrackerList(appTracker);
         return appTracker;
     }
 }

@@ -13,24 +13,30 @@ import java.util.List;
 public class AppConfig implements ConfigProvider {
 
     private Info info;
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     public AppConfig() {
-        mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         InputStream is;
         TypeReference<Info> mapType = new TypeReference<Info>() {
         };
         try {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
-        } catch (IOException e) {
-            File f = new File("config.json");
+
+        }catch (FileNotFoundException e){
+            info=new Info();
+            File file = new File("config.json");
             try {
-                f.createNewFile();
-                info = new Info();
+                mapper.writeValue(file, info);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+
         }
     }
 
@@ -47,7 +53,6 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public void addAppToTrack(AppInfo appInfo) {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
             info.addAppToTrack(appInfo);
@@ -59,7 +64,6 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public void removeAppToTrack(String programName) {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
             info.removeAppToTrack(programName);
