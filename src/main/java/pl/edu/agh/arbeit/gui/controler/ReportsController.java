@@ -58,7 +58,7 @@ public class ReportsController {
 
         applicationsNames.addAll(
                 applicationsNamesFromTracker.stream()
-                        .filter(name -> applicationsNames.contains(name))
+                        .filter(name -> !applicationsNames.contains(name))
                         .collect(Collectors.toList()));
 
         reportsStage.setTitle("Generate report");
@@ -80,11 +80,8 @@ public class ReportsController {
         generateReportButton.setOnAction(event -> {
             try {
                 List<Event> events = eventListener.getRepository().getAllEvents();
-                events.forEach(e -> {
-                    if(!e.getTopic().equals("system")){
-                        System.out.println("relevant -> " + e);
-                    }
-                });
+
+               
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
 //                appsToReport.forEach(System.out::println);

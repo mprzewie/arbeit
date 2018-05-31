@@ -72,7 +72,6 @@ public class DurationCalculator {
             if(event.getTopic().equals(topic) && !event.getType().equals(localPreviousEvent.getType())){
                 // the first requirement ensures that we only take into consideration events regarding the given topic
                 // the second requirement is because two events of the same type in a row are redundant - we only care about the first one
-                System.out.println("relevant -> " + event + " ; " + localPreviousEvent);
                 if(localPreviousEvent.getType().equals(typeWeAreTracking) &&
                         ! typeWeAreTracking.equals(event.getType())){
                     result.put(localPreviousEvent.getDateTime(),
