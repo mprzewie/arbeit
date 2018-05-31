@@ -14,15 +14,18 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
     private List<String> applicationsNames;
+    private Map<String, CheckBox> appBoxes = new HashMap<>();
 
     @FXML
     private DatePicker dateFromPicker;
@@ -77,7 +80,12 @@ public class ReportsController {
         generateReportButton.setOnAction(event -> {
             try {
                 List<Event> events = eventListener.getRepository().getAllEvents();
-                CsvReport report = new CsvReport(applicationsNames, events);
+
+               
+                List<String> appsToReport = applicationsNames.stream()
+                        .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
+//                appsToReport.forEach(System.out::println);
+                CsvReport report = new CsvReport(appsToReport, events);
 
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
@@ -102,6 +110,7 @@ public class ReportsController {
             Region region = new Region();
             region.setMinHeight(14.0);
             appListContent.getChildren().add(region);
+            appBoxes.put(appName, cb);
         }
 
         CheckBox cb = new CheckBox(last);
