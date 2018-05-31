@@ -27,10 +27,10 @@ public class AppAdder extends Pane {
     private EventListener eventListener;
     private ConfigProvider appConfig;
 
-    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener) {
+    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener, ConfigProvider appConfig) {
+        this.appConfig = appConfig;
         this.applicationTrackers = applicationTrackers;
         this.eventListener = eventListener;
-        this.appConfig = new AppConfig();
         addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
@@ -53,7 +53,7 @@ public class AppAdder extends Pane {
         this.getChildren().add(appNameTextField);
 
         forbidEmptyAppName();
-        initTrackingAppsFromConfig(appConfig.getAppsToTrack(), mainWindowController);
+        initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
         initAddButton(mainWindowController);
     }
 
@@ -100,7 +100,6 @@ public class AppAdder extends Pane {
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();
-        mainWindowController.addToTrackerList(appTracker);
         return appTracker;
     }
 }

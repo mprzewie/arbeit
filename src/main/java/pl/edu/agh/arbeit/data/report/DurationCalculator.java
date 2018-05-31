@@ -10,25 +10,39 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DurationCalculator {
 
     private final String topic;
     private final List<Event> relevantEvents;
     private final Map<EventType, Map<LocalDateTime, Duration>> durationMaps;
+    private Event previousEvent;
+    private Event finalEvent;
 
-    public DurationCalculator(String topic, List<Event> events) {
+    public DurationCalculator(String topic, List<Event> events, Optional<Event> eventBefore, Event finalEvent) {
         this.topic = topic;
         this.relevantEvents = events;
         this.durationMaps = new HashMap<>();
-        durationMaps.put(
-                EventType.ACTIVE,
-                splitAtMidnight(activeDurations())
-                );
-        durationMaps.put(
-                EventType.PASSIVE,
-                splitAtMidnight(passiveDurations())
-        );
+        this.previousEvent = eventBefore.orElseGet(() -> new Event() {
+            @Override
+            public String getTopic() {
+                return topic;
+            }
+
+            @Override
+            public EventType getType() {
+                return EventType.STOP;
+            }
+        });
+        this.finalEvent = finalEvent;
+
+        putDurations();
+    }
+
+    private void putDurations() {
+        durationMaps.put(EventType.ACTIVE, splitAtMidnight(durations(EventType.ACTIVE)));
+        durationMaps.put(EventType.PASSIVE, splitAtMidnight(durations(EventType.PASSIVE)));
     }
 
     public Duration activityLength(LocalDate date, EventType activityType){
@@ -49,110 +63,39 @@ public class DurationCalculator {
     // this is a map of active periods of tracked topic (application)
     // key -> time of the start of the period
     // value -> duration of the period
-    private Map<LocalDateTime, Duration> activeDurations() {
-
-        // for now I assume that the application has been previously closed
-        // TODO use initialStates
+    private Map<LocalDateTime, Duration> durations(EventType typeWeAreTracking) {
         // the event below is for comparing
-        Event previousEvent = new Event() {
-            @Override
-            public String getTopic() {
-                return topic;
-            }
-
-            @Override
-            public EventType getType() {
-                return EventType.STOP;
-            }
-        };
-
+        Event localPreviousEvent = this.previousEvent;
         Map<LocalDateTime, Duration> result = new HashMap<>();
-
         for (Event event : relevantEvents) {
+//            System.out.println("relevant event: " + event);
             // systemEvents are currently ignored
             // let's assume for now that when AppEvents are happening,
             // system is active
             // below: because could be sdystem event
             if(event.getTopic().equals(topic)){
-                // activity stops when passive mode is entered or app has been stopped
-                // if current event is not active (one of three remaining) and previous event is active event
-                if(!event.getType().equals(EventType.ACTIVE)
-                        && previousEvent.getType().equals(EventType.ACTIVE)){
-                    result.put(previousEvent.getDateTime(),
+                if(localPreviousEvent.getType().equals(typeWeAreTracking) &&
+                        ! typeWeAreTracking.equals(event.getType())){
+                    result.put(localPreviousEvent.getDateTime(),
                             Duration.ofSeconds(
-                                    previousEvent
+                                    localPreviousEvent
                                             .getDateTime()
                                             .until(event.getDateTime(), ChronoUnit.SECONDS)
                             )
                     );
                 }
-                previousEvent = event;
+                localPreviousEvent = event;
             }
         }
         // after iteration
         // if previous event is active it means that we still use this application
         // it must be considered in report as additional but non existing event (only adding duration in time vector)
-        if(previousEvent.getType().equals(EventType.ACTIVE)) {
-            result.put(previousEvent.getDateTime(),
+        if(localPreviousEvent.getType().equals(typeWeAreTracking)) {
+            result.put(localPreviousEvent.getDateTime(),
                     Duration.ofSeconds(
-                            previousEvent.getDateTime()
+                            localPreviousEvent.getDateTime()
                                     .until(
-                                            relevantEvents.get(relevantEvents.size() - 1)
-                                                    .getDateTime(),
-                                            ChronoUnit.SECONDS)
-                    ));
-        }
-        return result;
-    }
-
-    // this is a map of passive periods of tracked topic (application)
-    // key -> time of the start of the period
-    // value -> duration of the period
-    private Map<LocalDateTime, Duration> passiveDurations() {
-        // for now I assume that the application has been previously closed
-        // TODO use initialStates
-        Event currentTopic = new Event() {
-            @Override
-            public String getTopic() {
-                return topic;
-            }
-
-            @Override
-            public EventType getType() {
-                return EventType.STOP;
-            }
-        };
-
-        Map<LocalDateTime, Duration> result = new HashMap<>();
-
-        for (Event event : relevantEvents) {
-            // systemEvents are currently ignored
-            // let's assume for now that when AppEvents are happening,
-            // system is active
-            if(event.getTopic().equals(topic)){
-                // passiveness stops when passive mode is entered or app has been stopped
-                if(!event.getTopic().equals("system")) System.out.println("-" + event);
-
-                if(!event.getType().equals(EventType.PASSIVE)
-                        && currentTopic.getType().equals(EventType.PASSIVE)){
-                    result.put(currentTopic.getDateTime(),
-                            Duration.ofSeconds(
-                                    currentTopic
-                                            .getDateTime()
-                                            .until(event.getDateTime(), ChronoUnit.SECONDS)
-                            )
-                    );
-                }
-                currentTopic = event;
-            }
-        }
-        // if app is currently passive
-        if(currentTopic.getType().equals(EventType.PASSIVE)){
-            result.put(currentTopic.getDateTime(),
-                    Duration.ofSeconds(
-                            currentTopic.getDateTime()
-                                    .until(
-                                            relevantEvents.get(relevantEvents.size()-1)
+                                            finalEvent
                                                     .getDateTime(),
                                             ChronoUnit.SECONDS)
                     ));
