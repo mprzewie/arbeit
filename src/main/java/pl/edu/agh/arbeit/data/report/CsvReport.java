@@ -23,17 +23,11 @@ import java.util.stream.Stream;
 public class CsvReport implements Report {
 
     private final List<Event> events;
-// initial set of events is going to be needed in order to calculate the activities properly
-//    private final Collection<Event> predecessors;
     private final List<LocalDate> dates;
     private final List<String> appsToReport;
-   // private final CSVFormat format;
 
     public CsvReport(List<String> appsToReport, List<Event> events) {
-        this.appsToReport = new LinkedList<>();
-        this.appsToReport.add("system");
-        this.appsToReport.addAll(appsToReport);
-//        this.predecessors = predecessors;
+        this.appsToReport = appsToReport;
         this.events = events;
         // list of distinct LocalDates when systemEvents happened
         this.dates = getSortedRelevantEvents("system")
