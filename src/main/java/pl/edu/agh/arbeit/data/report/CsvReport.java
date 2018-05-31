@@ -2,6 +2,7 @@ package pl.edu.agh.arbeit.data.report;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
@@ -9,6 +10,7 @@ import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -28,7 +30,9 @@ public class CsvReport implements Report {
    // private final CSVFormat format;
 
     public CsvReport(List<String> appsToReport, List<Event> events) {
-        this.appsToReport = appsToReport;
+        this.appsToReport = new LinkedList<>();
+        this.appsToReport.add("system");
+        this.appsToReport.addAll(appsToReport);
 //        this.predecessors = predecessors;
         this.events = events;
         // list of distinct LocalDates when systemEvents happened
@@ -37,7 +41,6 @@ public class CsvReport implements Report {
                 .map(Event::getLocalDate)
                 .distinct()
                 .collect(Collectors.toList());
-        //this.format = CSVFormat.DEFAULT.withHeader(header);
     }
 
 

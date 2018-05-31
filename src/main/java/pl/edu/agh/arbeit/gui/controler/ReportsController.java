@@ -83,6 +83,7 @@ public class ReportsController {
                     }
                 });
                 CsvReport report = new CsvReport(applicationsNames, events);
+
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
