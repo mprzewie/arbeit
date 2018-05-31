@@ -81,10 +81,9 @@ public class ReportsController {
             try {
                 List<Event> events = eventListener.getRepository().getAllEvents();
 
-               
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
-//                appsToReport.forEach(System.out::println);
+                appsToReport.forEach(System.out::println);
                 CsvReport report = new CsvReport(appsToReport, events);
 
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
@@ -98,7 +97,6 @@ public class ReportsController {
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
-        System.out.println(calculateSpaceTakenByOtherViews());
         List<String> apps = new LinkedList<>();
         apps.addAll(applicationsNames);
         final String last = apps.remove(apps.size() - 1);
@@ -116,6 +114,8 @@ public class ReportsController {
         CheckBox cb = new CheckBox(last);
         cb.setSelected(true);
         appListContent.getChildren().add(cb);
+        appBoxes.put(last, cb);
+
     }
 
     private void initScrollPane(ReadOnlyDoubleProperty heightProperty){
