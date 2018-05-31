@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
@@ -55,43 +56,35 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-    private AppAdder appAdder;
+
+    @FXML
+    private ChoiceBox styleChoiceBox;
 
     private EventListener eventListener;
 
-    private List<Tracker> trackerList;
-
     private SystemTracker systemTracker;
 
-    private List<ApplicationTracker> applicationTrackerList;
+    private List<ApplicationTracker> applicationTrackerList = new LinkedList<>();
 
-
-    private boolean customEventActive;
+    private boolean customEventActive = false;
 
     private EventRepository applicationRepository = new DatabaseEventRepository();
 
     @FXML
     private VBox listContent;
 
-    private ConfigProvider appConfig;
+
+    private ConfigProvider appConfig = new AppConfig();
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
-        customEventActive = false;
-        this.trackerList = new LinkedList<>();
-        this.applicationTrackerList = new LinkedList<>();
-        this.overviewController=overviewController;
-        this.appConfig = new AppConfig();
-
+        this.overviewController= overviewController;
         listContent.getChildren().add(0,new SystemListItem());
-        initAppScrollPane();
-
         this.eventListener = new EventListener(applicationRepository);
-
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
-        trackerList.add(systemTracker);
 
+        this.initAppScrollPane();
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
@@ -108,8 +101,9 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
-        listContent.getChildren().add(this.appAdder);
+
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener);
+        listContent.getChildren().add(appAdder);
     }
 
     public void addNewAppView(Application application){
@@ -188,12 +182,13 @@ public class MainWindowController {
         );
     }
 
-    public void addToTrackerList(Tracker tracker){
-        this.trackerList.add(tracker);
-    }
-
     public void stopTrackingAll(){
-        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
+        systemTracker.stop();
+        this.applicationTrackerList.forEach(tracker -> {
+            tracker.stop();
+            System.out.println("STOPPED tracking " + tracker.toString());
+        });
+
     }
 
     public SystemTracker getSystemTracker() {

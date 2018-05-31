@@ -16,6 +16,13 @@ public class DatabaseEventRepository implements EventRepository {
         initialize(true);
     }
 
+
+    public static DatabaseEventRepository initializeDBOrConnectToExisting(){
+        DatabaseEventRepository databaseEventRepository = new DatabaseEventRepository();
+        databaseEventRepository.initialize(false);
+        return databaseEventRepository;
+    }
+
     private final String url = "jdbc:sqlite:test.db";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -27,7 +34,7 @@ public class DatabaseEventRepository implements EventRepository {
                 "'" + event.getType() + "'" +
                 ", " + "'" +  dateToInsert + "'" + ")"
                 ;
-//        System.out.println("SQL:   " + sql);
+        System.out.println("SQL:   " + sql);
 
         try (Connection connection = DriverManager.getConnection(url)) {
             Statement stmt = connection.createStatement();
