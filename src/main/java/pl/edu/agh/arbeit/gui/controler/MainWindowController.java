@@ -1,6 +1,7 @@
 package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.beans.binding.DoubleBinding;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.model.AppConfig;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
+import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
@@ -68,13 +70,10 @@ public class MainWindowController {
 
     private boolean customEventActive = false;
 
-    private EventRepository applicationRepository = new DatabaseEventRepository();
+    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
     @FXML
     private VBox listContent;
-
-
-    private ConfigProvider appConfig = new AppConfig();
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
@@ -91,7 +90,26 @@ public class MainWindowController {
         this.initAppAdder();
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
+        this.initStyleChocieBox();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+    }
+
+    private void initStyleChocieBox() {
+        styleChoiceBox.setItems(FXCollections.observableArrayList(
+                StyleType.values()));
+        styleChoiceBox.getSelectionModel().select(StyleType.STANDARD);
+
+        String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+        String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+
+        styleChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    anchorPane.getStylesheets().clear();
+                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK))
+                            anchorPane.getStylesheets().add(dark);
+                        else
+                            anchorPane.getStylesheets().add(standard);
+                });
     }
 
     private void initAppScrollPane(){
@@ -104,6 +122,7 @@ public class MainWindowController {
 
         AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener);
         listContent.getChildren().add(appAdder);
+
     }
 
     public void addNewAppView(Application application){
