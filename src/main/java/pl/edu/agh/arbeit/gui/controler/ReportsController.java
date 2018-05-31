@@ -67,6 +67,11 @@ public class ReportsController {
         generateReportButton.setOnAction(event -> {
             try {
                 List<Event> events = eventListener.getRepository().getAllEvents();
+                events.forEach(e -> {
+                    if(!e.getTopic().equals("system")){
+                        System.out.println("relevant -> " + e);
+                    }
+                });
                 CsvReport report = new CsvReport(trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList()), events);
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
