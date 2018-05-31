@@ -9,6 +9,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
-    private List<ApplicationTracker> trackers;
+    private List<String> applicationsNames;
 
     @FXML
     private DatePicker dateFromPicker;
@@ -47,7 +49,15 @@ public class ReportsController {
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
-        this.trackers = trackers;
+        DatabaseEventRepository repository = new DatabaseEventRepository();
+        this.applicationsNames = repository.getRecordedAppsNames();
+        List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
+
+        applicationsNames.addAll(
+                applicationsNamesFromTracker.stream()
+                        .filter(name -> applicationsNames.contains(name))
+                        .collect(Collectors.toList()));
+
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
@@ -72,7 +82,7 @@ public class ReportsController {
                         System.out.println("relevant -> " + e);
                     }
                 });
-                CsvReport report = new CsvReport(trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList()), events);
+                CsvReport report = new CsvReport(applicationsNames, events);
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
@@ -86,7 +96,7 @@ public class ReportsController {
         initScrollPane(heightProperty);
         System.out.println(calculateSpaceTakenByOtherViews());
         List<String> apps = new LinkedList<>();
-        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
+        apps.addAll(applicationsNames);
         final String last = apps.remove(apps.size() - 1);
 
         for (String appName : apps){
