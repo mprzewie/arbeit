@@ -17,10 +17,10 @@ public class DurationCalculator {
     private final String topic;
     private final List<Event> relevantEvents;
     private final Map<EventType, Map<LocalDateTime, Duration>> durationMaps;
-    private Optional<Event> eventBefore;
     private Event previousEvent;
+    private Event finalEvent;
 
-    public DurationCalculator(String topic, List<Event> events, Optional<Event> eventBefore) {
+    public DurationCalculator(String topic, List<Event> events, Optional<Event> eventBefore, Event finalEvent) {
         this.topic = topic;
         this.relevantEvents = events;
         this.durationMaps = new HashMap<>();
@@ -35,11 +35,13 @@ public class DurationCalculator {
                 return EventType.STOP;
             }
         });
-        putDurations();
-        this.eventBefore = eventBefore;
+        this.finalEvent = finalEvent;
+
+        calculateDurations();
     }
 
-    private void putDurations() {
+    private void calculateDurations() {
+        System.out.println(topic + " " + relevantEvents.size());
         durationMaps.put(EventType.ACTIVE, splitAtMidnight(durations(EventType.ACTIVE)));
         durationMaps.put(EventType.PASSIVE, splitAtMidnight(durations(EventType.PASSIVE)));
     }
@@ -62,24 +64,16 @@ public class DurationCalculator {
     // this is a map of active periods of tracked topic (application)
     // key -> time of the start of the period
     // value -> duration of the period
-
     private Map<LocalDateTime, Duration> durations(EventType typeWeAreTracking) {
         // the event below is for comparing
         Event localPreviousEvent = this.previousEvent;
         Map<LocalDateTime, Duration> result = new HashMap<>();
-        EventType inverseThanTrackedType = typeWeAreTracking.equals(EventType.ACTIVE) ? EventType.PASSIVE : EventType.ACTIVE;
-        EventType startingOrStoppingEvent = typeWeAreTracking.equals(EventType.ACTIVE) ? EventType.STOP : EventType.START;
-
         for (Event event : relevantEvents) {
-            // systemEvents are currently ignored
-            // let's assume for now that when AppEvents are happening,
-            // system is active
-            // below: because could be sdystem event
-            if(event.getTopic().equals(topic)){
-                // activity stops when passive mode is entered or app has been stopped
-                // if current event is not active (one of three remaining) and previous event is active event
-                if((event.getType().equals(inverseThanTrackedType)|| event.getType().equals(startingOrStoppingEvent))
-                        && localPreviousEvent.getType().equals(typeWeAreTracking)){
+            if(event.getTopic().equals(topic) && !event.getType().equals(localPreviousEvent.getType())){
+                // the first requirement ensures that we only take into consideration events regarding the given topic
+                // the second requirement is because two events of the same type in a row are redundant - we only care about the first one
+                if(localPreviousEvent.getType().equals(typeWeAreTracking) &&
+                        ! typeWeAreTracking.equals(event.getType())){
                     result.put(localPreviousEvent.getDateTime(),
                             Duration.ofSeconds(
                                     localPreviousEvent
@@ -99,7 +93,7 @@ public class DurationCalculator {
                     Duration.ofSeconds(
                             localPreviousEvent.getDateTime()
                                     .until(
-                                            relevantEvents.get(relevantEvents.size() - 1)
+                                            finalEvent
                                                     .getDateTime(),
                                             ChronoUnit.SECONDS)
                     ));
