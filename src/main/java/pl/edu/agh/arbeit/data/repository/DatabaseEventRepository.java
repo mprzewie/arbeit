@@ -1,5 +1,7 @@
 package pl.edu.agh.arbeit.data.repository;
 
+import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 
@@ -171,6 +173,27 @@ public class DatabaseEventRepository implements EventRepository {
         // TODO implement this method
         return null;
     }
+
+    @Override
+    public List<String> getRecordedAppsNames() {
+        String sql = "SELECT DISTINCT topic \n" +
+                "FROM Event";
+
+        LinkedList<String> result = new LinkedList<>();
+        try (Connection conn = DriverManager.getConnection(url)
+        ) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String appName = rs.getString("topic");
+                result.add(appName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 
     private Optional<Event> fromResultSet(ResultSet set){
         try {
