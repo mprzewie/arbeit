@@ -89,6 +89,7 @@ public class ReportsController {
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
 //                appsToReport.forEach(System.out::println);
                 CsvReport report = new CsvReport(appsToReport, events);
+
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
