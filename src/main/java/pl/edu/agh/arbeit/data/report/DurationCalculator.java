@@ -37,10 +37,11 @@ public class DurationCalculator {
         });
         this.finalEvent = finalEvent;
 
-        putDurations();
+        calculateDurations();
     }
 
-    private void putDurations() {
+    private void calculateDurations() {
+        System.out.println(topic + " " + relevantEvents.size());
         durationMaps.put(EventType.ACTIVE, splitAtMidnight(durations(EventType.ACTIVE)));
         durationMaps.put(EventType.PASSIVE, splitAtMidnight(durations(EventType.PASSIVE)));
     }
@@ -68,12 +69,10 @@ public class DurationCalculator {
         Event localPreviousEvent = this.previousEvent;
         Map<LocalDateTime, Duration> result = new HashMap<>();
         for (Event event : relevantEvents) {
-//            System.out.println("relevant event: " + event);
-            // systemEvents are currently ignored
-            // let's assume for now that when AppEvents are happening,
-            // system is active
-            // below: because could be sdystem event
-            if(event.getTopic().equals(topic)){
+            if(event.getTopic().equals(topic) && !event.getType().equals(localPreviousEvent.getType())){
+                // the first requirement ensures that we only take into consideration events regarding the given topic
+                // the second requirement is because two events of the same type in a row are redundant - we only care about the first one
+                System.out.println("relevant -> " + event + " ; " + localPreviousEvent);
                 if(localPreviousEvent.getType().equals(typeWeAreTracking) &&
                         ! typeWeAreTracking.equals(event.getType())){
                     result.put(localPreviousEvent.getDateTime(),

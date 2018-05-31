@@ -1,5 +1,6 @@
 package pl.edu.agh.arbeit.data.repository;
 
+import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 
 import java.util.Date;
@@ -21,5 +22,6 @@ public interface EventRepository {
     List<Event> getBy(Date date);
     List<Event> getBy(String topic);
     List<Event> getAll();
+    List<String> getRecordedAppsNames();
 
 }
