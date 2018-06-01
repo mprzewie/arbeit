@@ -1,0 +1,21 @@
+{
+  "systemPingTimeInSeconds" : 5,
+  "timeToBecomePassiveInSeconds" : 0,
+  "appsToTrack" : [ {
+    "name" : "b",
+    "programName" : "b",
+    "pingTimeInSeconds" : 5
+  }, {
+    "name" : "c",
+    "programName" : "c",
+    "pingTimeInSeconds" : 5
+  }, {
+    "name" : "d",
+    "programName" : "d",
+    "pingTimeInSeconds" : 5
+  }, {
+    "name" : "j",
+    "programName" : "j",
+    "pingTimeInSeconds" : 5
+  } ]
+}

@@ -15,9 +15,14 @@ import pl.edu.agh.arbeit.gui.controler.AppSettingsController;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.controler.ReportsController;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class AppListItem extends Pane {
@@ -35,7 +40,11 @@ public class AppListItem extends Pane {
         initSettingsButton();
         initDeleteButton(mainWindowController);
 
-        this.getChildren().add(new TimeLine());
+        TimeLine tl = new TimeLine();
+        this.getChildren().add(tl);
+        tl.addEvent(EventType.START, LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()).minusHours(5));
+        tl.addEvent(EventType.PASSIVE, LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()).minusHours(5).plusMinutes(20));
+        tl.addEvent(EventType.PASSIVE, LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()).minusHours(5).plusMinutes(100));
     }
 
     private void initSettingsButton(){
@@ -58,6 +67,7 @@ public class AppListItem extends Pane {
                             e.printStackTrace();
                         }
         });
+        this.getChildren().add(settingsIcon);
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){
