@@ -17,5 +17,9 @@
     "name" : "j",
     "programName" : "j",
     "pingTimeInSeconds" : 5
+  }, {
+    "name" : "chrome.exe",
+    "programName" : "chrome.exe",
+    "pingTimeInSeconds" : 5
   } ]
 }

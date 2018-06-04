@@ -1,7 +1,9 @@
 package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.Subscribe;
+import javafx.application.Platform;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
+import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.events.*;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
@@ -11,6 +13,7 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 public class EventListener {
 
     private EventRepository repository;
+    private MainWindowController mainWindowController;
 
     public void subscribe(Tracker tracker){
         tracker.getBus().register(this);
@@ -20,8 +23,9 @@ public class EventListener {
         tracker.getBus().unregister(this);
     }
 
-    public EventListener(EventRepository repository) {
+    public EventListener(EventRepository repository, MainWindowController mainWindowController) {
         this.repository = repository;
+        this.mainWindowController = mainWindowController;
     }
 
     public EventRepository getRepository() {
@@ -32,6 +36,7 @@ public class EventListener {
     public void acceptEvent(Event event){
         System.out.println(event);
         repository.put(event);
+        Platform.runLater(() -> mainWindowController.acceptEvent(event));
     }
 
 }
