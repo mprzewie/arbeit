@@ -25,8 +25,6 @@ import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.tracker.Application;
-import pl.edu.agh.arbeit.tracker.events.Event;
-import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
@@ -34,10 +32,6 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,7 +79,7 @@ public class MainWindowController {
     @FXML
     private VBox listContent;
 
-    private ConfigProvider appConfig;
+    private ConfigProvider appConfig = new AppConfig();
 
     private Scene scene;
 
@@ -100,16 +94,15 @@ public class MainWindowController {
         this.appConfig = new AppConfig();
         this.appListItems = new ArrayList<>();
 
+    public void init(OverviewController overviewController, DoubleBinding heightProperty) {
+        this.overviewController= overviewController;
         listContent.getChildren().add(0,new SystemListItem());
-        initAppScrollPane();
-
-        this.eventListener = new EventListener(applicationRepository, this);
-
+        this.eventListener = new EventListener(applicationRepository);
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
-        trackerList.add(systemTracker);
 
+        this.initAppScrollPane();
         this.bindSizeProperties();
         this.initDatePicer();
         this.initReportButton();
@@ -145,13 +138,14 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-        this.appAdder = new AppAdder(this, applicationTrackerList, eventListener);
-        listContent.getChildren().add(this.appAdder);
+
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
+        listContent.getChildren().add(appAdder);
+
     }
 
     public void addNewAppView(Application application){
         AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
-        appListItems.add(appListItem);
         int listContentIndex = listContent.getChildren().size() - 1;
         if(listContentIndex == 0)
             listContentIndex++;
@@ -226,12 +220,13 @@ public class MainWindowController {
         );
     }
 
-    public void addToTrackerList(Tracker tracker){
-        this.trackerList.add(tracker);
-    }
-
     public void stopTrackingAll(){
-        this.trackerList.forEach(e -> {e.stop(); System.out.println("STOPPED tracking " + e.toString());});
+        systemTracker.stop();
+        this.applicationTrackerList.forEach(tracker -> {
+            tracker.stop();
+            System.out.println("STOPPED tracking " + tracker.toString());
+        });
+
     }
 
     public SystemTracker getSystemTracker() {

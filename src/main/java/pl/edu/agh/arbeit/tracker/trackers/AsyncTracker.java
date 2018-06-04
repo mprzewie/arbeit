@@ -23,6 +23,7 @@ public abstract class AsyncTracker implements Tracker {
     @Override
     public void stop() {
         trackingThread.interrupt();
+        stopTracking();
     }
 
     private void performTracking(){
@@ -31,8 +32,7 @@ public abstract class AsyncTracker implements Tracker {
                 actOnStatus();
                 Thread.sleep(pingTime.getSeconds() * 1000);
             } catch (InterruptedException e){
-                stopTracking();
-                return;
+                break;
             }
         }
     }
