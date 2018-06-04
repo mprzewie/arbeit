@@ -1,6 +1,5 @@
 package pl.edu.agh.arbeit.tracker.trackers;
 
-import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import pl.edu.agh.arbeit.tracker.system.KeyboardTracker;
@@ -28,12 +27,6 @@ public class SystemTracker extends AsyncTracker {
         keyboardTracker.start();
     }
 
-
-    @Override
-    public void start(){
-        bus.post(new SystemEvent(EventType.START));
-        super.start();
-    }
     @Override
     protected void actOnStatus() {
         bus.post(currentStateEvent());

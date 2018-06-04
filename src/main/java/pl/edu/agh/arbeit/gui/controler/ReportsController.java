@@ -9,23 +9,18 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
-import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
-    private List<String> applicationsNames;
-    private Map<String, CheckBox> appBoxes = new HashMap<>();
+    private List<ApplicationTracker> trackers;
 
     @FXML
     private DatePicker dateFromPicker;
@@ -52,15 +47,7 @@ public class ReportsController {
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
-        DatabaseEventRepository repository = new DatabaseEventRepository();
-        this.applicationsNames = repository.getRecordedAppsNames();
-        List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
-
-        applicationsNames.addAll(
-                applicationsNamesFromTracker.stream()
-                        .filter(name -> !applicationsNames.contains(name))
-                        .collect(Collectors.toList()));
-
+        this.trackers = trackers;
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
@@ -80,12 +67,7 @@ public class ReportsController {
         generateReportButton.setOnAction(event -> {
             try {
                 List<Event> events = eventListener.getRepository().getAllEvents();
-
-                List<String> appsToReport = applicationsNames.stream()
-                        .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
-                appsToReport.forEach(System.out::println);
-                CsvReport report = new CsvReport(appsToReport, events);
-
+                CsvReport report = new CsvReport(trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList()), events);
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
@@ -97,8 +79,9 @@ public class ReportsController {
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
+        System.out.println(calculateSpaceTakenByOtherViews());
         List<String> apps = new LinkedList<>();
-        apps.addAll(applicationsNames);
+        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
         final String last = apps.remove(apps.size() - 1);
 
         for (String appName : apps){
@@ -108,14 +91,11 @@ public class ReportsController {
             Region region = new Region();
             region.setMinHeight(14.0);
             appListContent.getChildren().add(region);
-            appBoxes.put(appName, cb);
         }
 
         CheckBox cb = new CheckBox(last);
         cb.setSelected(true);
         appListContent.getChildren().add(cb);
-        appBoxes.put(last, cb);
-
     }
 
     private void initScrollPane(ReadOnlyDoubleProperty heightProperty){

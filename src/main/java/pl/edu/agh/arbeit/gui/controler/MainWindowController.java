@@ -25,6 +25,7 @@ import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 import pl.edu.agh.arbeit.tracker.trackers.Tracker;
@@ -32,6 +33,10 @@ import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -86,21 +91,16 @@ public class MainWindowController {
     private List<AppListItem> appListItems;
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty, Scene scene) {
-        customEventActive = false;
-        this.trackerList = new LinkedList<>();
-        this.scene = scene;
-        this.applicationTrackerList = new LinkedList<>();
-        this.overviewController=overviewController;
-        this.appConfig = new AppConfig();
-        this.appListItems = new ArrayList<>();
-
-    public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
         listContent.getChildren().add(0,new SystemListItem());
-        this.eventListener = new EventListener(applicationRepository);
+        this.eventListener = new EventListener(applicationRepository, this);
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
         systemTracker.start();
+        this.applicationTrackerList = new LinkedList<>();
+
+        this.appListItems = new ArrayList<>();
+
 
         this.initAppScrollPane();
         this.bindSizeProperties();
@@ -110,7 +110,6 @@ public class MainWindowController {
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
         this.initStyleChocieBox();
-        //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
     }
 
     private void initStyleChocieBox() {
@@ -146,6 +145,7 @@ public class MainWindowController {
 
     public void addNewAppView(Application application){
         AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
+        appListItems.add(appListItem);
         int listContentIndex = listContent.getChildren().size() - 1;
         if(listContentIndex == 0)
             listContentIndex++;
