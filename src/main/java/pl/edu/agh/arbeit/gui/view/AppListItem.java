@@ -25,6 +25,7 @@ public class AppListItem extends Pane {
 
     private Application application;
     private List<ApplicationTracker> trackers;
+    private TimeLine timeLine;
 
     public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
         this.application = application;
@@ -36,7 +37,8 @@ public class AppListItem extends Pane {
         initSettingsButton();
         initDeleteButton(mainWindowController);
 
-        this.getChildren().add(new TimeLine());
+        timeLine = new TimeLine();
+        this.getChildren().add(timeLine);
     }
 
     private void initSettingsButton(){
@@ -106,5 +108,21 @@ public class AppListItem extends Pane {
         verticalLine.setStartY(0);
         verticalLine.setEndY(49);
         this.getChildren().add(verticalLine);
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    public TimeLine getTimeLine() {
+        return timeLine;
+    }
+
+    public void setTimeLine(TimeLine timeLine) {
+        this.timeLine = timeLine;
     }
 }
