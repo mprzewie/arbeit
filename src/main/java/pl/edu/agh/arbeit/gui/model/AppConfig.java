@@ -1,5 +1,7 @@
 package pl.edu.agh.arbeit.gui.model;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,20 +16,27 @@ public class AppConfig implements ConfigProvider {
     private ObjectMapper mapper = new ObjectMapper();
 
     public AppConfig() {
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         InputStream is;
         TypeReference<Info> mapType = new TypeReference<Info>() {
         };
         try {
             is = new FileInputStream(new File("config.json"));
             info = mapper.readValue(is, mapType);
-        } catch (IOException e) {
-            File f = new File("config.json");
+
+        }catch (FileNotFoundException e){
+            info=new Info();
+            File file = new File("config.json");
             try {
-                f.createNewFile();
-                info = new Info();
+                mapper.writeValue(file, info);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+
         }
     }
 
@@ -44,12 +53,10 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public void addAppToTrack(AppInfo appInfo) {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
             info.addAppToTrack(appInfo);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,12 +64,10 @@ public class AppConfig implements ConfigProvider {
 
     @Override
     public void removeAppToTrack(String programName) {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         File file = new File("config.json");
         try {
             info.removeAppToTrack(programName);
             mapper.writeValue(file, info);
-            mapper.writeValue(System.out, info);
         } catch (IOException e) {
             e.printStackTrace();
         }

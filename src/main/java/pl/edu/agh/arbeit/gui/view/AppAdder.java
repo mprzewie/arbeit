@@ -31,10 +31,10 @@ public class AppAdder extends Pane {
     private EventListener eventListener;
     private ConfigProvider appConfig;
 
-    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener) {
+    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener, ConfigProvider appConfig) {
+        this.appConfig = appConfig;
         this.applicationTrackers = applicationTrackers;
         this.eventListener = eventListener;
-        this.appConfig = new AppConfig();
         addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
@@ -63,8 +63,7 @@ public class AppAdder extends Pane {
         appNameComboBox.setEditable(true);
         TextFields.bindAutoCompletion(appNameComboBox.getEditor(), appNameComboBox.getItems());
         forbidEmptyAppName();
-
-        initTrackingAppsFromConfig(appConfig.getAppsToTrack(), mainWindowController);
+        initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
         initAddButton(mainWindowController);
     }
 
@@ -86,10 +85,8 @@ public class AppAdder extends Pane {
         appNameComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals("")) {
                 addCircle.setDisable(true);
-            }
-            else{
+            else
                 addCircle.setDisable(false);
-            }
         });
     }
 

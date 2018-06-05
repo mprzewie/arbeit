@@ -14,6 +14,7 @@ import pl.edu.agh.arbeit.gui.controler.AppSettingsController;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
+import pl.edu.agh.arbeit.tracker.trackers.AsyncTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +66,12 @@ public class AppListItem extends Pane {
         deleteAppButton.setSize("22px");
 
         deleteAppButton.setOnMouseClicked(event -> {
+            trackers.stream()
+                    .filter(t -> t.getApplication().equals(application))
+                    .findFirst()
+                    .ifPresent(AsyncTracker::stop);
             trackers.removeIf(tracker -> tracker.getApplication().equals(this.application));
+
             mainWindowController.removeAppView(this);
             mainWindowController.removeApp(this.application.getProgramName());
         });
