@@ -9,7 +9,6 @@ import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
-import pl.edu.agh.arbeit.gui.model.AppConfig;
 import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
@@ -71,7 +70,7 @@ public class AppAdder extends Pane {
         List<AppInfo> tempList= new LinkedList<>();
         tempList.addAll(appInfos);
         tempList.forEach(e -> addApp(mainWindowController, new Application(
-                e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()),
+                        e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()),
                 Duration.ofSeconds(e.getPingTimeInSeconds())
         ));
     }

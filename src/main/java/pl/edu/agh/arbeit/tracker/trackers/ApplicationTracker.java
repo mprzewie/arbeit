@@ -40,8 +40,7 @@ public class ApplicationTracker extends AsyncTracker {
 
     @Override
     protected void stopTracking() {
-        if(!previousEvents.peek().getType().equals(EventType.STOP))
-            bus.post(new ApplicationEvent(EventType.STOP, application));
+        bus.post(new ApplicationEvent(EventType.STOP, application));
     }
 
     public Application getApplication() {

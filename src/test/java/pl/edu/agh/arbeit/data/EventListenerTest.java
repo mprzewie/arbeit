@@ -59,6 +59,8 @@ class EventListenerTest {
 
     }
 
+
+/*
     @BeforeEach
     void setup(){
         listener = new EventListener(repositoryMock);
@@ -78,6 +80,7 @@ class EventListenerTest {
         bus.post(eventMock);
         assertTrue(events.isEmpty());
     }
+*/
 
 
 }
