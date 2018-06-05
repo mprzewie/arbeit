@@ -25,7 +25,7 @@ public class OverviewController {
             AnchorPane rootLayout = loader.load();
             MainWindowController mainWindowController = loader.getController();
             scene = new Scene(rootLayout);
-            mainWindowController.init(this, primaryStage.heightProperty().multiply(0.85), scene);
+            mainWindowController.init(this, primaryStage.heightProperty().multiply(0.85));
             this.primaryStage.setResizable(false);
             this.primaryStage.setScene(scene);
 
