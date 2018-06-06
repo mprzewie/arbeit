@@ -1,20 +1,18 @@
 .root {
-    -fx-base: rgba(30, 31, 32, 255); // dark
+    -fx-base: #06253a; // dark
 }
 
 .icon-arrow {
-    -fx-stroke: #6838ff;
-    -fx-fill: #6838ff;
+    -fx-fill: #218891;
 }
 
 .icon-plus {
-    -fx-stroke: #6838ff;
-    -fx-fill: #6838ff;
+    -fx-fill: #218891;
 }
 
 .button{
-    -fx-background-color: #6838ff;
-    -fx-text-fill: #497fff;
+    -fx-background-color: #218891;
+    -fx-text-fill: #000000;
 }
 
 
