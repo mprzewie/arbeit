@@ -10,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
@@ -29,13 +30,13 @@ public class AppAdder extends Pane {
     private FontAwesomeIconView addCircle;
     private ComboBox<String> appNameComboBox;
     private List<ApplicationTracker> applicationTrackers;
-    private EventListener eventListener;
+    private List<EventListener> eventListeners;
     private ConfigProvider appConfig;
 
-    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener, ConfigProvider appConfig) {
+    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, List<EventListener> eventListeners, ConfigProvider appConfig) {
         this.appConfig = appConfig;
         this.applicationTrackers = applicationTrackers;
-        this.eventListener = eventListener;
+        this.eventListeners = eventListeners;
         addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
@@ -121,7 +122,7 @@ public class AppAdder extends Pane {
 
     private ApplicationTracker createTracker(Duration pingTime, Application application, MainWindowController mainWindowController){
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
-        eventListener.subscribe(appTracker);
+        eventListeners.forEach(listener -> listener.subscribe(appTracker));
         appTracker.start();
         return appTracker;
     }

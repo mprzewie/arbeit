@@ -7,10 +7,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
-    private EventListener eventListener;
+    private EventListenerSaver eventListener;
     private List<String> applicationsNames;
     private Map<String, CheckBox> appBoxes = new HashMap<>();
 
@@ -51,7 +50,7 @@ public class ReportsController {
     private VBox appListContent;
 
 
-    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
+    public void init(Stage reportsStage, EventListenerSaver eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
 

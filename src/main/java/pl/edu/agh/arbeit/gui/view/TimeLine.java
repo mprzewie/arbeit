@@ -17,9 +17,8 @@ import java.util.List;
 public class TimeLine extends Pane {
     private List<RectangleTyped> rectangleList;
 
-    private Color activeColor = Color.rgb(193, 16, 9);
-    private Color passiveColor = Color.rgb(83, 7, 4);
-    ;
+    private Color passiveColor = Color.rgb(193, 16, 9);
+    private Color activeColor = Color.rgb(10, 128, 4);
     private Color offColor = Color.grayRgb(33);
     private Color backgroundColor = Color.grayRgb(84);
     private BorderPane prevBorderPane;
@@ -54,7 +53,9 @@ public class TimeLine extends Pane {
                         rec.setEventType(eventType);
                         rec.setFill(getColorFromEventType(eventType));
                         rectangleList.add(rec);
-                        this.getChildren().add(rec);
+                        getChildren().add(rec);
+                    } else{
+                        rectangleList.get(getLastElemIndex()).setFill(getColorFromEventType(eventType));
                     }
                 if (rectangleList.size() == 0) {
                     RectangleTyped rec = new RectangleTyped(1, 49);
@@ -62,7 +63,7 @@ public class TimeLine extends Pane {
                     rec.setEventType(eventType);
                     rec.setFill(getColorFromEventType(eventType));
                     rectangleList.add(rec);
-                    this.getChildren().add(rec);
+                    getChildren().add(rec);
                 }
             }
         }

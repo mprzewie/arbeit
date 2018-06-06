@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
@@ -28,7 +29,6 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
-import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -69,7 +69,9 @@ public class MainWindowController {
     @FXML
     private VBox listContent;
 
-    private EventListener eventListener;
+    private EventListenerSaver eventListenerSaver;
+//    private EventListenerSaver eventDrawerListener;
+    private List<EventListener> eventListeners = new ArrayList<>();
 
     private SystemTracker systemTracker;
 
@@ -89,9 +91,20 @@ public class MainWindowController {
         this.overviewController= overviewController;
         systemListItem = new SystemListItem();
         listContent.getChildren().add(0,systemListItem);
-        this.eventListener = new EventListener(applicationRepository, this);
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
-        this.eventListener.subscribe(systemTracker);
+
+
+        eventListenerSaver = new EventListenerSaver(applicationRepository);
+
+        EventListener eventDrawerListener = new EventListenerDrawer(this);
+
+        eventListeners.add(eventListenerSaver);
+        eventListeners.add(eventDrawerListener);
+
+        eventListeners.forEach(listener -> listener.subscribe(systemTracker));
+//        eventListenerSaver.subscribe(systemTracker);
+//        eventDrawerListener.subscribe(systemTracker);
+
         systemTracker.start();
 
         appListItems = new ArrayList<>();
@@ -132,7 +145,7 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListeners, appConfig);
         listContent.getChildren().add(appAdder);
     }
 
@@ -170,7 +183,7 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty());
+                    reportsController.init(stage, eventListenerSaver, applicationTrackerList, stage.heightProperty());
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
