@@ -9,6 +9,7 @@ import javafx.scene.text.Text;
 public class SystemListItem extends Pane {
 
     private FontAwesomeIconView settingsIcon;
+    private TimeLine timeLine;
 
     public SystemListItem() {
         Line verticalLine = new Line();
@@ -37,5 +38,12 @@ public class SystemListItem extends Pane {
         this.settingsIcon.setLayoutX(97);
         this.settingsIcon.setLayoutY(22);
         this.getChildren().add(settingsIcon);
+
+        this.timeLine = new TimeLine();
+        this.getChildren().add(timeLine);
+    }
+
+    public TimeLine getTimeLine() {
+        return timeLine;
     }
 }

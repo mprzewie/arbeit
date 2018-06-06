@@ -63,9 +63,11 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-
     @FXML
     private ChoiceBox styleChoiceBox;
+
+    @FXML
+    private VBox listContent;
 
     private EventListener eventListener;
 
@@ -77,16 +79,16 @@ public class MainWindowController {
 
     private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
-    @FXML
-    private VBox listContent;
-
     private ConfigProvider appConfig = new AppConfig();
 
     private List<AppListItem> appListItems;
 
+    private SystemListItem systemListItem;
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
-        listContent.getChildren().add(0,new SystemListItem());
+        systemListItem = new SystemListItem();
+        listContent.getChildren().add(0,systemListItem);
         this.eventListener = new EventListener(applicationRepository, this);
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
@@ -230,5 +232,8 @@ public class MainWindowController {
                 appListItem.getTimeLine().addEvent(event.getType(),
                         LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
         });
+
+        if(event.getTopic().equals("system"))
+            systemListItem.getTimeLine().addEvent(event.getType(), LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
     }
 }
