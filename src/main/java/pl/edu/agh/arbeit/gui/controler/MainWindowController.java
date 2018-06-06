@@ -3,6 +3,7 @@ package pl.edu.agh.arbeit.gui.controler;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,7 +29,6 @@ import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
-import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-//import pl.edu.agh.arbeit.gui.view.AddCircle;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -199,15 +197,7 @@ public class MainWindowController {
 
     private void initBeginCustomEventButton() {
         beginCustomEventButton.setOnAction(
-                event -> {
-                    if(customEventActive){
-                        beginCustomEventButton.setText("Begin Custom Event");
-                        customEventActive = false;
-                    } else {
-                        beginCustomEventButton.setText("End Custom Event");
-                        customEventActive = true;
-                    }
-                }
+                beginCustomEventButtonListener
         );
     }
 
@@ -231,4 +221,33 @@ public class MainWindowController {
                         LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
         });
     }
+
+    public void beginCustomEvent(){
+        beginCustomEventButton.setText("End Custom Event");
+        customEventActive = true;
+        beginCustomEventButton.setOnAction(endCustomEventButtonListener);
+    }
+
+    private EventHandler<ActionEvent> beginCustomEventButtonListener =
+            event -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(Main.class.getResource("view/BeginCustomEventPane.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = new Stage();
+                    BeginCustomEventController beginCustomEventController = loader.getController();
+                    beginCustomEventController.init(stage, this);
+                    stage.setScene(new Scene(root, 450, 100));
+                    stage.show();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            };
+
+    private EventHandler<ActionEvent> endCustomEventButtonListener =
+            event -> {
+                beginCustomEventButton.setText("Begin Custom Event");
+                customEventActive = false;
+                beginCustomEventButton.setOnAction(beginCustomEventButtonListener);
+            };
 }
