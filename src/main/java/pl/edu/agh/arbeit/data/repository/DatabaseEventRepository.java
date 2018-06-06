@@ -1,5 +1,6 @@
 package pl.edu.agh.arbeit.data.repository;
 
+import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
@@ -30,6 +31,43 @@ public class DatabaseEventRepository implements EventRepository {
 
     private final String url = "jdbc:sqlite:test.db";
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+    public void putCustom(Event event) throws IllegalCustomEventTypeException {
+        if (event.getType().equals(EventType.ACTIVE) || event.getType().equals(EventType.PASSIVE)) {
+            throw new IllegalCustomEventTypeException();
+        }
+//        duration calculator needs active event to calculate activity time of every event, also custom
+        if (event.getType().equals(EventType.START)) {
+            put(event);
+            Event fakeActiveEvent = new Event() {
+                @Override
+                public String getTopic() {
+                    return event.getTopic();
+                }
+
+                @Override
+                public EventType getType() {
+                    return EventType.ACTIVE;
+                }
+
+                @Override
+                public Date getDate() {
+                    return oneSecondLater(event.getDate());
+                }
+            };
+            put(fakeActiveEvent);
+        }
+        if (event.getType().equals(EventType.STOP)) {
+            put(event);
+        }
+    }
+
+    private Date oneSecondLater(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.SECOND, 1);
+        return cal.getTime();
+    }
 
     public void put(Event event){
         String dateToInsert = dateFormat.format(event.getDate());
