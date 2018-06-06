@@ -28,7 +28,7 @@ public class BeginCustomEventController {
 
     private void initBeginButton(){
         beginButton.setOnAction(event -> {
-            mainWindowController.beginCustomEvent();
+            mainWindowController.beginCustomEvent(eventNameTextField.getText());
             eventsStage.close();
         });
     }

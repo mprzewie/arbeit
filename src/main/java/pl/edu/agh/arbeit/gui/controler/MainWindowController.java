@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
@@ -26,15 +27,15 @@ import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.CustomEvent;
+import pl.edu.agh.arbeit.tracker.events.CustomEventBuilder;
 import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -72,6 +73,7 @@ public class MainWindowController {
     private List<ApplicationTracker> applicationTrackerList = new LinkedList<>();
 
     private boolean customEventActive = false;
+    private String currentCustomEventName = "";
 
     private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
@@ -230,10 +232,33 @@ public class MainWindowController {
         });
     }
 
-    public void beginCustomEvent(){
+    public void beginCustomEvent(String eventName){
         beginCustomEventButton.setText("End Custom Event");
         customEventActive = true;
+        currentCustomEventName = eventName;
+        actuallyBeginCustomEvent(eventName);
         beginCustomEventButton.setOnAction(endCustomEventButtonListener);
+    }
+
+    private void actuallyBeginCustomEvent(String eventName) {
+        Date date = constructDateNow();
+        CustomEvent customEventStart = CustomEventBuilder.aCustomEvent()
+                .withDate(date)
+                .withTopic(eventName)
+                .withType(EventType.START)
+                .build();
+        try {
+            applicationRepository.putCustom(customEventStart);
+            System.out.println(customEventStart);
+        } catch (IllegalCustomEventTypeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Date constructDateNow() {
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
     }
 
     private EventHandler<ActionEvent> beginCustomEventButtonListener =
@@ -255,7 +280,24 @@ public class MainWindowController {
     private EventHandler<ActionEvent> endCustomEventButtonListener =
             event -> {
                 beginCustomEventButton.setText("Begin Custom Event");
+                actuallyEndCustomEvent(currentCustomEventName);
                 customEventActive = false;
+                currentCustomEventName = "";
                 beginCustomEventButton.setOnAction(beginCustomEventButtonListener);
             };
+
+    private void actuallyEndCustomEvent(String eventName) {
+        Date date = constructDateNow();
+        CustomEvent customEventStop = CustomEventBuilder.aCustomEvent()
+                .withDate(date)
+                .withTopic(eventName)
+                .withType(EventType.STOP)
+                .build();
+        try {
+            applicationRepository.putCustom(customEventStop);
+            System.out.println(customEventStop);
+        } catch (IllegalCustomEventTypeException e) {
+            e.printStackTrace();
+        }
+    }
 }
