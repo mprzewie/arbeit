@@ -30,7 +30,7 @@ public class DatabaseEventRepository implements EventRepository {
     }
 
     private final String url = "jdbc:sqlite:test.db";
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public void putCustom(Event event) throws IllegalCustomEventTypeException {
         if (event.getType().equals(EventType.ACTIVE) || event.getType().equals(EventType.PASSIVE)) {
