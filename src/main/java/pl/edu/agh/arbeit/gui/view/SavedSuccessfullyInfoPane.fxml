@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.text.Font?>
-<AnchorPane stylesheets="@Standard.css"
+<AnchorPane fx:id="anchorPane" stylesheets="@Standard.css"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="pl.edu.agh.arbeit.gui.controler.SavedSuccessfullyInfoController"

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -31,6 +32,10 @@ public class ReportsController {
     private List<String> applicationsNames;
     private Map<String, CheckBox> appBoxes = new HashMap<>();
 
+
+    @FXML
+    private AnchorPane anchorPane;
+
     @FXML
     private DatePicker dateFromPicker;
 
@@ -52,8 +57,9 @@ public class ReportsController {
     @FXML
     private VBox appListContent;
 
+    private String styleNow;
 
-    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
+    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty, String styleType){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
         dateFromPicker.setValue(LocalDate.now());
@@ -72,6 +78,9 @@ public class ReportsController {
         initAppList(heightProperty);
         initPathTextField();
         pathTextField.setText("report.csv");
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(styleType);
+        styleNow = styleType;
     }
 
     private void initCancelButton(){
@@ -109,7 +118,7 @@ public class ReportsController {
             Parent root = loader.load();
             Stage stage = new Stage();
             SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
-            savedSuccessfullyInfoController.init(stage);
+            savedSuccessfullyInfoController.init(stage, styleNow);
             stage.setScene(new Scene(root, 450, 100));
             stage.show();
         } catch (IOException ex) {
