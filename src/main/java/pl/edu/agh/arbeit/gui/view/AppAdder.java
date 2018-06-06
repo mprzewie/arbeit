@@ -4,6 +4,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
@@ -63,6 +64,16 @@ public class AppAdder extends Pane {
         TextFields.bindAutoCompletion(appNameComboBox.getEditor(), appNameComboBox.getItems());
         forbidEmptyAppName();
         initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
+        appNameComboBox.setOnKeyPressed(keyEvent ->{
+            if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+                if(!this.appNameComboBox.getEditor().getText().equals("")) {
+                    Application newApp = new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
+                    if (isAppNotTracked(newApp))
+                        appConfig.addAppToTrack(new AppInfo(newApp.getName(), newApp.getProgramName(), APP_TRACKER_PING_TIME));
+                    addApp(mainWindowController, newApp, APP_TRACKER_PING_TIME);
+                }
+            }
+        });
         initAddButton(mainWindowController);
 
         forbidEmptyAppName();
