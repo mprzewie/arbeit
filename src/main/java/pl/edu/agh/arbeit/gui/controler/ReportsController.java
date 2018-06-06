@@ -2,6 +2,9 @@ package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -10,10 +13,11 @@ import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -89,6 +93,7 @@ public class ReportsController {
                 if(!events.isEmpty()) {
                     CsvReport report = new CsvReport(appsToReport, events);
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                    showSavedSuccessfullyInfo();
                 }
                 reportsStage.close();
             } catch (Exception e) {
@@ -97,6 +102,20 @@ public class ReportsController {
         });
     }
 
+    private void showSavedSuccessfullyInfo(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/SavedSuccessfullyInfoPane.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
+            savedSuccessfullyInfoController.init(stage);
+            stage.setScene(new Scene(root, 450, 100));
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
