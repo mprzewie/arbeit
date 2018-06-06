@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
@@ -76,6 +77,9 @@ public class AppAdder extends Pane {
         });
         initAddButton(mainWindowController);
 
+        this.getChildren().add(appNameComboBox);
+        appNameComboBox.setEditable(true);
+        TextFields.bindAutoCompletion(appNameComboBox.getEditor(), appNameComboBox.getItems());
         forbidEmptyAppName();
         initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
         initAddButton(mainWindowController);
@@ -98,6 +102,7 @@ public class AppAdder extends Pane {
     private void forbidEmptyAppName(){
         appNameComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals(""))
+
                 addCircle.setDisable(true);
             else
                 addCircle.setDisable(false);

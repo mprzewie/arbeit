@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class ReportsController {
     private EventListener eventListener;
     private List<String> applicationsNames;
     private Map<String, CheckBox> appBoxes = new HashMap<>();
+
 
     @FXML
     private DatePicker dateFromPicker;
@@ -52,6 +54,7 @@ public class ReportsController {
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
+
         dateFromPicker.setValue(LocalDate.now());
         dateToPicker.setValue(LocalDate.now());
         DatabaseEventRepository repository = new DatabaseEventRepository();
@@ -61,6 +64,7 @@ public class ReportsController {
                 applicationsNamesFromTracker.stream()
                         .filter(name -> !applicationsNames.contains(name))
                         .collect(Collectors.toList()));
+
 
         reportsStage.setTitle("Generate report");
         initCancelButton();
@@ -90,6 +94,7 @@ public class ReportsController {
                     CsvReport report = new CsvReport(appsToReport, events);
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 }
+
                 reportsStage.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -116,9 +121,11 @@ public class ReportsController {
 
             CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
+            appBoxes.add(cb);
             appListContent.getChildren().add(cb);
             appBoxes.put(last, cb);
         }
+
 
     }
 

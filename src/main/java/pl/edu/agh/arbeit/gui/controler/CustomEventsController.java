@@ -45,6 +45,7 @@ public class CustomEventsController {
 
     private void initAddButton() {
         addButton.setOnAction(event ->
+
                 eventsStage.close()
         );
     }
@@ -62,7 +63,7 @@ public class CustomEventsController {
             if(i<10) {
                 hours.add("0" + Integer.toString(i));
                 minutes.add("0" + Integer.toString(i));
-            } else if(i<=24) hours.add(Integer.toString(i));
+            } else if(i<24) hours.add(Integer.toString(i));
             else minutes.add(Integer.toString(i));
         }
         hoursFromBox.setItems(FXCollections.observableArrayList(hours));
