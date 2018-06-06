@@ -9,23 +9,25 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
+import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
-import java.time.LocalDate;
-import java.util.Date;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.LinkedList;
+import java.util.*;
+
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
-    private List<ApplicationTracker> trackers;
-    private List<CheckBox> appBoxes;
+    private List<String> applicationsNames;
+    private Map<String, CheckBox> appBoxes = new HashMap<>();
+
 
     @FXML
     private DatePicker dateFromPicker;
@@ -52,10 +54,18 @@ public class ReportsController {
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
-        this.trackers = trackers;
-        this.appBoxes = new LinkedList<>();
+
         dateFromPicker.setValue(LocalDate.now());
         dateToPicker.setValue(LocalDate.now());
+        DatabaseEventRepository repository = new DatabaseEventRepository();
+        this.applicationsNames = repository.getRecordedAppsNames();
+        List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
+        applicationsNames.addAll(
+                applicationsNamesFromTracker.stream()
+                        .filter(name -> !applicationsNames.contains(name))
+                        .collect(Collectors.toList()));
+
+
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
@@ -73,14 +83,18 @@ public class ReportsController {
     private void initGenerateReportsButton(){
         generateReportButton.setOnAction(event -> {
             try {
-                //Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
-                //Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
-                List<Event> events; // =  new LinkedList<>();
-                List<String> appNames = appBoxes.stream().filter(CheckBox::isSelected).map(CheckBox::getText).collect(Collectors.toList());
-                //appNames.forEach(name -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(name, start, end)));
-                events = eventListener.getRepository().getAllEvents();
-                CsvReport report = new CsvReport(appNames, events);
-                if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                List<Event> events = new LinkedList<>();
+                Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
+                Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
+
+                List<String> appsToReport = applicationsNames.stream()
+                        .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
+                appsToReport.forEach(app -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(app,start,end)));
+                if(!events.isEmpty()) {
+                    CsvReport report = new CsvReport(appsToReport, events);
+                    if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                }
+
                 reportsStage.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -92,25 +106,27 @@ public class ReportsController {
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
         List<String> apps = new LinkedList<>();
-        trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
-
-        if(apps.size() > 0) {
-            final String last = apps.remove(apps.size() - 1);
-
+        apps.addAll(applicationsNames);
+        final String last = apps.remove(apps.size() - 1);
+        if(!apps.isEmpty()) {
             for (String appName : apps) {
                 CheckBox cb = new CheckBox(appName);
                 cb.setSelected(true);
-                appBoxes.add(cb);
                 appListContent.getChildren().add(cb);
                 Region region = new Region();
                 region.setMinHeight(14.0);
                 appListContent.getChildren().add(region);
+                appBoxes.put(appName, cb);
             }
+
             CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
             appBoxes.add(cb);
             appListContent.getChildren().add(cb);
+            appBoxes.put(last, cb);
         }
+
+
     }
 
     private void initScrollPane(ReadOnlyDoubleProperty heightProperty){

@@ -13,15 +13,10 @@ import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.controler.AppSettingsController;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.Application;
-import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.AsyncTracker;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 public class AppListItem extends Pane {
@@ -64,7 +59,6 @@ public class AppListItem extends Pane {
                             e.printStackTrace();
                         }
         });
-        this.getChildren().add(settingsIcon);
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){
