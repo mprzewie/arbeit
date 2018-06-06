@@ -82,7 +82,7 @@ public class AppAdder extends Pane {
 
     private void forbidEmptyAppName(){
         appNameComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals("")) {
+            if(newValue.equals(""))
                 addCircle.setDisable(true);
             else
                 addCircle.setDisable(false);
@@ -109,7 +109,6 @@ public class AppAdder extends Pane {
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
         eventListener.subscribe(appTracker);
         appTracker.start();
-        mainWindowController.addToTrackerList(appTracker);
         return appTracker;
     }
 }

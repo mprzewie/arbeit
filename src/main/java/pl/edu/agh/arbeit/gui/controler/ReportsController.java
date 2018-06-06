@@ -12,6 +12,10 @@ import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
+import java.time.LocalDate;
+import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.nio.file.Paths;
 import java.util.List;
@@ -21,6 +25,7 @@ public class ReportsController {
     private Stage reportsStage;
     private EventListener eventListener;
     private List<ApplicationTracker> trackers;
+    private List<CheckBox> appBoxes;
 
     @FXML
     private DatePicker dateFromPicker;
@@ -48,12 +53,14 @@ public class ReportsController {
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
         this.trackers = trackers;
+        this.appBoxes = new LinkedList<>();
+        dateFromPicker.setValue(LocalDate.now());
+        dateToPicker.setValue(LocalDate.now());
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
         initAppList(heightProperty);
         initPathTextField();
-        makeFieldsDisabledForNow();
         pathTextField.setText("report.csv");
     }
 
@@ -66,8 +73,13 @@ public class ReportsController {
     private void initGenerateReportsButton(){
         generateReportButton.setOnAction(event -> {
             try {
-                List<Event> events = eventListener.getRepository().getAllEvents();
-                CsvReport report = new CsvReport(trackers.stream().map(t -> t.getApplication().getName()).collect(Collectors.toList()), events);
+                //Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
+                //Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
+                List<Event> events; // =  new LinkedList<>();
+                List<String> appNames = appBoxes.stream().filter(CheckBox::isSelected).map(CheckBox::getText).collect(Collectors.toList());
+                //appNames.forEach(name -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(name, start, end)));
+                events = eventListener.getRepository().getAllEvents();
+                CsvReport report = new CsvReport(appNames, events);
                 if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                 reportsStage.close();
             } catch (Exception e) {
@@ -79,23 +91,26 @@ public class ReportsController {
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
-        System.out.println(calculateSpaceTakenByOtherViews());
         List<String> apps = new LinkedList<>();
         trackers.forEach(tracker -> apps.add(tracker.getApplication().getName()));
-        final String last = apps.remove(apps.size() - 1);
 
-        for (String appName : apps){
-            CheckBox cb = new CheckBox(appName);
+        if(apps.size() > 0) {
+            final String last = apps.remove(apps.size() - 1);
+
+            for (String appName : apps) {
+                CheckBox cb = new CheckBox(appName);
+                cb.setSelected(true);
+                appBoxes.add(cb);
+                appListContent.getChildren().add(cb);
+                Region region = new Region();
+                region.setMinHeight(14.0);
+                appListContent.getChildren().add(region);
+            }
+            CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
+            appBoxes.add(cb);
             appListContent.getChildren().add(cb);
-            Region region = new Region();
-            region.setMinHeight(14.0);
-            appListContent.getChildren().add(region);
         }
-
-        CheckBox cb = new CheckBox(last);
-        cb.setSelected(true);
-        appListContent.getChildren().add(cb);
     }
 
     private void initScrollPane(ReadOnlyDoubleProperty heightProperty){
@@ -123,10 +138,4 @@ public class ReportsController {
             }
         });
     }
-
-    private void makeFieldsDisabledForNow(){
-        this.dateFromPicker.setDisable(true);
-        this.dateToPicker.setDisable(true);
-    }
-
 }
