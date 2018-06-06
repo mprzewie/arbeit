@@ -2,6 +2,9 @@ package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -10,15 +13,16 @@ import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ReportsController {
@@ -52,10 +56,11 @@ public class ReportsController {
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
+        dateFromPicker.setValue(LocalDate.now());
+        dateToPicker.setValue(LocalDate.now());
         DatabaseEventRepository repository = new DatabaseEventRepository();
         this.applicationsNames = repository.getRecordedAppsNames();
         List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
-
         applicationsNames.addAll(
                 applicationsNamesFromTracker.stream()
                         .filter(name -> !applicationsNames.contains(name))
@@ -66,7 +71,6 @@ public class ReportsController {
         initGenerateReportsButton();
         initAppList(heightProperty);
         initPathTextField();
-        makeFieldsDisabledForNow();
         pathTextField.setText("report.csv");
     }
 
@@ -79,14 +83,18 @@ public class ReportsController {
     private void initGenerateReportsButton(){
         generateReportButton.setOnAction(event -> {
             try {
-                List<Event> events = eventListener.getRepository().getAllEvents();
+                List<Event> events = new LinkedList<>();
+                Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
+                Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
 
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
-                appsToReport.forEach(System.out::println);
-                CsvReport report = new CsvReport(appsToReport, events);
-
-                if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                appsToReport.forEach(app -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(app,start,end)));
+                if(!events.isEmpty()) {
+                    CsvReport report = new CsvReport(appsToReport, events);
+                    if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                    showSavedSuccessfullyInfo();
+                }
                 reportsStage.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -94,27 +102,42 @@ public class ReportsController {
         });
     }
 
+    private void showSavedSuccessfullyInfo(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/SavedSuccessfullyInfoPane.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
+            savedSuccessfullyInfoController.init(stage);
+            stage.setScene(new Scene(root, 450, 100));
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
         List<String> apps = new LinkedList<>();
         apps.addAll(applicationsNames);
         final String last = apps.remove(apps.size() - 1);
+        if(!apps.isEmpty()) {
+            for (String appName : apps) {
+                CheckBox cb = new CheckBox(appName);
+                cb.setSelected(true);
+                appListContent.getChildren().add(cb);
+                Region region = new Region();
+                region.setMinHeight(14.0);
+                appListContent.getChildren().add(region);
+                appBoxes.put(appName, cb);
+            }
 
-        for (String appName : apps){
-            CheckBox cb = new CheckBox(appName);
+            CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
             appListContent.getChildren().add(cb);
-            Region region = new Region();
-            region.setMinHeight(14.0);
-            appListContent.getChildren().add(region);
-            appBoxes.put(appName, cb);
+            appBoxes.put(last, cb);
         }
-
-        CheckBox cb = new CheckBox(last);
-        cb.setSelected(true);
-        appListContent.getChildren().add(cb);
-        appBoxes.put(last, cb);
 
     }
 
@@ -143,10 +166,4 @@ public class ReportsController {
             }
         });
     }
-
-    private void makeFieldsDisabledForNow(){
-        this.dateFromPicker.setDisable(true);
-        this.dateToPicker.setDisable(true);
-    }
-
 }

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
+import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
@@ -37,6 +38,9 @@ class EventListenerTest {
     @Mock
     private Application applicationMock;
 
+    @Mock
+    private MainWindowController mainWindowController;
+
     private Event eventMock;
 
     EventListenerTest(){
@@ -61,7 +65,7 @@ class EventListenerTest {
 
     @BeforeEach
     void setup(){
-        listener = new EventListener(repositoryMock);
+        listener = new EventListener(repositoryMock, mainWindowController);
         events = new LinkedList<>();
     }
 
