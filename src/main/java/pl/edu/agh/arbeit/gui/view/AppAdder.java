@@ -77,12 +77,6 @@ public class AppAdder extends Pane {
         });
         initAddButton(mainWindowController);
 
-        this.getChildren().add(appNameComboBox);
-        appNameComboBox.setEditable(true);
-        TextFields.bindAutoCompletion(appNameComboBox.getEditor(), appNameComboBox.getItems());
-        forbidEmptyAppName();
-        initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
-        initAddButton(mainWindowController);
     }
 
     private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){

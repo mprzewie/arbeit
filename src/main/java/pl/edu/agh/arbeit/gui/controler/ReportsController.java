@@ -121,7 +121,6 @@ public class ReportsController {
 
             CheckBox cb = new CheckBox(last);
             cb.setSelected(true);
-            appBoxes.add(cb);
             appListContent.getChildren().add(cb);
             appBoxes.put(last, cb);
         }
