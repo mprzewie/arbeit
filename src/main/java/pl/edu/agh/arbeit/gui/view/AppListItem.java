@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ public class AppListItem extends Pane {
     private Application application;
     private List<ApplicationTracker> trackers;
     private TimeLine timeLine;
+    private Text appNameText;
 
     public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
         this.application = application;
@@ -86,7 +88,7 @@ public class AppListItem extends Pane {
         if(application.getName().length() > 11)
             applicationName = applicationName.substring(0,10) + "...";
 
-        Text appNameText = new Text(10, 30, applicationName);
+        appNameText = new Text(10, 30, applicationName);
         this.getChildren().add(appNameText);
     }
 
@@ -122,5 +124,13 @@ public class AppListItem extends Pane {
 
     public void setTimeLine(TimeLine timeLine) {
         this.timeLine = timeLine;
+    }
+
+    public void setTextWhite() {
+        appNameText.setFill(Color.SNOW);
+    }
+
+    public void setTextBlack() {
+        appNameText.setFill(Color.BLACK);
     }
 }
