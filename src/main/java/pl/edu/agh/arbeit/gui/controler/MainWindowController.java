@@ -82,9 +82,12 @@ public class MainWindowController {
 
     private List<AppListItem> appListItems;
 
+    private SystemListItem systemListItem;
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
-        listContent.getChildren().add(0,new SystemListItem());
+        systemListItem = new SystemListItem();
+        listContent.getChildren().add(0,systemListItem);
         this.eventListener = new EventListener(applicationRepository, this);
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
         this.eventListener.subscribe(systemTracker);
@@ -114,10 +117,15 @@ public class MainWindowController {
         styleChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     anchorPane.getStylesheets().clear();
-                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK))
+                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK)) {
                             anchorPane.getStylesheets().add(dark);
-                        else
+                            appListItems.forEach(AppListItem::setTextWhite);
+                            systemListItem.setTextWhite();
+                        } else {
                             anchorPane.getStylesheets().add(standard);
+                            appListItems.forEach(AppListItem::setTextBlack);
+                            systemListItem.setTextBlack();
+                        }
                 });
     }
 
