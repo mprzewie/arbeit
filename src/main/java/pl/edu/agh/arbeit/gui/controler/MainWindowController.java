@@ -88,11 +88,13 @@ public class MainWindowController {
 
     private SystemListItem systemListItem;
 
+    private String styleNow;
+
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
         systemListItem = new SystemListItem();
         listContent.getChildren().add(0,systemListItem);
-        this.eventListener = new EventListener(applicationRepository, this);
 
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
 
@@ -108,6 +110,7 @@ public class MainWindowController {
 
 
         systemTracker.start();
+        styleNow = AppAdder.class.getResource("Standard.css").toExternalForm();
 
         appListItems = new ArrayList<>();
 
@@ -129,8 +132,8 @@ public class MainWindowController {
                 StyleType.values()));
         styleChoiceBox.getSelectionModel().select(StyleType.STANDARD);
 
-        String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
-        String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+        final String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+        final String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
 
         styleChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -139,10 +142,14 @@ public class MainWindowController {
                             anchorPane.getStylesheets().add(dark);
                             appListItems.forEach(AppListItem::setTextWhite);
                             systemListItem.setTextWhite();
+
+                            styleNow = dark;
                         } else {
                             anchorPane.getStylesheets().add(standard);
                             appListItems.forEach(AppListItem::setTextBlack);
                             systemListItem.setTextBlack();
+
+                            styleNow = standard;
                         }
                 });
     }
@@ -159,7 +166,7 @@ public class MainWindowController {
     }
 
     public void addNewAppView(Application application){
-        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
+        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this, styleNow);
         appListItems.add(appListItem);
         int listContentIndex = listContent.getChildren().size() - 1;
         if(listContentIndex == 0)
@@ -194,7 +201,8 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListenerSaver, applicationTrackerList, stage.heightProperty());
+                    reportsController.init(stage, eventListenerSaver, applicationTrackerList, stage.heightProperty(), styleNow);
+
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
@@ -213,7 +221,7 @@ public class MainWindowController {
                         Parent root = loader.load();
                         Stage stage = new Stage();
                         CustomEventsController customEventsController = loader.getController();
-                        customEventsController.init(stage);
+                        customEventsController.init(stage, styleNow);
                         stage.setScene(new Scene(root, 450, 450));
                         stage.show();
                     } catch (IOException e) {
@@ -332,6 +340,7 @@ public class MainWindowController {
         return Date.from(instant);
     }
 
+
     private EventHandler<ActionEvent> beginCustomEventButtonListener =
             event -> {
                 try {
@@ -340,7 +349,8 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     BeginCustomEventController beginCustomEventController = loader.getController();
-                    beginCustomEventController.init(stage, this);
+
+                    beginCustomEventController.init(stage, this, styleNow);
                     stage.setScene(new Scene(root, 450, 100));
                     stage.show();
                 } catch (IOException ex) {
@@ -371,4 +381,5 @@ public class MainWindowController {
             e.printStackTrace();
         }
     }
+
 }

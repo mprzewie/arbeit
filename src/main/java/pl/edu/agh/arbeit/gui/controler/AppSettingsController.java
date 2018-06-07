@@ -4,12 +4,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.tracker.Application;
 
 public class AppSettingsController {
     private Application application;
     private Stage stage;
+
+    @FXML
+    private AnchorPane anchorPane;
 
     @FXML
     private Button saveButton;
@@ -26,7 +31,7 @@ public class AppSettingsController {
     @FXML
     private ChoiceBox pingTimeChoiceBox;
 
-    public void init(Application application, Stage stage) {
+    public void init(Application application, Stage stage, String styleType) {
         this.application = application;
         this.stage = stage;
         this.stage.setTitle("Settings");
@@ -38,12 +43,14 @@ public class AppSettingsController {
 
         initCancelButton();
         initSaveButton();
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(styleType);
     }
 
     private void initSaveButton() {
-        saveButton.setOnAction(event ->{
-            stage.close();
-        });
+        saveButton.setOnAction(event ->
+            stage.close()
+        );
     }
 
     private void initCancelButton(){

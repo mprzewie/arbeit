@@ -16,6 +16,11 @@ import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.time.*;
 import java.util.Date;
+
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import pl.edu.agh.arbeit.gui.model.StyleType;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,6 +28,9 @@ public class CustomEventsController {
     public TextField eventName;
 
     private Stage eventsStage;
+
+    @FXML
+    private AnchorPane anchorPane;
 
     @FXML
     private Button addButton;
@@ -45,15 +53,17 @@ public class CustomEventsController {
     @FXML
     private ChoiceBox<String> minutesToBox;
 
-    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
-    public void init(Stage eventsStage) {
+    public void init(Stage eventsStage, String styleType) {
         this.eventsStage = eventsStage;
         eventsStage.setTitle("Add Custom Event");
         initAddButton();
         initCancelButton();
         initHourBoxes();
-//        eventDatePicker.setDisable(true);
+
+        eventDatePicker.setDisable(true);
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(styleType);
     }
 
     private void initAddButton() {

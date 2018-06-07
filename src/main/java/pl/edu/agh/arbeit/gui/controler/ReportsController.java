@@ -6,10 +6,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
@@ -35,6 +37,9 @@ public class ReportsController {
 
 
     @FXML
+    private AnchorPane anchorPane;
+
+    @FXML
     private DatePicker dateFromPicker;
 
     @FXML
@@ -55,8 +60,10 @@ public class ReportsController {
     @FXML
     private VBox appListContent;
 
+    private String styleNow;
 
-    public void init(Stage reportsStage, EventListenerSaver eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
+    public void init(Stage reportsStage, EventListenerSaver eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty, String styleType){
+
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
 
@@ -77,6 +84,9 @@ public class ReportsController {
         initAppList(heightProperty);
         initPathTextField();
         pathTextField.setText("report.csv");
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(styleType);
+        styleNow = styleType;
     }
 
     private void initCancelButton(){
@@ -117,7 +127,8 @@ public class ReportsController {
             Parent root = loader.load();
             Stage stage = new Stage();
             SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
-            savedSuccessfullyInfoController.init(stage);
+
+            savedSuccessfullyInfoController.init(stage, styleNow);
             stage.setScene(new Scene(root, 450, 100));
             stage.show();
         } catch (IOException ex) {

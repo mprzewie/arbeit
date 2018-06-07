@@ -22,12 +22,19 @@ import java.util.List;
 
 public class AppListItem extends Pane {
 
+
+    private final String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+    private final String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+
     private Application application;
     private List<ApplicationTracker> trackers;
     private TimeLine timeLine;
     private Text appNameText;
 
-    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
+    private String styleNow;
+
+
+    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController, String styleNow) {
         this.application = application;
         this.trackers = trackers;
 
@@ -39,6 +46,7 @@ public class AppListItem extends Pane {
 
         timeLine = new TimeLine();
         this.getChildren().add(timeLine);
+        this.styleNow = styleNow;
     }
 
     private void initSettingsButton(){
@@ -54,7 +62,7 @@ public class AppListItem extends Pane {
                             Parent root = loader.load();
                             Stage stage = new Stage();
                             AppSettingsController appSettingsController = loader.getController();
-                            appSettingsController.init(application,stage);
+                            appSettingsController.init(application, stage, styleNow);
                             stage.setScene(new Scene(root, 359.0, 229.0));
                             stage.show();
                         } catch (IOException e) {
@@ -130,9 +138,14 @@ public class AppListItem extends Pane {
 
     public void setTextWhite() {
         appNameText.setFill(Color.SNOW);
+
+        styleNow = standard;
+
     }
 
     public void setTextBlack() {
         appNameText.setFill(Color.BLACK);
+
+        styleNow = dark;
     }
 }
