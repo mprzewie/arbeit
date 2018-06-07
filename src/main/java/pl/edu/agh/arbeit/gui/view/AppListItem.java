@@ -90,8 +90,8 @@ public class AppListItem extends Pane {
     }
 
     private void initApplicationName(){
-        String applicationName = application.getName();
-        if(application.getName().length() > 11)
+        String applicationName = application.getDisplayName();
+        if(application.getDisplayName().length() > 11)
             applicationName = applicationName.substring(0,10) + "...";
 
         appNameText = new Text(10, 30, applicationName);
@@ -129,6 +129,8 @@ public class AppListItem extends Pane {
     }
 
     public void setTimeLine(TimeLine timeLine) {
+        getChildren().remove(this.timeLine);
+        getChildren().add(timeLine);
         this.timeLine = timeLine;
     }
 

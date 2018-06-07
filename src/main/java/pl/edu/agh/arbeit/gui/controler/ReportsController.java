@@ -11,10 +11,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.gui.Main;
+
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
@@ -23,12 +24,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 public class ReportsController {
     private Stage reportsStage;
-    private EventListener eventListener;
+    private EventListenerSaver eventListener;
     private List<String> applicationsNames;
     private Map<String, CheckBox> appBoxes = new HashMap<>();
 
@@ -60,10 +62,12 @@ public class ReportsController {
     private String styleNow;
 
     public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty, String styleType){
+
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
+
         dateFromPicker.setValue(LocalDate.now());
-        dateToPicker.setValue(LocalDate.now());
+        dateToPicker.setValue(LocalDate.now().plusDays(1));
         DatabaseEventRepository repository = new DatabaseEventRepository();
         this.applicationsNames = repository.getRecordedAppsNames();
         List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
@@ -71,6 +75,7 @@ public class ReportsController {
                 applicationsNamesFromTracker.stream()
                         .filter(name -> !applicationsNames.contains(name))
                         .collect(Collectors.toList()));
+
 
         reportsStage.setTitle("Generate report");
         initCancelButton();
@@ -94,7 +99,7 @@ public class ReportsController {
             try {
                 List<Event> events = new LinkedList<>();
                 Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
-                Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
+                Date end = Date.from(Instant.from(dateToPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
 
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
@@ -104,6 +109,7 @@ public class ReportsController {
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                     showSavedSuccessfullyInfo();
                 }
+
                 reportsStage.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -147,6 +153,7 @@ public class ReportsController {
             appListContent.getChildren().add(cb);
             appBoxes.put(last, cb);
         }
+
 
     }
 

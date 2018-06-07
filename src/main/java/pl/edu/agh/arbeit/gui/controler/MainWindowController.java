@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
@@ -25,8 +26,10 @@ import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
+import pl.edu.agh.arbeit.gui.view.TimeLine;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
@@ -61,11 +64,14 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-
     @FXML
     private ChoiceBox styleChoiceBox;
 
-    private EventListener eventListener;
+    @FXML
+    private VBox listContent;
+
+    private EventListenerSaver eventListenerSaver;
+    private List<EventListener> eventListeners = new ArrayList<>();
 
     private SystemTracker systemTracker;
 
@@ -73,10 +79,7 @@ public class MainWindowController {
 
     private boolean customEventActive = false;
 
-    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
-
-    @FXML
-    private VBox listContent;
+    private EventRepository eventRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
     private ConfigProvider appConfig = new AppConfig();
 
@@ -86,13 +89,25 @@ public class MainWindowController {
 
     private String styleNow;
 
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
         systemListItem = new SystemListItem();
         listContent.getChildren().add(0,systemListItem);
-        this.eventListener = new EventListener(applicationRepository, this);
+
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
-        this.eventListener.subscribe(systemTracker);
+
+
+        eventListenerSaver = new EventListenerSaver(eventRepository);
+
+        EventListener eventDrawerListener = new EventListenerDrawer(this);
+
+        eventListeners.add(eventListenerSaver);
+        eventListeners.add(eventDrawerListener);
+
+        eventListeners.forEach(listener -> listener.subscribe(systemTracker));
+
+
         systemTracker.start();
         styleNow = AppAdder.class.getResource("Standard.css").toExternalForm();
 
@@ -100,13 +115,15 @@ public class MainWindowController {
 
         this.initAppScrollPane();
         this.bindSizeProperties();
-        this.initDatePicer();
+        this.initDatePicker();
         this.initReportButton();
         this.initAppAdder();
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
         this.initStyleChocieBox();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+
+        redrawTimelines(LocalDate.now());
     }
 
     private void initStyleChocieBox() {
@@ -141,7 +158,7 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListeners, appConfig);
         listContent.getChildren().add(appAdder);
     }
 
@@ -165,9 +182,11 @@ public class MainWindowController {
     private void bindSizeProperties() {
     }
 
-    private void initDatePicer(){
+    private void initDatePicker(){
         datePicker.setValue(LocalDate.now());
-        datePicker.setDisable(true);
+        datePicker.valueProperty().addListener((overview, oldValue, newValue) -> {
+            redrawTimelines(newValue);
+        });
     }
 
     private void initReportButton() {
@@ -180,6 +199,7 @@ public class MainWindowController {
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
                     reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty(), styleNow);
+
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
@@ -228,11 +248,64 @@ public class MainWindowController {
     }
 
     public void acceptEvent(Event event){
+        if(datePicker.getValue().isEqual(LocalDate.now())){
+
+            appListItems.forEach(appListItem -> {
+                if(appListItem.getApplication().getProgramName().equals(event.getTopic()))
+                    appListItem.getTimeLine().addEvent(event);
+            });
+            if(event.getTopic().equals("system"))
+                systemListItem.getTimeLine().addEvent(event);
+        }
+    }
+
+    private void redrawTimelines(LocalDate date){
+        Date from = Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date to = Date.from(date.plusDays(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         appListItems.forEach(appListItem -> {
-            if(appListItem.getApplication().getProgramName().equals(event.getTopic()))
-                appListItem.getTimeLine().addEvent(event.getType(),
-                        LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            String applicationName = appListItem.getApplication().getProgramName();
+            List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
+            appListItem.setTimeLine(new TimeLine());
+            eventRepository.getPreviousEventTypeForApp(relevantEvents)
+                    .ifPresent(event -> appListItem.getTimeLine().addEvent(new Event() {
+                        @Override
+                        public String getTopic() {
+                            return applicationName;
+                        }
+
+                        @Override
+                        public EventType getType() {
+                            return event.getType();
+                        }
+
+                        @Override
+                        public Date getDate(){
+                            return from;
+                        }
+                    }));
+            relevantEvents.forEach(appListItem.getTimeLine()::addEvent);
         });
+        List<Event> relevantSystemEvents = eventRepository.getEventForGivenAppinRange("system", from, to);
+        systemListItem.setTimeLine(new TimeLine());
+        eventRepository.getPreviousEventTypeForApp(relevantSystemEvents)
+                .ifPresent(event -> systemListItem.getTimeLine().addEvent(new Event() {
+                    @Override
+                    public String getTopic() {
+                        return "system";
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return event.getType();
+                    }
+
+                    @Override
+                    public Date getDate(){
+                        return from;
+                    }
+                }));
+        relevantSystemEvents.forEach(systemListItem.getTimeLine()::addEvent);
+
     }
 
     public void beginCustomEvent(){
