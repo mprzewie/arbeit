@@ -3,13 +3,14 @@ package pl.edu.agh.arbeit.gui.view;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
 public class SystemListItem extends Pane {
 
     private FontAwesomeIconView settingsIcon;
-    private TimeLine timeLine;
+    private Text systemText;
 
     public SystemListItem() {
         Line verticalLine = new Line();
@@ -27,7 +28,7 @@ public class SystemListItem extends Pane {
         f1.setEndY(50);
         this.getChildren().add(f1);
 
-        Text systemText = new Text("System");
+        systemText = new Text("System");
         systemText.setLayoutX(10);
         systemText.setLayoutY(30);
         this.getChildren().add(systemText);
@@ -51,5 +52,13 @@ public class SystemListItem extends Pane {
 
     public TimeLine getTimeLine() {
         return timeLine;
+    }
+
+    public void setTextWhite() {
+        systemText.setFill(Color.SNOW);
+    }
+
+    public void setTextBlack() {
+        systemText.setFill(Color.BLACK);
     }
 }

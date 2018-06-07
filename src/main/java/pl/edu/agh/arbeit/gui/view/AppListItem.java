@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -21,11 +22,17 @@ import java.util.List;
 
 public class AppListItem extends Pane {
 
+
+    private final String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+    private final String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+
     private Application application;
     private List<ApplicationTracker> trackers;
     private TimeLine timeLine;
+    private Text appNameText;
+    private String styleNow;
 
-    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
+    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController, String styleNow) {
         this.application = application;
         this.trackers = trackers;
 
@@ -37,6 +44,7 @@ public class AppListItem extends Pane {
 
         timeLine = new TimeLine();
         this.getChildren().add(timeLine);
+        this.styleNow = styleNow;
     }
 
     private void initSettingsButton(){
@@ -52,7 +60,7 @@ public class AppListItem extends Pane {
                             Parent root = loader.load();
                             Stage stage = new Stage();
                             AppSettingsController appSettingsController = loader.getController();
-                            appSettingsController.init(application,stage);
+                            appSettingsController.init(application, stage, styleNow);
                             stage.setScene(new Scene(root, 359.0, 229.0));
                             stage.show();
                         } catch (IOException e) {
@@ -86,7 +94,7 @@ public class AppListItem extends Pane {
         if(application.getDisplayName().length() > 11)
             applicationName = applicationName.substring(0,10) + "...";
 
-        Text appNameText = new Text(10, 30, applicationName);
+        appNameText = new Text(10, 30, applicationName);
         this.getChildren().add(appNameText);
     }
 
@@ -124,5 +132,15 @@ public class AppListItem extends Pane {
         getChildren().remove(this.timeLine);
         getChildren().add(timeLine);
         this.timeLine = timeLine;
+    }
+
+    public void setTextWhite() {
+        appNameText.setFill(Color.SNOW);
+        styleNow = standard;
+    }
+
+    public void setTextBlack() {
+        appNameText.setFill(Color.BLACK);
+        styleNow = dark;
     }
 }

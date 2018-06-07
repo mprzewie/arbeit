@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Font?>
+<AnchorPane fx:id="anchorPane" stylesheets="@Standard.css"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="pl.edu.agh.arbeit.gui.controler.SavedSuccessfullyInfoController"
+            prefHeight="100.0" prefWidth="450.0">
+        <Label layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="450.0" text="Report Saved Successfully" textAlignment="CENTER">
+            <font>
+                <Font name="System" size="12.0" />
+            </font>
+        </Label>
+        <Button fx:id="okButton" minHeight="38.0" minWidth="101.0" mnemonicParsing="false" text="OK" textAlignment="CENTER" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0">
+            <font>
+                <Font name="System Bold" size="12.0" />
+            </font>
+        </Button>
+</AnchorPane>

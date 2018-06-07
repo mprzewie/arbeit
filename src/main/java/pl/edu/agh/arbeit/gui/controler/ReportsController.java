@@ -2,7 +2,11 @@ package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -10,9 +14,12 @@ import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
+import pl.edu.agh.arbeit.gui.Main;
+
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,6 +34,9 @@ public class ReportsController {
     private List<String> applicationsNames;
     private Map<String, CheckBox> appBoxes = new HashMap<>();
 
+
+    @FXML
+    private AnchorPane anchorPane;
 
     @FXML
     private DatePicker dateFromPicker;
@@ -49,8 +59,10 @@ public class ReportsController {
     @FXML
     private VBox appListContent;
 
+    private String styleNow;
 
-    public void init(Stage reportsStage, EventListenerSaver eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty){
+    public void init(Stage reportsStage, EventListener eventListener, List<ApplicationTracker> trackers, ReadOnlyDoubleProperty heightProperty, String styleType){
+
         this.reportsStage = reportsStage;
         this.eventListener = eventListener;
 
@@ -71,6 +83,9 @@ public class ReportsController {
         initAppList(heightProperty);
         initPathTextField();
         pathTextField.setText("report.csv");
+        anchorPane.getStylesheets().clear();
+        anchorPane.getStylesheets().add(styleType);
+        styleNow = styleType;
     }
 
     private void initCancelButton(){
@@ -92,6 +107,7 @@ public class ReportsController {
                 if(!events.isEmpty()) {
                     CsvReport report = new CsvReport(appsToReport, events);
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
+                    showSavedSuccessfullyInfo();
                 }
 
                 reportsStage.close();
@@ -101,6 +117,20 @@ public class ReportsController {
         });
     }
 
+    private void showSavedSuccessfullyInfo(){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/SavedSuccessfullyInfoPane.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
+            savedSuccessfullyInfoController.init(stage, styleNow);
+            stage.setScene(new Scene(root, 450, 100));
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private void initAppList(ReadOnlyDoubleProperty heightProperty){
         initScrollPane(heightProperty);
