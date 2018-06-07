@@ -32,7 +32,7 @@ public class AppSettingsController {
         this.stage.setTitle("Settings");
         this.stage.setResizable(false);
 
-        appNameTextField.setText(application.getName());
+        appNameTextField.setText(application.getDisplayName());
         programNameTextField.setText(application.getProgramName());
         pingTimeChoiceBox.setDisable(true);
 

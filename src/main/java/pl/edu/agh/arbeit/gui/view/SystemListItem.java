@@ -12,6 +12,8 @@ public class SystemListItem extends Pane {
     private FontAwesomeIconView settingsIcon;
     private Text systemText;
 
+    private TimeLine timeLine;
+
     public SystemListItem() {
         Line verticalLine = new Line();
         verticalLine.setStartX(120);
@@ -39,6 +41,19 @@ public class SystemListItem extends Pane {
         this.settingsIcon.setLayoutX(97);
         this.settingsIcon.setLayoutY(22);
         this.getChildren().add(settingsIcon);
+
+        this.timeLine = new TimeLine();
+        this.getChildren().add(timeLine);
+    }
+
+    public void setTimeLine(TimeLine timeLine) {
+        getChildren().remove(this.timeLine);
+        getChildren().add(timeLine);
+        this.timeLine = timeLine;
+    }
+
+    public TimeLine getTimeLine() {
+        return timeLine;
     }
 
     public void setTextWhite() {

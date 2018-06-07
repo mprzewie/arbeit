@@ -2,23 +2,16 @@ package pl.edu.agh.arbeit.data.report;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
-import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CsvReport implements Report {
 
@@ -40,6 +33,7 @@ public class CsvReport implements Report {
 
     public void writeCsv(Path path) throws IOException {
         FileWriter writer = new FileWriter(path.toString());
+        System.out.println(path);
         CSVPrinter printer = new CSVPrinter(writer, CSVFormat.EXCEL);
 
         LinkedList<String> record = new LinkedList<>();
@@ -111,8 +105,8 @@ public class CsvReport implements Report {
                 .parallelStream()
                 .filter(event -> event.getTopic().equals(topic))
                 .sorted((o1, o2) -> {
-                    if(o1.getDateTime().isBefore(o2.getDateTime())) return -1;
-                    else if(o2.getDateTime().isBefore(o1.getDateTime())) return 1;
+                    if(o1.getLocalDateTime().isBefore(o2.getLocalDateTime())) return -1;
+                    else if(o2.getLocalDateTime().isBefore(o1.getLocalDateTime())) return 1;
                     else return 0;
                 })
                .collect(Collectors.toList());

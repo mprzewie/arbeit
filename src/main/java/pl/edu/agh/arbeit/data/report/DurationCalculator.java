@@ -74,11 +74,11 @@ public class DurationCalculator {
                 // the second requirement is because two events of the same type in a row are redundant - we only care about the first one
                 if(localPreviousEvent.getType().equals(typeWeAreTracking) &&
                         ! typeWeAreTracking.equals(event.getType())){
-                    result.put(localPreviousEvent.getDateTime(),
+                    result.put(localPreviousEvent.getLocalDateTime(),
                             Duration.ofSeconds(
                                     localPreviousEvent
-                                            .getDateTime()
-                                            .until(event.getDateTime(), ChronoUnit.SECONDS)
+                                            .getLocalDateTime()
+                                            .until(event.getLocalDateTime(), ChronoUnit.SECONDS)
                             )
                     );
                 }
@@ -89,12 +89,12 @@ public class DurationCalculator {
         // if previous event is active it means that we still use this application
         // it must be considered in report as additional but non existing event (only adding duration in time vector)
         if(localPreviousEvent.getType().equals(typeWeAreTracking)) {
-            result.put(localPreviousEvent.getDateTime(),
+            result.put(localPreviousEvent.getLocalDateTime(),
                     Duration.ofSeconds(
-                            localPreviousEvent.getDateTime()
+                            localPreviousEvent.getLocalDateTime()
                                     .until(
                                             finalEvent
-                                                    .getDateTime(),
+                                                    .getLocalDateTime(),
                                             ChronoUnit.SECONDS)
                     ));
         }

@@ -3,6 +3,8 @@ package pl.edu.agh.arbeit.tracker.events;
 
 import pl.edu.agh.arbeit.tracker.Application;
 
+import java.util.Date;
+
 public class ApplicationEvent extends Event {
 
     private final Application application;
@@ -13,9 +15,16 @@ public class ApplicationEvent extends Event {
         this.type = type;
     }
 
+    public ApplicationEvent(EventType type, Application application, Date date) {
+        this.application = application;
+        this.type = type;
+        this.date = date;
+    }
+
+
     @Override
     public String getTopic() {
-        return application.getName();
+        return application.getProgramName();
     }
 
     @Override

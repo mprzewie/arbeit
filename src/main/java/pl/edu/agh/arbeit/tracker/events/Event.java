@@ -19,7 +19,7 @@ public abstract class Event {
         return getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
-    public LocalDateTime getDateTime(){
+    public LocalDateTime getLocalDateTime(){
         return getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 

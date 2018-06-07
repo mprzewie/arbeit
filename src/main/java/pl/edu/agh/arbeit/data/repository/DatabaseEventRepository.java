@@ -69,6 +69,7 @@ public class DatabaseEventRepository implements EventRepository {
         return cal.getTime();
     }
 
+
     public void put(Event event){
         String dateToInsert = dateFormat.format(event.getDate());
         String sql = "INSERT INTO Event (topic, eventType, eventDate) " +
@@ -167,7 +168,6 @@ public class DatabaseEventRepository implements EventRepository {
     public List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate){
         String formatStartDate = dateFormat.format(startDate);
         String formatEndDate = dateFormat.format(endDate);
-
         String sql = "SELECT rowid, topic, eventType, eventDate\n" +
                 "FROM Event where topic = ? AND eventDate > ? AND eventDate < ?";
 
@@ -191,25 +191,25 @@ public class DatabaseEventRepository implements EventRepository {
     @Override
     public List<Event> getBy(Date date, String topic) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getBy(Date date) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getBy(String topic) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getAll() {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
