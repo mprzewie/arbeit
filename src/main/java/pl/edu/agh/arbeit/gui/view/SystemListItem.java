@@ -11,6 +11,7 @@ public class SystemListItem extends Pane {
 
     private FontAwesomeIconView settingsIcon;
     private Text systemText;
+
     private TimeLine timeLine;
 
     public SystemListItem() {

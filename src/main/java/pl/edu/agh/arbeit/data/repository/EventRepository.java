@@ -1,5 +1,6 @@
 package pl.edu.agh.arbeit.data.repository;
 
+import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 
@@ -23,5 +24,7 @@ public interface EventRepository {
     List<Event> getBy(String topic);
     List<Event> getAll();
     List<String> getRecordedAppsNames();
+
+    void putCustom(Event event) throws IllegalCustomEventTypeException;
 
 }

@@ -104,7 +104,9 @@ public class ReportsController {
 
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
+
                 appsToReport.forEach(app -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(app,start,end)));
+                events.addAll(eventListener.getRepository().getEventForGivenAppinRange("system", start, end));
                 if(!events.isEmpty()) {
                     CsvReport report = new CsvReport(appsToReport, events);
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
@@ -125,6 +127,7 @@ public class ReportsController {
             Parent root = loader.load();
             Stage stage = new Stage();
             SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
+
             savedSuccessfullyInfoController.init(stage, styleNow);
             stage.setScene(new Scene(root, 450, 100));
             stage.show();

@@ -30,7 +30,9 @@ public class AppListItem extends Pane {
     private List<ApplicationTracker> trackers;
     private TimeLine timeLine;
     private Text appNameText;
+
     private String styleNow;
+
 
     public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController, String styleNow) {
         this.application = application;
@@ -136,11 +138,14 @@ public class AppListItem extends Pane {
 
     public void setTextWhite() {
         appNameText.setFill(Color.SNOW);
+
         styleNow = standard;
+
     }
 
     public void setTextBlack() {
         appNameText.setFill(Color.BLACK);
+
         styleNow = dark;
     }
 }
