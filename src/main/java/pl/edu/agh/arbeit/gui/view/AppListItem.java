@@ -138,18 +138,13 @@ public class AppListItem extends Pane {
         this.timeLine = timeLine;
     }
 
-    public void setTextWhite() {
+    public void setStyleDark() {
         appNameText.setFill(Color.SNOW);
-
-        styleNow = standard;
-
-    }
-
-    public void setTextBlack() {
-        appNameText.setFill(Color.BLACK);
-
         styleNow = dark;
     }
 
-
+    public void setStyleStandard() {
+        appNameText.setFill(Color.BLACK);
+        styleNow = standard;
+    }
 }

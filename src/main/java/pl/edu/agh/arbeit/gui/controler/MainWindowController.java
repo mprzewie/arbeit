@@ -140,15 +140,13 @@ public class MainWindowController {
                     anchorPane.getStylesheets().clear();
                         if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK)) {
                             anchorPane.getStylesheets().add(dark);
-                            appListItems.forEach(AppListItem::setTextWhite);
+                            appListItems.forEach(AppListItem::setStyleDark);
                             systemListItem.setTextWhite();
-
                             styleNow = dark;
                         } else {
                             anchorPane.getStylesheets().add(standard);
-                            appListItems.forEach(AppListItem::setTextBlack);
+                            appListItems.forEach(AppListItem::setStyleStandard);
                             systemListItem.setTextBlack();
-
                             styleNow = standard;
                         }
                 });
