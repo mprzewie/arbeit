@@ -33,6 +33,7 @@ public class CsvReport implements Report {
 
     public void writeCsv(Path path) throws IOException {
         FileWriter writer = new FileWriter(path.toString());
+        System.out.println(path);
         CSVPrinter printer = new CSVPrinter(writer, CSVFormat.EXCEL);
 
         LinkedList<String> record = new LinkedList<>();

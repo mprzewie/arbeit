@@ -29,7 +29,7 @@ public class DatabaseEventRepository implements EventRepository {
     }
 
     private final String url = "jdbc:sqlite:test.db";
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public void put(Event event){
         String dateToInsert = dateFormat.format(event.getDate());
@@ -129,7 +129,6 @@ public class DatabaseEventRepository implements EventRepository {
     public List<Event> getEventForGivenAppinRange(String application, Date startDate, Date endDate){
         String formatStartDate = dateFormat.format(startDate);
         String formatEndDate = dateFormat.format(endDate);
-
         String sql = "SELECT rowid, topic, eventType, eventDate\n" +
                 "FROM Event where topic = ? AND eventDate > ? AND eventDate < ?";
 

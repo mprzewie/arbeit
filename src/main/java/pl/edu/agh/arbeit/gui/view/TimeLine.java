@@ -10,6 +10,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
+import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -44,35 +45,33 @@ public class TimeLine extends Pane {
         EventType eventType = event.getType();
         LocalDateTime dateTime = event.getLocalDateTime();
         if (!eventType.equals(EventType.START)) {
-            if (eventType.equals(getLastElemEventType())) {
-                if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 0)
-                    rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX());
-            } else {
-                if (rectangleList.size() > 0)
-                    if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 1.5) {
-                        rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() - 1);
-                        RectangleTyped rec = new RectangleTyped(1, 49);
-                        rec.setLayoutX(getPositionFromDate(dateTime));
-                        rec.setEventType(eventType);
-                        rec.setFill(getColorFromEventType(eventType));
-                        rectangleList.add(rec);
-                        getChildren().add(rec);
-                    } else{
-                        System.out.println("changing color");
-                        rectangleList.get(getLastElemIndex()).setFill(getColorFromEventType(eventType));
-                        rectangleList.get(getLastElemIndex()).setEventType(eventType);
-                    }
-                if (rectangleList.size() == 0) {
+            if (rectangleList.size() > 0) {
+                if (eventType.equals(getLastElemEventType())) {
+                    if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 0)
+                        rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX());
+                } else if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 1.5) {
+                    rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() - 1);
                     RectangleTyped rec = new RectangleTyped(1, 49);
                     rec.setLayoutX(getPositionFromDate(dateTime));
                     rec.setEventType(eventType);
                     rec.setFill(getColorFromEventType(eventType));
                     rectangleList.add(rec);
                     getChildren().add(rec);
+                } else {
+                    rectangleList.get(getLastElemIndex()).setFill(getColorFromEventType(eventType));
+                    rectangleList.get(getLastElemIndex()).setEventType(eventType);
                 }
+            } else {
+                RectangleTyped rec = new RectangleTyped(1, 49);
+                rec.setLayoutX(getPositionFromDate(dateTime));
+                rec.setEventType(eventType);
+                rec.setFill(getColorFromEventType(eventType));
+                rectangleList.add(rec);
+                getChildren().add(rec);
             }
         }
     }
+
 
     private String getDateFromPosition(double position) {
         int seconds = (int) (86400 * position / 880);

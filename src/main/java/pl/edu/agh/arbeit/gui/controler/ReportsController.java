@@ -55,7 +55,7 @@ public class ReportsController {
         this.eventListener = eventListener;
 
         dateFromPicker.setValue(LocalDate.now());
-        dateToPicker.setValue(LocalDate.now());
+        dateToPicker.setValue(LocalDate.now().plusDays(1));
         DatabaseEventRepository repository = new DatabaseEventRepository();
         this.applicationsNames = repository.getRecordedAppsNames();
         List<String> applicationsNamesFromTracker = trackers.stream().map(tracker -> tracker.getApplication().getProgramName()).collect(Collectors.toList());
@@ -84,7 +84,7 @@ public class ReportsController {
             try {
                 List<Event> events = new LinkedList<>();
                 Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
-                Date end = Date.from(Instant.from(dateToPicker.getValue().plusDays(1).atStartOfDay(ZoneId.systemDefault())));
+                Date end = Date.from(Instant.from(dateToPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
 
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());

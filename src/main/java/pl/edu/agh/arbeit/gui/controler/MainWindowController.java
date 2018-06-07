@@ -28,6 +28,7 @@ import pl.edu.agh.arbeit.gui.view.SystemListItem;
 import pl.edu.agh.arbeit.gui.view.TimeLine;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
@@ -173,7 +174,6 @@ public class MainWindowController {
     private void initDatePicker(){
         datePicker.setValue(LocalDate.now());
         datePicker.valueProperty().addListener((overview, oldValue, newValue) -> {
-            System.out.println("redrawing timelines");
             redrawTimelines(newValue);
         });
     }
@@ -260,9 +260,47 @@ public class MainWindowController {
         Date to = Date.from(date.plusDays(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         appListItems.forEach(appListItem -> {
             String applicationName = appListItem.getApplication().getProgramName();
-//            List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
+            List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
             appListItem.setTimeLine(new TimeLine());
+            eventRepository.getPreviousEventTypeForApp(relevantEvents)
+                    .ifPresent(event -> appListItem.getTimeLine().addEvent(new Event() {
+                        @Override
+                        public String getTopic() {
+                            return applicationName;
+                        }
+
+                        @Override
+                        public EventType getType() {
+                            return event.getType();
+                        }
+
+                        @Override
+                        public Date getDate(){
+                            return from;
+                        }
+                    }));
+            relevantEvents.forEach(appListItem.getTimeLine()::addEvent);
         });
+        List<Event> relevantSystemEvents = eventRepository.getEventForGivenAppinRange("system", from, to);
         systemListItem.setTimeLine(new TimeLine());
+        eventRepository.getPreviousEventTypeForApp(relevantSystemEvents)
+                .ifPresent(event -> systemListItem.getTimeLine().addEvent(new Event() {
+                    @Override
+                    public String getTopic() {
+                        return "system";
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return event.getType();
+                    }
+
+                    @Override
+                    public Date getDate(){
+                        return from;
+                    }
+                }));
+        relevantSystemEvents.forEach(systemListItem.getTimeLine()::addEvent);
+
     }
 }
