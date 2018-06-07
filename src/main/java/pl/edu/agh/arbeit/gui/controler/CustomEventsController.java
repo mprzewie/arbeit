@@ -53,7 +53,7 @@ public class CustomEventsController {
     @FXML
     private ChoiceBox<String> minutesToBox;
 
-
+    private DatabaseEventRepository eventRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
     public void init(Stage eventsStage, String styleType) {
         this.eventsStage = eventsStage;
         eventsStage.setTitle("Add Custom Event");
@@ -77,7 +77,7 @@ public class CustomEventsController {
                     .withType(EventType.START)
                     .build();
             try {
-                applicationRepository.putCustom(customEventStart);
+                eventRepository.putCustom(customEventStart);
             } catch (IllegalCustomEventTypeException e) {
                 e.printStackTrace();
                 success = false;
@@ -88,7 +88,7 @@ public class CustomEventsController {
                     .withType(EventType.STOP)
                     .build();
             try {
-                applicationRepository.putCustom(customEventStop);
+                eventRepository.putCustom(customEventStop);
             } catch (IllegalCustomEventTypeException e) {
                 e.printStackTrace();
                 success = false;

@@ -327,7 +327,7 @@ public class MainWindowController {
                 .withType(EventType.START)
                 .build();
         try {
-            applicationRepository.putCustom(customEventStart);
+            eventRepository.putCustom(customEventStart);
             System.out.println(customEventStart);
         } catch (IllegalCustomEventTypeException e) {
             e.printStackTrace();
@@ -375,7 +375,7 @@ public class MainWindowController {
                 .withType(EventType.STOP)
                 .build();
         try {
-            applicationRepository.putCustom(customEventStop);
+            eventRepository.putCustom(customEventStop);
             System.out.println(customEventStop);
         } catch (IllegalCustomEventTypeException e) {
             e.printStackTrace();
