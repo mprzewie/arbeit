@@ -10,7 +10,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
 import pl.edu.agh.arbeit.data.EventListener;
-import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
@@ -71,7 +70,7 @@ public class AppAdder extends Pane {
                 if(!this.appNameComboBox.getEditor().getText().equals("")) {
                     Application newApp = new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
                     if (isAppNotTracked(newApp))
-                        appConfig.addAppToTrack(new AppInfo(newApp.getName(), newApp.getProgramName(), APP_TRACKER_PING_TIME));
+                        appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(), newApp.getProgramName(), APP_TRACKER_PING_TIME));
                     addApp(mainWindowController, newApp, APP_TRACKER_PING_TIME);
                 }
             }
@@ -108,7 +107,7 @@ public class AppAdder extends Pane {
         addCircle.setOnMouseClicked(event ->{
             Application newApp =  new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
             if(isAppNotTracked(newApp))
-                appConfig.addAppToTrack(new AppInfo(newApp.getName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
+                appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
             addApp(mainWindowController,newApp,APP_TRACKER_PING_TIME);
         });
     }

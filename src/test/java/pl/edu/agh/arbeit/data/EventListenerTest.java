@@ -55,7 +55,7 @@ class EventListenerTest {
         }).when(trackerMock).start();
 
         Mockito.when(trackerMock.getBus()).thenReturn(bus);
-        Mockito.when(applicationMock.getName()).thenReturn("application");
+        Mockito.when(applicationMock.getDisplayName()).thenReturn("application");
         eventMock = new ApplicationEvent(EventType.ACTIVE, applicationMock);
 
     }

@@ -1,7 +1,6 @@
 package pl.edu.agh.arbeit.tracker;
 
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
-import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.events.SystemEvent;
 import pl.edu.agh.arbeit.tracker.system.SystemHandler;
@@ -14,20 +13,20 @@ import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 // TODO the whole logic of whether the app is running or not should be stored here
 public class Application {
-    private final String name;
+    private final String displayName;
     private final String programName;
     private final SystemHandler handler;
     private final SystemTracker systemTracker;
 
-    public Application(String name, String programName, SystemTracker tracker) {
-        this.name = name;
+    public Application(String displayName, String programName, SystemTracker tracker) {
+        this.displayName = displayName;
         this.programName = programName;
         this.handler = new WindowsSystemHandler();
         this.systemTracker = tracker;
     }
 
-    public Application(String name, String programName, SystemHandler handler, SystemTracker tracker) {
-        this.name = name;
+    public Application(String displayName, String programName, SystemHandler handler, SystemTracker tracker) {
+        this.displayName = displayName;
         this.programName = programName;
         this.handler = handler;
         this.systemTracker = tracker;
@@ -50,8 +49,8 @@ public class Application {
         return currentSystemEvent.getType().equals(EventType.ACTIVE) && programName.equals(handler.getFocusedApplicationName());
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getProgramName() {
@@ -61,7 +60,7 @@ public class Application {
 
     //to determine if new systemTracker should be created
     public boolean equals(Application other) {
-        return this.name.equals(other.name) && this.programName.equals(other.programName);
+        return this.displayName.equals(other.displayName) && this.programName.equals(other.programName);
     }    
 }
 

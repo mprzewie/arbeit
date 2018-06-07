@@ -15,7 +15,7 @@ public class ApplicationEvent extends Event {
 
     @Override
     public String getTopic() {
-        return application.getName();
+        return application.getProgramName();
     }
 
     @Override

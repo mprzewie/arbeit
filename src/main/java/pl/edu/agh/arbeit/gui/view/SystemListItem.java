@@ -43,6 +43,12 @@ public class SystemListItem extends Pane {
         this.getChildren().add(timeLine);
     }
 
+    public void setTimeLine(TimeLine timeLine) {
+        getChildren().remove(this.timeLine);
+        getChildren().add(timeLine);
+        this.timeLine = timeLine;
+    }
+
     public TimeLine getTimeLine() {
         return timeLine;
     }

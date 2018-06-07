@@ -25,6 +25,7 @@ import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
+import pl.edu.agh.arbeit.gui.view.TimeLine;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
@@ -70,7 +71,6 @@ public class MainWindowController {
     private VBox listContent;
 
     private EventListenerSaver eventListenerSaver;
-//    private EventListenerSaver eventDrawerListener;
     private List<EventListener> eventListeners = new ArrayList<>();
 
     private SystemTracker systemTracker;
@@ -79,7 +79,7 @@ public class MainWindowController {
 
     private boolean customEventActive = false;
 
-    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
+    private EventRepository eventRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
     private ConfigProvider appConfig = new AppConfig();
 
@@ -94,7 +94,7 @@ public class MainWindowController {
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
 
 
-        eventListenerSaver = new EventListenerSaver(applicationRepository);
+        eventListenerSaver = new EventListenerSaver(eventRepository);
 
         EventListener eventDrawerListener = new EventListenerDrawer(this);
 
@@ -102,8 +102,7 @@ public class MainWindowController {
         eventListeners.add(eventDrawerListener);
 
         eventListeners.forEach(listener -> listener.subscribe(systemTracker));
-//        eventListenerSaver.subscribe(systemTracker);
-//        eventDrawerListener.subscribe(systemTracker);
+
 
         systemTracker.start();
 
@@ -111,13 +110,15 @@ public class MainWindowController {
 
         this.initAppScrollPane();
         this.bindSizeProperties();
-        this.initDatePicer();
+        this.initDatePicker();
         this.initReportButton();
         this.initAppAdder();
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
         this.initStyleChocieBox();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+
+        redrawTimelines(LocalDate.now());
     }
 
     private void initStyleChocieBox() {
@@ -169,9 +170,12 @@ public class MainWindowController {
     private void bindSizeProperties() {
     }
 
-    private void initDatePicer(){
+    private void initDatePicker(){
         datePicker.setValue(LocalDate.now());
-        datePicker.setDisable(true);
+        datePicker.valueProperty().addListener((overview, oldValue, newValue) -> {
+            System.out.println("redrawing timelines");
+            redrawTimelines(newValue);
+        });
     }
 
     private void initReportButton() {
@@ -240,13 +244,25 @@ public class MainWindowController {
     }
 
     public void acceptEvent(Event event){
-        appListItems.forEach(appListItem -> {
-            if(appListItem.getApplication().getProgramName().equals(event.getTopic()))
-                appListItem.getTimeLine().addEvent(event.getType(),
-                        LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
-        });
+        if(datePicker.getValue().isEqual(LocalDate.now())){
 
-        if(event.getTopic().equals("system"))
-            systemListItem.getTimeLine().addEvent(event.getType(), LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()));
+            appListItems.forEach(appListItem -> {
+                if(appListItem.getApplication().getProgramName().equals(event.getTopic()))
+                    appListItem.getTimeLine().addEvent(event);
+            });
+            if(event.getTopic().equals("system"))
+                systemListItem.getTimeLine().addEvent(event);
+        }
+    }
+
+    private void redrawTimelines(LocalDate date){
+        Date from = Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date to = Date.from(date.plusDays(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        appListItems.forEach(appListItem -> {
+            String applicationName = appListItem.getApplication().getProgramName();
+//            List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
+            appListItem.setTimeLine(new TimeLine());
+        });
+        systemListItem.setTimeLine(new TimeLine());
     }
 }

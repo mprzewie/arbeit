@@ -153,25 +153,25 @@ public class DatabaseEventRepository implements EventRepository {
     @Override
     public List<Event> getBy(Date date, String topic) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getBy(Date date) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getBy(String topic) {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Event> getAll() {
         // TODO implement this method
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

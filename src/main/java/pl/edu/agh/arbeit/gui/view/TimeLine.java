@@ -8,6 +8,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 
 import java.time.LocalDateTime;
@@ -39,27 +40,31 @@ public class TimeLine extends Pane {
         initEventHandler();
     }
 
-    public void addEvent(EventType eventType, LocalDateTime date) {
+    public void addEvent(Event event) {
+        EventType eventType = event.getType();
+        LocalDateTime dateTime = event.getLocalDateTime();
         if (!eventType.equals(EventType.START)) {
             if (eventType.equals(getLastElemEventType())) {
-                if (getPositionFromDate(date) - rectangleList.get(getLastElemIndex()).getLayoutX() > 0)
-                    rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(date) - rectangleList.get(getLastElemIndex()).getLayoutX());
+                if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 0)
+                    rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX());
             } else {
                 if (rectangleList.size() > 0)
-                    if (getPositionFromDate(date) - rectangleList.get(getLastElemIndex()).getLayoutX() > 1.5) {
-                        rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(date) - rectangleList.get(getLastElemIndex()).getLayoutX() - 1);
+                    if (getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() > 1.5) {
+                        rectangleList.get(getLastElemIndex()).setWidth(getPositionFromDate(dateTime) - rectangleList.get(getLastElemIndex()).getLayoutX() - 1);
                         RectangleTyped rec = new RectangleTyped(1, 49);
-                        rec.setLayoutX(getPositionFromDate(date));
+                        rec.setLayoutX(getPositionFromDate(dateTime));
                         rec.setEventType(eventType);
                         rec.setFill(getColorFromEventType(eventType));
                         rectangleList.add(rec);
                         getChildren().add(rec);
                     } else{
+                        System.out.println("changing color");
                         rectangleList.get(getLastElemIndex()).setFill(getColorFromEventType(eventType));
+                        rectangleList.get(getLastElemIndex()).setEventType(eventType);
                     }
                 if (rectangleList.size() == 0) {
                     RectangleTyped rec = new RectangleTyped(1, 49);
-                    rec.setLayoutX(getPositionFromDate(date));
+                    rec.setLayoutX(getPositionFromDate(dateTime));
                     rec.setEventType(eventType);
                     rec.setFill(getColorFromEventType(eventType));
                     rectangleList.add(rec);
