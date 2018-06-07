@@ -10,7 +10,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import pl.edu.agh.arbeit.tracker.events.Event;
 import pl.edu.agh.arbeit.tracker.events.EventType;
-import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -18,20 +17,20 @@ import java.util.List;
 
 public class TimeLine extends Pane {
     private List<RectangleTyped> rectangleList;
+    private Rectangle backgroundRectangle;
 
     private Color passiveColor = Color.rgb(193, 16, 9);
     private Color activeColor = Color.rgb(10, 128, 4);
-    private Color offColor = Color.grayRgb(33);
     private Color backgroundColor = Color.grayRgb(84);
+
     private BorderPane prevBorderPane;
 
     public TimeLine() {
         this.setLayoutX(121);
         rectangleList = new LinkedList<>();
-        Rectangle startRectangle = new Rectangle(880, 49);
-        startRectangle.setFill(backgroundColor);
-        //rectangleList.add(startRectangle);
-        this.getChildren().add(startRectangle);
+        backgroundRectangle = new Rectangle(880, 49);
+        backgroundRectangle.setFill(backgroundColor);
+        this.getChildren().add(backgroundRectangle);
         Line downLine = new Line();
         downLine.setStartY(50);
         downLine.setEndY(50);
@@ -159,4 +158,43 @@ public class TimeLine extends Pane {
                 });
     }
 
+    public Color getPassiveColor() {
+        return passiveColor;
+    }
+
+    public Color getActiveColor() {
+        return activeColor;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setPassiveColor(Color passiveColor) {
+        this.passiveColor = passiveColor;
+        rectangleList.forEach(rectangleTyped -> {
+            if(rectangleTyped.getEventType().equals(EventType.PASSIVE))
+                rectangleTyped.setFill(passiveColor);
+        });
+    }
+
+    public void setActiveColor(Color activeColor) {
+        this.activeColor = activeColor;
+        rectangleList.forEach(rectangleTyped -> {
+            if(rectangleTyped.getEventType().equals(EventType.ACTIVE))
+                rectangleTyped.setFill(activeColor);
+
+            if(rectangleTyped.getEventType().equals(EventType.START))
+                rectangleTyped.setFill(activeColor);
+        });
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        backgroundRectangle.setFill(backgroundColor);
+        rectangleList.forEach(rectangleTyped -> {
+            if(rectangleTyped.getEventType().equals(EventType.STOP))
+                rectangleTyped.setFill(backgroundColor);
+        });
+    }
 }

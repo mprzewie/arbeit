@@ -62,13 +62,15 @@ public class AppListItem extends Pane {
                             Parent root = loader.load();
                             Stage stage = new Stage();
                             AppSettingsController appSettingsController = loader.getController();
-                            appSettingsController.init(application, stage, styleNow);
-                            stage.setScene(new Scene(root, 359.0, 229.0));
+                            appSettingsController.init(this, stage, styleNow);
+                            stage.setScene(new Scene(root, 360.0, 356.0));
                             stage.show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
         });
+
+        this.getChildren().add(settingsIcon);
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){
@@ -148,4 +150,6 @@ public class AppListItem extends Pane {
 
         styleNow = dark;
     }
+
+
 }
