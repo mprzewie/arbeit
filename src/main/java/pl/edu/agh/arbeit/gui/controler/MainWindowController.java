@@ -198,7 +198,7 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty(), styleNow);
+                    reportsController.init(stage, eventListenerSaver, applicationTrackerList, stage.heightProperty(), styleNow);
 
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
