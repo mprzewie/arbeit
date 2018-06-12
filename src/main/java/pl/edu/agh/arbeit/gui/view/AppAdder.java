@@ -2,18 +2,23 @@ package pl.edu.agh.arbeit.gui.view;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.scene.control.TextField;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+import javafx.scene.input.KeyCode;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import org.controlsfx.control.textfield.TextFields;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
-import pl.edu.agh.arbeit.gui.model.AppConfig;
 import pl.edu.agh.arbeit.gui.model.AppInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.system.RunningWindowsCollector;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,15 +27,15 @@ public class AppAdder extends Pane {
     private final Duration APP_TRACKER_PING_TIME = Duration.ofSeconds(5);
 
     private FontAwesomeIconView addCircle;
-    private TextField appNameTextField;
+    private ComboBox<String> appNameComboBox;
     private List<ApplicationTracker> applicationTrackers;
-    private EventListener eventListener;
+    private List<EventListener> eventListeners;
     private ConfigProvider appConfig;
 
-    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, EventListener eventListener, ConfigProvider appConfig) {
+    public AppAdder(MainWindowController mainWindowController, List<ApplicationTracker> applicationTrackers, List<EventListener> eventListeners, ConfigProvider appConfig) {
         this.appConfig = appConfig;
         this.applicationTrackers = applicationTrackers;
-        this.eventListener = eventListener;
+        this.eventListeners = eventListeners;
         addCircle = new FontAwesomeIconView(FontAwesomeIcon.PLUS_CIRCLE);
         addCircle.setSize("45px");
         addCircle.setLayoutX(40);
@@ -47,14 +52,31 @@ public class AppAdder extends Pane {
 
         this.getChildren().add(verticalLine);
 
-        this.appNameTextField = new TextField();
-        this.appNameTextField.setLayoutX(130);
-        this.appNameTextField.setLayoutY(10);
-        this.getChildren().add(appNameTextField);
+        List<String> appNames = new ArrayList<>(new RunningWindowsCollector().getRunningWindowsNames());
+        this.appNameComboBox = new ComboBox<>(FXCollections.observableList(appNames));
+        this.appNameComboBox.setLayoutX(130);
+        this.appNameComboBox.setLayoutY(10);
+        if(appNames.size() > 0) {
+            this.appNameComboBox.setValue(appNames.get(0));
+        }
 
+        this.getChildren().add(appNameComboBox);
+        appNameComboBox.setEditable(true);
+        TextFields.bindAutoCompletion(appNameComboBox.getEditor(), appNameComboBox.getItems());
         forbidEmptyAppName();
         initTrackingAppsFromConfig(this.appConfig.getAppsToTrack(), mainWindowController);
+        appNameComboBox.setOnKeyPressed(keyEvent ->{
+            if(keyEvent.getCode().equals(KeyCode.ENTER)) {
+                if(!this.appNameComboBox.getEditor().getText().equals("")) {
+                    Application newApp = new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
+                    if (isAppNotTracked(newApp))
+                        appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(), newApp.getProgramName(), APP_TRACKER_PING_TIME));
+                    addApp(mainWindowController, newApp, APP_TRACKER_PING_TIME);
+                }
+            }
+        });
         initAddButton(mainWindowController);
+
     }
 
     private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){
@@ -72,8 +94,9 @@ public class AppAdder extends Pane {
     }
 
     private void forbidEmptyAppName(){
-        appNameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals(""))
+        appNameComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals(""))
+
                 addCircle.setDisable(true);
             else
                 addCircle.setDisable(false);
@@ -82,9 +105,9 @@ public class AppAdder extends Pane {
 
     private void initAddButton(MainWindowController mainWindowController){
         addCircle.setOnMouseClicked(event ->{
-            Application newApp =  new Application(this.appNameTextField.getText(), this.appNameTextField.getText(), mainWindowController.getSystemTracker());
+            Application newApp =  new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
             if(isAppNotTracked(newApp))
-                appConfig.addAppToTrack(new AppInfo(newApp.getName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
+                appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
             addApp(mainWindowController,newApp,APP_TRACKER_PING_TIME);
         });
     }
@@ -98,7 +121,7 @@ public class AppAdder extends Pane {
 
     private ApplicationTracker createTracker(Duration pingTime, Application application, MainWindowController mainWindowController){
         ApplicationTracker appTracker = new ApplicationTracker(pingTime, application);
-        eventListener.subscribe(appTracker);
+        eventListeners.forEach(listener -> listener.subscribe(appTracker));
         appTracker.start();
         return appTracker;
     }

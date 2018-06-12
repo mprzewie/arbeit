@@ -2,18 +2,17 @@ package pl.edu.agh.arbeit.gui.view;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.Main;
 import pl.edu.agh.arbeit.gui.controler.AppSettingsController;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
-import pl.edu.agh.arbeit.gui.controler.ReportsController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.AsyncTracker;
@@ -23,10 +22,19 @@ import java.util.List;
 
 public class AppListItem extends Pane {
 
+
+    private final String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+    private final String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+
     private Application application;
     private List<ApplicationTracker> trackers;
+    private TimeLine timeLine;
+    private Text appNameText;
 
-    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController) {
+    private String styleNow;
+
+
+    public AppListItem(Application application, List<ApplicationTracker> trackers, MainWindowController mainWindowController, String styleNow) {
         this.application = application;
         this.trackers = trackers;
 
@@ -36,7 +44,9 @@ public class AppListItem extends Pane {
         initSettingsButton();
         initDeleteButton(mainWindowController);
 
-        this.getChildren().add(new TimeLine());
+        timeLine = new TimeLine();
+        this.getChildren().add(timeLine);
+        this.styleNow = styleNow;
     }
 
     private void initSettingsButton(){
@@ -52,13 +62,15 @@ public class AppListItem extends Pane {
                             Parent root = loader.load();
                             Stage stage = new Stage();
                             AppSettingsController appSettingsController = loader.getController();
-                            appSettingsController.init(application,stage);
-                            stage.setScene(new Scene(root, 359.0, 229.0));
+                            appSettingsController.init(this, stage, styleNow);
+                            stage.setScene(new Scene(root, 360.0, 356.0));
                             stage.show();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
         });
+
+        this.getChildren().add(settingsIcon);
     }
 
     private void initDeleteButton(MainWindowController mainWindowController){
@@ -82,11 +94,11 @@ public class AppListItem extends Pane {
     }
 
     private void initApplicationName(){
-        String applicationName = application.getName();
-        if(application.getName().length() > 11)
+        String applicationName = application.getDisplayName();
+        if(application.getDisplayName().length() > 11)
             applicationName = applicationName.substring(0,10) + "...";
 
-        Text appNameText = new Text(10, 30, applicationName);
+        appNameText = new Text(10, 30, applicationName);
         this.getChildren().add(appNameText);
     }
 
@@ -106,5 +118,33 @@ public class AppListItem extends Pane {
         verticalLine.setStartY(0);
         verticalLine.setEndY(49);
         this.getChildren().add(verticalLine);
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    public TimeLine getTimeLine() {
+        return timeLine;
+    }
+
+    public void setTimeLine(TimeLine timeLine) {
+        getChildren().remove(this.timeLine);
+        getChildren().add(timeLine);
+        this.timeLine = timeLine;
+    }
+
+    public void setStyleDark() {
+        appNameText.setFill(Color.SNOW);
+        styleNow = dark;
+    }
+
+    public void setStyleStandard() {
+        appNameText.setFill(Color.BLACK);
+        styleNow = standard;
     }
 }

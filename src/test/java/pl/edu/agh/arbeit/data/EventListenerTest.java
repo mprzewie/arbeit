@@ -1,14 +1,12 @@
 package pl.edu.agh.arbeit.data;
 
 import com.google.common.eventbus.EventBus;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
+import pl.edu.agh.arbeit.gui.controler.MainWindowController;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
@@ -26,7 +24,7 @@ class EventListenerTest {
 
     private EventBus bus = new EventBus();
     private List<Event> events;
-    private EventListener listener;
+    private EventListenerSaver listener;
 
     @Mock
     private EventRepository repositoryMock;
@@ -36,6 +34,9 @@ class EventListenerTest {
 
     @Mock
     private Application applicationMock;
+
+    @Mock
+    private MainWindowController mainWindowController;
 
     private Event eventMock;
 
@@ -54,14 +55,14 @@ class EventListenerTest {
         }).when(trackerMock).start();
 
         Mockito.when(trackerMock.getBus()).thenReturn(bus);
-        Mockito.when(applicationMock.getName()).thenReturn("application");
+        Mockito.when(applicationMock.getDisplayName()).thenReturn("application");
         eventMock = new ApplicationEvent(EventType.ACTIVE, applicationMock);
 
     }
 
     @BeforeEach
     void setup(){
-        listener = new EventListener(repositoryMock);
+        listener = new EventListenerSaver(repositoryMock);
         events = new LinkedList<>();
     }
 

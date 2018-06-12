@@ -11,9 +11,9 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" maxWidth="1000" minWidth="1000.0" prefHeight="471.0" prefWidth="1000.0" styleClass="root" stylesheets="@Standard.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.arbeit.gui.controler.MainWindowController">
-    <FontAwesomeIconView glyphName="ARROW_CIRCLE_LEFT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="190" AnchorPane.topAnchor="16" />
+    <!--<FontAwesomeIconView glyphName="ARROW_CIRCLE_LEFT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="190" AnchorPane.topAnchor="16" />-->
     <DatePicker fx:id="datePicker" maxWidth="140" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="12.0" />
-    <FontAwesomeIconView glyphName="ARROW_CIRCLE_RIGHT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="16" AnchorPane.topAnchor="16" />
+    <!--<FontAwesomeIconView glyphName="ARROW_CIRCLE_RIGHT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="16" AnchorPane.topAnchor="16" />-->
     <Line endX="1010" endY="50" startY="50" />
 
     <ScrollPane fx:id="appScrollPane" prefHeight="310.0" stylesheets="@Standard.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">

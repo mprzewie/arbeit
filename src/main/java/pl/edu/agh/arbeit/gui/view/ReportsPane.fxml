@@ -10,7 +10,7 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.ScrollPane?>
-<AnchorPane stylesheets="@Standard.css"
+<AnchorPane fx:id="anchorPane" stylesheets="@Standard.css"
             prefHeight="400.0"
             prefWidth="600.0"
             xmlns="http://javafx.com/javafx/8.0.112"

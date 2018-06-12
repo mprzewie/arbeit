@@ -3,6 +3,7 @@ package pl.edu.agh.arbeit.gui.controler;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
+import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
+import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
@@ -24,18 +27,21 @@ import pl.edu.agh.arbeit.gui.model.StyleType;
 import pl.edu.agh.arbeit.gui.view.AppAdder;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 import pl.edu.agh.arbeit.gui.view.SystemListItem;
+import pl.edu.agh.arbeit.gui.view.TimeLine;
 import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.CustomEvent;
+import pl.edu.agh.arbeit.tracker.events.CustomEventBuilder;
+import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
-import pl.edu.agh.arbeit.tracker.trackers.Tracker;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-//import pl.edu.agh.arbeit.gui.view.AddCircle;
 
 public class MainWindowController {
     private OverviewController overviewController;
@@ -58,42 +64,67 @@ public class MainWindowController {
     @FXML
     private ScrollPane appScrollPane;
 
-
     @FXML
     private ChoiceBox styleChoiceBox;
 
-    private EventListener eventListener;
+    @FXML
+    private VBox listContent;
+
+    private EventListenerSaver eventListenerSaver;
+    private List<EventListener> eventListeners = new ArrayList<>();
 
     private SystemTracker systemTracker;
 
     private List<ApplicationTracker> applicationTrackerList = new LinkedList<>();
 
     private boolean customEventActive = false;
+    private String currentCustomEventName = "";
 
-    private EventRepository applicationRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
-
-    @FXML
-    private VBox listContent;
+    private EventRepository eventRepository = DatabaseEventRepository.initializeDBOrConnectToExisting();
 
     private ConfigProvider appConfig = new AppConfig();
 
+    private List<AppListItem> appListItems;
+
+    private SystemListItem systemListItem;
+
+    private String styleNow;
+
+
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
-        listContent.getChildren().add(0,new SystemListItem());
-        this.eventListener = new EventListener(applicationRepository);
+        systemListItem = new SystemListItem();
+        listContent.getChildren().add(0,systemListItem);
+
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
-        this.eventListener.subscribe(systemTracker);
+
+
+        eventListenerSaver = new EventListenerSaver(eventRepository);
+
+        EventListener eventDrawerListener = new EventListenerDrawer(this);
+
+        eventListeners.add(eventListenerSaver);
+        eventListeners.add(eventDrawerListener);
+
+        eventListeners.forEach(listener -> listener.subscribe(systemTracker));
+
+
         systemTracker.start();
+        styleNow = AppAdder.class.getResource("Standard.css").toExternalForm();
+
+        appListItems = new ArrayList<>();
 
         this.initAppScrollPane();
         this.bindSizeProperties();
-        this.initDatePicer();
+        this.initDatePicker();
         this.initReportButton();
         this.initAppAdder();
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
         this.initStyleChocieBox();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
+
+        redrawTimelines(LocalDate.now());
     }
 
     private void initStyleChocieBox() {
@@ -101,16 +132,23 @@ public class MainWindowController {
                 StyleType.values()));
         styleChoiceBox.getSelectionModel().select(StyleType.STANDARD);
 
-        String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
-        String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
+        final String standard = AppAdder.class.getResource("Standard.css").toExternalForm();
+        final String dark = AppAdder.class.getResource("Dark.css").toExternalForm();
 
         styleChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     anchorPane.getStylesheets().clear();
-                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK))
+                        if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK)) {
                             anchorPane.getStylesheets().add(dark);
-                        else
+                            appListItems.forEach(AppListItem::setStyleDark);
+                            systemListItem.setTextWhite();
+                            styleNow = dark;
+                        } else {
                             anchorPane.getStylesheets().add(standard);
+                            appListItems.forEach(AppListItem::setStyleStandard);
+                            systemListItem.setTextBlack();
+                            styleNow = standard;
+                        }
                 });
     }
 
@@ -121,14 +159,13 @@ public class MainWindowController {
     }
 
     private void initAppAdder(){
-
-        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListener, appConfig);
+        AppAdder appAdder = new AppAdder(this, applicationTrackerList, eventListeners, appConfig);
         listContent.getChildren().add(appAdder);
-
     }
 
     public void addNewAppView(Application application){
-        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this);
+        AppListItem appListItem = new AppListItem(application, applicationTrackerList, this, styleNow);
+        appListItems.add(appListItem);
         int listContentIndex = listContent.getChildren().size() - 1;
         if(listContentIndex == 0)
             listContentIndex++;
@@ -146,9 +183,11 @@ public class MainWindowController {
     private void bindSizeProperties() {
     }
 
-    private void initDatePicer(){
+    private void initDatePicker(){
         datePicker.setValue(LocalDate.now());
-        datePicker.setDisable(true);
+        datePicker.valueProperty().addListener((overview, oldValue, newValue) -> {
+            redrawTimelines(newValue);
+        });
     }
 
     private void initReportButton() {
@@ -160,7 +199,8 @@ public class MainWindowController {
                     Parent root = loader.load();
                     Stage stage = new Stage();
                     ReportsController reportsController = loader.getController();
-                    reportsController.init(stage, eventListener, applicationTrackerList, stage.heightProperty());
+                    reportsController.init(stage, eventListenerSaver, applicationTrackerList, stage.heightProperty(), styleNow);
+
                     stage.setScene(new Scene(root, 450, 450));
                     stage.show();
                 } catch (IOException e) {
@@ -179,7 +219,7 @@ public class MainWindowController {
                         Parent root = loader.load();
                         Stage stage = new Stage();
                         CustomEventsController customEventsController = loader.getController();
-                        customEventsController.init(stage);
+                        customEventsController.init(stage, styleNow);
                         stage.setScene(new Scene(root, 450, 450));
                         stage.show();
                     } catch (IOException e) {
@@ -191,15 +231,7 @@ public class MainWindowController {
 
     private void initBeginCustomEventButton() {
         beginCustomEventButton.setOnAction(
-                event -> {
-                    if(customEventActive){
-                        beginCustomEventButton.setText("Begin Custom Event");
-                        customEventActive = false;
-                    } else {
-                        beginCustomEventButton.setText("End Custom Event");
-                        customEventActive = true;
-                    }
-                }
+                beginCustomEventButtonListener
         );
     }
 
@@ -215,4 +247,137 @@ public class MainWindowController {
     public SystemTracker getSystemTracker() {
         return systemTracker;
     }
+
+    public void acceptEvent(Event event){
+        if(datePicker.getValue().isEqual(LocalDate.now())){
+
+            appListItems.forEach(appListItem -> {
+                if(appListItem.getApplication().getProgramName().equals(event.getTopic()))
+                    appListItem.getTimeLine().addEvent(event);
+            });
+            if(event.getTopic().equals("system"))
+                systemListItem.getTimeLine().addEvent(event);
+        }
+    }
+
+    private void redrawTimelines(LocalDate date){
+        Date from = Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date to = Date.from(date.plusDays(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        appListItems.forEach(appListItem -> {
+            String applicationName = appListItem.getApplication().getProgramName();
+            List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
+            appListItem.setTimeLine(new TimeLine());
+            eventRepository.getPreviousEventTypeForApp(relevantEvents)
+                    .ifPresent(event -> appListItem.getTimeLine().addEvent(new Event() {
+                        @Override
+                        public String getTopic() {
+                            return applicationName;
+                        }
+
+                        @Override
+                        public EventType getType() {
+                            return event.getType();
+                        }
+
+                        @Override
+                        public Date getDate(){
+                            return from;
+                        }
+                    }));
+            relevantEvents.forEach(appListItem.getTimeLine()::addEvent);
+        });
+        List<Event> relevantSystemEvents = eventRepository.getEventForGivenAppinRange("system", from, to);
+        systemListItem.setTimeLine(new TimeLine());
+        eventRepository.getPreviousEventTypeForApp(relevantSystemEvents)
+                .ifPresent(event -> systemListItem.getTimeLine().addEvent(new Event() {
+                    @Override
+                    public String getTopic() {
+                        return "system";
+                    }
+
+                    @Override
+                    public EventType getType() {
+                        return event.getType();
+                    }
+
+                    @Override
+                    public Date getDate(){
+                        return from;
+                    }
+                }));
+        relevantSystemEvents.forEach(systemListItem.getTimeLine()::addEvent);
+
+    }
+
+    public void beginCustomEvent(String eventName){
+        beginCustomEventButton.setText("End Custom Event");
+        customEventActive = true;
+        currentCustomEventName = eventName;
+        actuallyBeginCustomEvent(eventName);
+        beginCustomEventButton.setOnAction(endCustomEventButtonListener);
+    }
+
+    private void actuallyBeginCustomEvent(String eventName) {
+        Date date = constructDateNow();
+        CustomEvent customEventStart = CustomEventBuilder.aCustomEvent()
+                .withDate(date)
+                .withTopic(eventName)
+                .withType(EventType.START)
+                .build();
+        try {
+            eventRepository.putCustom(customEventStart);
+            System.out.println(customEventStart);
+        } catch (IllegalCustomEventTypeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Date constructDateNow() {
+        LocalDateTime now = LocalDateTime.now();
+        Instant instant = now.atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
+    }
+
+
+    private EventHandler<ActionEvent> beginCustomEventButtonListener =
+            event -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(Main.class.getResource("view/BeginCustomEventPane.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = new Stage();
+                    BeginCustomEventController beginCustomEventController = loader.getController();
+
+                    beginCustomEventController.init(stage, this, styleNow);
+                    stage.setScene(new Scene(root, 450, 100));
+                    stage.show();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            };
+
+    private EventHandler<ActionEvent> endCustomEventButtonListener =
+            event -> {
+                beginCustomEventButton.setText("Begin Custom Event");
+                actuallyEndCustomEvent(currentCustomEventName);
+                customEventActive = false;
+                currentCustomEventName = "";
+                beginCustomEventButton.setOnAction(beginCustomEventButtonListener);
+            };
+
+    private void actuallyEndCustomEvent(String eventName) {
+        Date date = constructDateNow();
+        CustomEvent customEventStop = CustomEventBuilder.aCustomEvent()
+                .withDate(date)
+                .withTopic(eventName)
+                .withType(EventType.STOP)
+                .build();
+        try {
+            eventRepository.putCustom(customEventStop);
+            System.out.println(customEventStop);
+        } catch (IllegalCustomEventTypeException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
