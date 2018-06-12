@@ -25,10 +25,16 @@ public class TimeLine extends Pane {
 
     private BorderPane prevBorderPane;
 
+    private static int TIME_LINE_WIDTH = 870;
+    private static int TIME_LINE_HEIGHT = 49;
+
+    private static int TIME_SHOWER_HEIGHT = 19;
+
     public TimeLine() {
         this.setLayoutX(121);
+        this.setMaxWidth(TIME_LINE_WIDTH);
         rectangleList = new LinkedList<>();
-        backgroundRectangle = new Rectangle(880, 49);
+        backgroundRectangle = new Rectangle(TIME_LINE_WIDTH, TIME_LINE_HEIGHT);
         backgroundRectangle.setFill(backgroundColor);
         this.getChildren().add(backgroundRectangle);
         Line downLine = new Line();
@@ -36,8 +42,14 @@ public class TimeLine extends Pane {
         downLine.setEndY(50);
         downLine.setEndX(1010);
         this.getChildren().add(downLine);
-
         initEventHandler();
+
+        Line endLine = new Line();
+        endLine.setEndX(TIME_LINE_WIDTH+1);
+        endLine.setStartX(TIME_LINE_WIDTH+1);
+        endLine.setStartY(0.5);
+        endLine.setEndY(TIME_LINE_HEIGHT);
+        this.getChildren().add(endLine);
     }
 
     public void addEvent(Event event) {
@@ -73,7 +85,7 @@ public class TimeLine extends Pane {
 
 
     private String getDateFromPosition(double position) {
-        int seconds = (int) (86400 * position / 880);
+        int seconds = (int) (86400 * position / TIME_LINE_WIDTH);
         Integer hour = seconds / 3600;
         Integer minuts = (seconds - hour * 3600) / 60;
         Integer sec = (seconds - hour * 3600 - minuts * 60);
@@ -95,7 +107,7 @@ public class TimeLine extends Pane {
     }
 
     private int getPositionFromDate(LocalDateTime date) {
-        return (int) (880 * (date.getHour() * 3600 + date.getMinute() * 60 + date.getSecond()) / 86400.0);
+        return (int) (TIME_LINE_WIDTH * (date.getHour() * 3600 + date.getMinute() * 60 + date.getSecond()) / 86400.0);
     }
 
     private EventType getLastElemEventType() {
@@ -123,37 +135,42 @@ public class TimeLine extends Pane {
     }
 
     private void initEventHandler() {
-        addEventHandler(MouseEvent.ANY,
+        int timeShowerWidth = 60;
+        backgroundRectangle.addEventHandler(MouseEvent.ANY,
                 e -> {
-
                     getChildren().remove(prevBorderPane);
                     //System.out.println(String.valueOf(e.getX()) + "  " + String.valueOf(e.getY()));
 
                     BorderPane borderPane = new BorderPane();
-                    borderPane.setMinWidth(60);
-                    borderPane.setMinHeight(19);
+                    borderPane.setMinWidth(timeShowerWidth);
+                    borderPane.setMinHeight(TIME_SHOWER_HEIGHT);
                     borderPane.setBorder(
                             new Border(
                                     new BorderStroke(Paint.valueOf("BLACK"),
                                             BorderStrokeStyle.SOLID,
                                             CornerRadii.EMPTY, BorderWidths.DEFAULT)));
                     borderPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("WHITE"), CornerRadii.EMPTY, Insets.EMPTY)));
-                    if (e.getX() > 1 && e.getX() < (880 - borderPane.getWidth()))
-                        borderPane.setLayoutX(e.getX());
-                    if (e.getY() >= 19 && e.getY() + borderPane.getHeight() <= 49)
-                        borderPane.setLayoutY(e.getY() - 19);
+                    if (e.getX() > 1 && e.getX() + timeShowerWidth < TIME_LINE_WIDTH) {
+                        borderPane.setLayoutX(e.getX() + 1);
+                    } else if(e.getX() + timeShowerWidth >= TIME_LINE_WIDTH){
+                        borderPane.setLayoutX(TIME_LINE_WIDTH - timeShowerWidth);
+                    }
+
+                    if (e.getY() >= 20 && e.getY() + borderPane.getHeight() <= 49)
+                        borderPane.setLayoutY(e.getY() - 20);
                     else
-                        borderPane.setLayoutY(0);
+                        borderPane.setLayoutY(TIME_LINE_HEIGHT - TIME_SHOWER_HEIGHT);
 
                     Text text = new Text(0, 0, getDateFromPosition(e.getX()));
                     text.setLayoutY(16);
                     text.setLayoutX(2);
                     borderPane.getChildren().add(text);
-                    getChildren().add(borderPane);
 
-                    prevBorderPane = borderPane;
-                    if (e.getEventType().equals(MouseEvent.MOUSE_EXITED)) {
-                        getChildren().remove(borderPane);
+                    if (!e.getEventType().equals(MouseEvent.MOUSE_EXITED) && !e.getEventType().equals(MouseEvent.MOUSE_EXITED_TARGET)) {
+                        getChildren().add(borderPane);
+                        prevBorderPane = borderPane;
+                    }else {
+                        getChildren().remove(prevBorderPane);
                     }
                 });
     }
