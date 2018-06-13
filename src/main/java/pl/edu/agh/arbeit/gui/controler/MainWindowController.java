@@ -12,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -90,6 +92,12 @@ public class MainWindowController {
 
     private String styleNow;
 
+    @FXML
+    private ImageView logoImg;
+
+    @FXML
+    private ImageView textTopImg;
+
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
@@ -113,6 +121,8 @@ public class MainWindowController {
         styleNow = AppAdder.class.getResource("Standard.css").toExternalForm();
 
         appListItems = new ArrayList<>();
+        Image image = new Image("/logo_arbeit_darker_blue.png");
+        logoImg = new ImageView(image);
 
         this.initAppScrollPane();
         this.bindSizeProperties();

@@ -54,6 +54,7 @@ public class AppListItem extends Pane {
         settingsIcon.setSize("22px");
         settingsIcon.setLayoutX(97);
         settingsIcon.setLayoutY(20);
+        settingsIcon.getStyleClass().add("settings-button");
 
         settingsIcon.setOnMouseClicked(event -> {
                         try {
@@ -78,6 +79,7 @@ public class AppListItem extends Pane {
         deleteAppButton.setLayoutX(98);
         deleteAppButton.setLayoutY(44);
         deleteAppButton.setSize("22px");
+        deleteAppButton.getStyleClass().add("trash-button");
 
         deleteAppButton.setOnMouseClicked(event -> {
             trackers.stream()

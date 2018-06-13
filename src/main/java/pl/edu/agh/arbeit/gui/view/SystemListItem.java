@@ -40,6 +40,7 @@ public class SystemListItem extends Pane {
         this.settingsIcon.setSize("22px");
         this.settingsIcon.setLayoutX(97);
         this.settingsIcon.setLayoutY(22);
+        this.settingsIcon.getStyleClass().add("settings-button");
         this.getChildren().add(settingsIcon);
 
         this.timeLine = new TimeLine();
