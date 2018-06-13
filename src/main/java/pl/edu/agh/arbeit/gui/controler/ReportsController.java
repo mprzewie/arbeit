@@ -77,7 +77,6 @@ public class ReportsController {
                         .filter(name -> !applicationsNames.contains(name))
                         .collect(Collectors.toList()));
 
-
         reportsStage.setTitle("Generate report");
         initCancelButton();
         initGenerateReportsButton();
@@ -140,10 +139,13 @@ public class ReportsController {
         initScrollPane(heightProperty);
         List<String> apps = new LinkedList<>();
         apps.addAll(applicationsNames);
-        final String last = apps.remove(apps.size() - 1);
         if(!apps.isEmpty()) {
+            final String last = apps.remove(apps.size() - 1);
             for (String appName : apps) {
                 CheckBox cb = new CheckBox(appName);
+                if(appName.equals("system")) {
+                    cb.setDisable(true);
+                }
                 cb.setSelected(true);
                 appListContent.getChildren().add(cb);
                 Region region = new Region();
