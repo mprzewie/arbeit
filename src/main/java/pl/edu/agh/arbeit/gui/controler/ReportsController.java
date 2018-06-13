@@ -11,7 +11,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.data.EventListenerSaver;
 import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
@@ -110,6 +109,8 @@ public class ReportsController {
                     CsvReport report = new CsvReport(appsToReport, events);
                     if(!pathTextField.getText().equals("")) report.writeCsv(Paths.get(pathTextField.getText()));
                     showSavedSuccessfullyInfo();
+                } else {
+                    showNoEventsInfo();
                 }
 
                 reportsStage.close();
@@ -122,12 +123,26 @@ public class ReportsController {
     private void showSavedSuccessfullyInfo(){
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("view/SavedSuccessfullyInfoPane.fxml"));
+            loader.setLocation(Main.class.getResource("view/SavedInfoPane.fxml"));
             Parent root = loader.load();
             Stage stage = new Stage();
-            SavedSuccessfullyInfoController savedSuccessfullyInfoController = loader.getController();
+            SavedInfoController savedInfoController = loader.getController();
+            savedInfoController.init(stage, styleNow, "Saved Successfully", "Report saved successfully");
+            stage.setScene(new Scene(root, 450, 100));
+            stage.show();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-            savedSuccessfullyInfoController.init(stage, styleNow);
+    private void showNoEventsInfo() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/SavedInfoPane.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            SavedInfoController savedInfoController = loader.getController();
+            savedInfoController.init(stage, styleNow, "No Events Warning", "There are no events in database yet or invalid dates were chosen");
             stage.setScene(new Scene(root, 450, 100));
             stage.show();
         } catch (IOException ex) {

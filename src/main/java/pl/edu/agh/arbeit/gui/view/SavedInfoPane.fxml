@@ -8,9 +8,9 @@
 <AnchorPane fx:id="anchorPane" stylesheets="@Standard.css"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="pl.edu.agh.arbeit.gui.controler.SavedSuccessfullyInfoController"
+            fx:controller="pl.edu.agh.arbeit.gui.controler.SavedInfoController"
             prefHeight="100.0" prefWidth="450.0">
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="450.0" text="Report Saved Successfully" alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Label fx:id="label" layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="450.0" text="Report Saved Successfully" alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <font>
                 <Font name="System" size="12.0" />
             </font>
