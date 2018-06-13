@@ -44,7 +44,10 @@ public class AppListItem extends Pane {
         initSettingsButton();
         initDeleteButton(mainWindowController);
 
-        timeLine = new TimeLine();
+        timeLine = new TimeLine(application.getActiveColor().getColorFx(),
+                application.getPassiveColor().getColorFx(),
+                application.getBackgroundColor().getColorFx()
+                );
         this.getChildren().add(timeLine);
         this.styleNow = styleNow;
     }
@@ -138,13 +141,18 @@ public class AppListItem extends Pane {
         this.timeLine = timeLine;
     }
 
-    public void setStyleDark() {
+    public void setTextWhite() {
         appNameText.setFill(Color.SNOW);
+
+        styleNow = standard;
+
+    }
+
+    public void setTextBlack() {
+        appNameText.setFill(Color.BLACK);
+
         styleNow = dark;
     }
 
-    public void setStyleStandard() {
-        appNameText.setFill(Color.BLACK);
-        styleNow = standard;
-    }
+
 }

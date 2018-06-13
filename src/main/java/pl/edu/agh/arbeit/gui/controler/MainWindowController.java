@@ -16,8 +16,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.data.EventListener;
-import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
 import pl.edu.agh.arbeit.data.EventListenerSaver;
+import pl.edu.agh.arbeit.data.report.IllegalCustomEventTypeException;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.data.repository.EventRepository;
 import pl.edu.agh.arbeit.gui.Main;
@@ -93,7 +93,7 @@ public class MainWindowController {
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
-        systemListItem = new SystemListItem();
+        systemListItem = new SystemListItem(appConfig);
         listContent.getChildren().add(0,systemListItem);
 
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
@@ -140,13 +140,15 @@ public class MainWindowController {
                     anchorPane.getStylesheets().clear();
                         if(StyleType.values()[newValue.intValue()].equals(StyleType.DARK)) {
                             anchorPane.getStylesheets().add(dark);
-                            appListItems.forEach(AppListItem::setStyleDark);
+                            appListItems.forEach(AppListItem::setTextWhite);
                             systemListItem.setTextWhite();
+
                             styleNow = dark;
                         } else {
                             anchorPane.getStylesheets().add(standard);
-                            appListItems.forEach(AppListItem::setStyleStandard);
+                            appListItems.forEach(AppListItem::setTextBlack);
                             systemListItem.setTextBlack();
+
                             styleNow = standard;
                         }
                 });
@@ -266,7 +268,9 @@ public class MainWindowController {
         appListItems.forEach(appListItem -> {
             String applicationName = appListItem.getApplication().getProgramName();
             List<Event> relevantEvents = eventRepository.getEventForGivenAppinRange(applicationName, from, to);
-            appListItem.setTimeLine(new TimeLine());
+            appListItem.setTimeLine(new TimeLine(appListItem.getApplication().getActiveColor().getColorFx(),
+                                                appListItem.getApplication().getPassiveColor().getColorFx(),
+                                                appListItem.getApplication().getBackgroundColor().getColorFx()));
             eventRepository.getPreviousEventTypeForApp(relevantEvents)
                     .ifPresent(event -> appListItem.getTimeLine().addEvent(new Event() {
                         @Override
@@ -380,4 +384,7 @@ public class MainWindowController {
         }
     }
 
+    public ConfigProvider getAppConfig() {
+        return appConfig;
+    }
 }

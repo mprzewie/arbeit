@@ -5,13 +5,12 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import org.controlsfx.control.textfield.TextFields;
 import pl.edu.agh.arbeit.data.EventListener;
 import pl.edu.agh.arbeit.gui.controler.MainWindowController;
-import pl.edu.agh.arbeit.gui.model.AppInfo;
+import pl.edu.agh.arbeit.gui.model.ApplicationInfo;
 import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 import pl.edu.agh.arbeit.tracker.Application;
 import pl.edu.agh.arbeit.tracker.system.RunningWindowsCollector;
@@ -19,7 +18,6 @@ import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -70,7 +68,7 @@ public class AppAdder extends Pane {
                 if(!this.appNameComboBox.getEditor().getText().equals("")) {
                     Application newApp = new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
                     if (isAppNotTracked(newApp))
-                        appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(), newApp.getProgramName(), APP_TRACKER_PING_TIME));
+                        appConfig.addAppToTrack(newApp.getApplicationInfo());
                     addApp(mainWindowController, newApp, APP_TRACKER_PING_TIME);
                 }
             }
@@ -79,12 +77,8 @@ public class AppAdder extends Pane {
 
     }
 
-    private void initTrackingAppsFromConfig(List<AppInfo> appInfos, MainWindowController mainWindowController){
-        List<AppInfo> tempList= new LinkedList<>();
-        tempList.addAll(appInfos);
-        tempList.forEach(e -> addApp(mainWindowController, new Application(
-                e.getName(),e.getProgramName(), mainWindowController.getSystemTracker()),
-                Duration.ofSeconds(e.getPingTimeInSeconds())
+    private void initTrackingAppsFromConfig(List<ApplicationInfo> apps, MainWindowController mainWindowController){
+        apps.forEach(e -> addApp(mainWindowController, e.toApplication(mainWindowController.getSystemTracker()), Duration.ofSeconds(e.getPingTimeInSeconds())
         ));
     }
 
@@ -107,7 +101,7 @@ public class AppAdder extends Pane {
         addCircle.setOnMouseClicked(event ->{
             Application newApp =  new Application(this.appNameComboBox.getEditor().getText(), this.appNameComboBox.getEditor().getText(), mainWindowController.getSystemTracker());
             if(isAppNotTracked(newApp))
-                appConfig.addAppToTrack(new AppInfo(newApp.getDisplayName(),newApp.getProgramName(),APP_TRACKER_PING_TIME));
+                appConfig.addAppToTrack(newApp.getApplicationInfo());
             addApp(mainWindowController,newApp,APP_TRACKER_PING_TIME);
         });
     }

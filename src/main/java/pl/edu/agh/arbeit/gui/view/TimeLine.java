@@ -21,16 +21,28 @@ public class TimeLine extends Pane {
 
     private Color passiveColor = Color.rgb(193, 16, 9);
     private Color activeColor = Color.rgb(10, 128, 4);
-    private Color backgroundColor = Color.grayRgb(84);
+    private Color backgroundColor = Color.grayRgb(70);
 
     private BorderPane prevBorderPane;
 
     private static int TIME_LINE_WIDTH = 870;
     private static int TIME_LINE_HEIGHT = 49;
 
+    private static int TIME_SHOWER_WIDTH = 60;
     private static int TIME_SHOWER_HEIGHT = 19;
 
-    public TimeLine() {
+    public  TimeLine(Color passiveColor, Color activeColor, Color backgroundColor){
+        this.passiveColor = passiveColor;
+        this.activeColor = activeColor;
+        this.backgroundColor = backgroundColor;
+        this.init();
+    }
+
+    public TimeLine(){
+        this.init();
+    }
+
+    private void init() {
         this.setLayoutX(121);
         this.setMaxWidth(TIME_LINE_WIDTH);
         rectangleList = new LinkedList<>();
@@ -135,14 +147,13 @@ public class TimeLine extends Pane {
     }
 
     private void initEventHandler() {
-        int timeShowerWidth = 60;
         backgroundRectangle.addEventHandler(MouseEvent.ANY,
                 e -> {
                     getChildren().remove(prevBorderPane);
                     //System.out.println(String.valueOf(e.getX()) + "  " + String.valueOf(e.getY()));
 
                     BorderPane borderPane = new BorderPane();
-                    borderPane.setMinWidth(timeShowerWidth);
+                    borderPane.setMinWidth(TIME_SHOWER_WIDTH);
                     borderPane.setMinHeight(TIME_SHOWER_HEIGHT);
                     borderPane.setBorder(
                             new Border(
@@ -150,10 +161,10 @@ public class TimeLine extends Pane {
                                             BorderStrokeStyle.SOLID,
                                             CornerRadii.EMPTY, BorderWidths.DEFAULT)));
                     borderPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("WHITE"), CornerRadii.EMPTY, Insets.EMPTY)));
-                    if (e.getX() > 1 && e.getX() + timeShowerWidth < TIME_LINE_WIDTH) {
+                    if (e.getX() > 1 && e.getX() + TIME_SHOWER_WIDTH < TIME_LINE_WIDTH) {
                         borderPane.setLayoutX(e.getX() + 1);
-                    } else if(e.getX() + timeShowerWidth >= TIME_LINE_WIDTH){
-                        borderPane.setLayoutX(TIME_LINE_WIDTH - timeShowerWidth);
+                    } else if(e.getX() + TIME_SHOWER_WIDTH >= TIME_LINE_WIDTH){
+                        borderPane.setLayoutX(TIME_LINE_WIDTH - TIME_SHOWER_WIDTH);
                     }
 
                     if (e.getY() >= 20 && e.getY() + borderPane.getHeight() <= 49)

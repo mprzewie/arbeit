@@ -1,5 +1,9 @@
 package pl.edu.agh.arbeit.tracker;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.scene.paint.Color;
+import pl.edu.agh.arbeit.gui.model.ApplicationInfo;
+import pl.edu.agh.arbeit.gui.model.JsonColor;
 import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.EventType;
 import pl.edu.agh.arbeit.tracker.events.SystemEvent;
@@ -13,10 +17,18 @@ import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 
 // TODO the whole logic of whether the app is running or not should be stored here
 public class Application {
-    private final String displayName;
-    private final String programName;
-    private final SystemHandler handler;
-    private final SystemTracker systemTracker;
+    private String displayName;
+    private String programName;
+    private SystemHandler handler = new WindowsSystemHandler();
+    private SystemTracker systemTracker;
+    private JsonColor activeColor = new JsonColor(Color.rgb(10, 128, 4));
+    private JsonColor passiveColor = new JsonColor(Color.rgb(193, 16, 9));
+    private JsonColor backgroundColor = new JsonColor(Color.grayRgb(70));
+    private int pingTimeInSeconds = 5;
+    private ApplicationInfo applicationInfo;
+
+    public Application() {
+    }
 
     public Application(String displayName, String programName, SystemTracker tracker) {
         this.displayName = displayName;
@@ -32,10 +44,24 @@ public class Application {
         this.systemTracker = tracker;
     }
 
+    public Application(String displayName, String programName, SystemTracker systemTracker, JsonColor activeColor, JsonColor passiveColor, JsonColor backgroundColor, int pingTimeInSeconds, ApplicationInfo applicationInfo) {
+        this.displayName = displayName;
+        this.programName = programName;
+        this.handler = new WindowsSystemHandler();
+        this.systemTracker = systemTracker;
+        this.activeColor = activeColor;
+        this.passiveColor = passiveColor;
+        this.backgroundColor = backgroundColor;
+        this.pingTimeInSeconds = pingTimeInSeconds;
+        this.applicationInfo = applicationInfo;
+    }
+
+    @JsonIgnore
     public boolean isRunning() {
         return handler.getRunningApplications().contains(programName);
     }
-    
+
+    @JsonIgnore
     public ApplicationEvent getCurrentStateEvent(){
         if(isRunning()){
             if(isActive()) return new ApplicationEvent(EventType.ACTIVE, this);
@@ -44,9 +70,13 @@ public class Application {
 
     }
 
+    @JsonIgnore
     public boolean isActive() {
-        SystemEvent currentSystemEvent = systemTracker.currentStateEvent();
-        return currentSystemEvent.getType().equals(EventType.ACTIVE) && programName.equals(handler.getFocusedApplicationName());
+        if(systemTracker != null) {
+            SystemEvent currentSystemEvent = systemTracker.currentStateEvent();
+            return currentSystemEvent.getType().equals(EventType.ACTIVE) && programName.equals(handler.getFocusedApplicationName());
+        }
+        return false;
     }
 
     public String getDisplayName() {
@@ -61,7 +91,71 @@ public class Application {
     //to determine if new systemTracker should be created
     public boolean equals(Application other) {
         return this.displayName.equals(other.displayName) && this.programName.equals(other.programName);
-    }    
+    }
+
+    public int getPingTimeInSeconds() {
+        return pingTimeInSeconds;
+    }
+
+    public void setPingTimeInSeconds(int pingTimeInSeconds) {
+        if(applicationInfo != null)
+            this.applicationInfo.setPingTimeInSeconds(pingTimeInSeconds);
+        this.pingTimeInSeconds = pingTimeInSeconds;
+    }
+
+    public JsonColor getActiveColor() {
+        return activeColor;
+    }
+
+    public void setActiveColor(JsonColor activeColor) {
+        if(applicationInfo != null)
+            this.applicationInfo.setActiveColor(activeColor);
+        this.activeColor = activeColor;
+    }
+
+    public JsonColor getPassiveColor() {
+        return passiveColor;
+    }
+
+    public void setPassiveColor(JsonColor passiveColor) {
+        if(applicationInfo != null)
+            this.applicationInfo.setPassiveColor(passiveColor);
+        this.passiveColor = passiveColor;
+    }
+
+    public JsonColor getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(JsonColor backgroundColor) {
+        if(applicationInfo != null)
+            this.applicationInfo.setBackgroundColor(backgroundColor);
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void setDisplayName(String displayName) {
+        if(applicationInfo != null)
+            this.applicationInfo.setDisplayName(displayName);
+        this.displayName = displayName;
+    }
+
+    public void setProgramName(String programName) {
+        if(applicationInfo != null)
+            this.applicationInfo.setProgramName(programName);
+        this.programName = programName;
+    }
+
+    public ApplicationInfo getApplicationInfo() {
+        if(applicationInfo == null)
+            applicationInfo = new ApplicationInfo(
+                    getDisplayName(),
+                    getProgramName(),
+                    getActiveColor(),
+                    getPassiveColor(),
+                    getBackgroundColor(),
+                    getPingTimeInSeconds());
+        return applicationInfo;
+    }
 }
 
 

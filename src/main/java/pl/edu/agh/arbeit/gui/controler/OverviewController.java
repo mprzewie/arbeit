@@ -30,6 +30,7 @@ public class OverviewController {
             this.primaryStage.setScene(scene);
 
             this.primaryStage.setOnCloseRequest(t -> {
+                mainWindowController.getAppConfig().update();
                 mainWindowController.stopTrackingAll();
                 Platform.exit();
                 System.exit(0);

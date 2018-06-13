@@ -1,7 +1,5 @@
 package pl.edu.agh.arbeit.gui.model;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -41,7 +39,7 @@ public class AppConfig implements ConfigProvider {
     }
 
     @Override
-    public List<AppInfo> getAppsToTrack() {
+    public List<ApplicationInfo> getAppsToTrack() {
         return this.info.getAppsToTrack();
     }
 
@@ -52,10 +50,20 @@ public class AppConfig implements ConfigProvider {
 
 
     @Override
-    public void addAppToTrack(AppInfo appInfo) {
+    public void addAppToTrack(ApplicationInfo app) {
         File file = new File("config.json");
         try {
-            info.addAppToTrack(appInfo);
+            info.addAppToTrack(app);
+            mapper.writeValue(file, info);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update() {
+        File file = new File("config.json");
+        try {
             mapper.writeValue(file, info);
         } catch (IOException e) {
             e.printStackTrace();

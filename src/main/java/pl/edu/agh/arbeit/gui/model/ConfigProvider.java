@@ -4,12 +4,13 @@ import java.time.Duration;
 import java.util.List;
 
 public interface ConfigProvider {
-    List<AppInfo> getAppsToTrack();
+    List<ApplicationInfo> getAppsToTrack();
     Duration getSystemPingTime();
     Duration getTimeToBecomePassive();
 
-    void addAppToTrack(AppInfo appInfo);
+    void addAppToTrack(ApplicationInfo app);
     void removeAppToTrack(String programName);
+    void update();
     void setSystemPingTime(Duration pingTime);
     void setTimeToBecomePassive(Duration timeToBecomePassive);
 }

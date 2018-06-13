@@ -7,6 +7,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import pl.edu.agh.arbeit.gui.model.JsonColor;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
 
 public class AppSettingsController {
@@ -63,15 +64,19 @@ public class AppSettingsController {
 
     private void initSaveButton() {
         saveButton.setOnAction(event -> {
-                    if (!appListItem.getTimeLine().getActiveColor().equals(activeColorPicker.getValue()))
+                    if (!appListItem.getTimeLine().getActiveColor().equals(activeColorPicker.getValue())) {
+                        appListItem.getApplication().setActiveColor(new JsonColor(activeColorPicker.getValue()));
                         appListItem.getTimeLine().setActiveColor(activeColorPicker.getValue());
 
-                    if (!appListItem.getTimeLine().getPassiveColor().equals(passiveColorPicker.getValue()))
+                    }
+                    if (!appListItem.getTimeLine().getPassiveColor().equals(passiveColorPicker.getValue())) {
+                        appListItem.getApplication().setPassiveColor(new JsonColor(passiveColorPicker.getValue()));
                         appListItem.getTimeLine().setPassiveColor(passiveColorPicker.getValue());
-
-                    if (!appListItem.getTimeLine().getBackgroundColor().equals(backgroundColorPicker.getValue()))
+                    }
+                    if (!appListItem.getTimeLine().getBackgroundColor().equals(backgroundColorPicker.getValue())) {
+                        appListItem.getApplication().setBackgroundColor(new JsonColor(backgroundColorPicker.getValue()));
                         appListItem.getTimeLine().setBackgroundColor(backgroundColorPicker.getValue());
-
+                    }
                     stage.close();
                 }
         );

@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import pl.edu.agh.arbeit.gui.model.ConfigProvider;
 
 public class SystemListItem extends Pane {
 
@@ -13,8 +14,9 @@ public class SystemListItem extends Pane {
     private Text systemText;
 
     private TimeLine timeLine;
+    private ConfigProvider appConfig;
 
-    public SystemListItem() {
+    public SystemListItem(ConfigProvider appConfig) {
         Line verticalLine = new Line();
         verticalLine.setStartX(120);
         verticalLine.setEndX(120);
