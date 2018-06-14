@@ -81,7 +81,7 @@ public class MainWindowController {
     private FontAwesomeIconView leftArrow;
 
     @FXML
-    private FontAwesomeIconView rightArrow
+    private FontAwesomeIconView rightArrow;
 
     private SystemTracker systemTracker;
 

@@ -9,7 +9,7 @@
     -fx-fill: #497fff;
 }
 
-.trash-button, .settings-button, .icon-plus {
+.trash-button, .settings-button, .icon-plus, .date-picker-arrow {
     -fx-fill: #4ebec2;
 }
 

@@ -21,22 +21,14 @@
 
 <AnchorPane fx:id="anchorPane" maxWidth="1000" minWidth="1000.0" prefHeight="550.0" prefWidth="1000.0" styleClass="root" stylesheets="@Standard.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.arbeit.gui.controler.MainWindowController">
    <children>
-       <!--<FontAwesomeIconView glyphName="ARROW_CIRCLE_LEFT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="190" AnchorPane.topAnchor="16" />-->
+       <FontAwesomeIconView fx:id="leftArrow" glyphName="ARROW_CIRCLE_LEFT" size="25" styleClass="date-picker-arrow" AnchorPane.rightAnchor="190" AnchorPane.topAnchor="16" />
        <DatePicker fx:id="datePicker" layoutX="841.0" layoutY="99.0" maxWidth="140" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="99.0" />
-       <!--<FontAwesomeIconView glyphName="ARROW_CIRCLE_RIGHT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="16" AnchorPane.topAnchor="16" />-->
+       <FontAwesomeIconView fx:id="rightArrow" glyphName="ARROW_CIRCLE_RIGHT" size="25" styleClass="date-picker-arrow" AnchorPane.rightAnchor="16" AnchorPane.topAnchor="16" />
        <Line endX="1010" endY="50" layoutY="88.0" startY="50" stroke="#0ac2cd" />
 
        <ScrollPane fx:id="appScrollPane" layoutX="22.0" layoutY="139.0" prefHeight="308.0" prefWidth="957.0" styleClass="inner-scroll-pane" stylesheets="@Standard.css" AnchorPane.leftAnchor="22.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="139.0">
       <content>
-              <VBox fx:id="listContent" styleClass="inner-scroll-pane" stylesheets="@Standard.css">
-<AnchorPane fx:id="anchorPane" maxWidth="1000" minWidth="1000.0" prefHeight="471.0" prefWidth="1000.0" styleClass="root" stylesheets="@Standard.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.arbeit.gui.controler.MainWindowController">
-    <FontAwesomeIconView fx:id="leftArrow" glyphName="ARROW_CIRCLE_LEFT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="190" AnchorPane.topAnchor="16" />
-    <DatePicker fx:id="datePicker" maxWidth="140" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="12.0" />
-    <FontAwesomeIconView fx:id="rightArrow" glyphName="ARROW_CIRCLE_RIGHT" size="25" styleClass="icon-arrow" AnchorPane.rightAnchor="16" AnchorPane.topAnchor="16" />
-    <Line endX="1010" endY="50" startY="50" />
-
-    <ScrollPane fx:id="appScrollPane" prefHeight="310.0" stylesheets="@Standard.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
-        <VBox fx:id="listContent">
+        <VBox fx:id="listContent" styleClass="inner-scroll-pane" stylesheets="@Standard.css">
         </VBox>
       </content>
        </ScrollPane>
