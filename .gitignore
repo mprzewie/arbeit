@@ -1,7 +1,10 @@
 #---------------------------------------#
 # Project Ignores                       #
 #---------------------------------------#
-
+*.txt
+*.csv
+config.json
+*.db
 # Maven
 target/
 pom.xml.tag
