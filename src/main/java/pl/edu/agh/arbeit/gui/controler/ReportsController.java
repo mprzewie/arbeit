@@ -16,7 +16,11 @@ import pl.edu.agh.arbeit.data.report.CsvReport;
 import pl.edu.agh.arbeit.data.repository.DatabaseEventRepository;
 import pl.edu.agh.arbeit.gui.Main;
 
+import pl.edu.agh.arbeit.tracker.Application;
+import pl.edu.agh.arbeit.tracker.events.ApplicationEvent;
 import pl.edu.agh.arbeit.tracker.events.Event;
+import pl.edu.agh.arbeit.tracker.events.EventType;
+import pl.edu.agh.arbeit.tracker.system.WindowsSystemHandler;
 import pl.edu.agh.arbeit.tracker.trackers.ApplicationTracker;
 import java.io.File;
 import java.io.IOException;
@@ -99,11 +103,20 @@ public class ReportsController {
                 List<Event> events = new LinkedList<>();
                 Date start = Date.from(Instant.from(dateFromPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
                 Date end = Date.from(Instant.from(dateToPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
-
+                Date end1=Date.from(Instant.from(dateToPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
+                end1.setTime(end.getTime()-5000);
+                Date end2 =Date.from(Instant.from(dateToPicker.getValue().atStartOfDay(ZoneId.systemDefault())));
+                end2.setTime(end.getTime()-3000);
                 List<String> appsToReport = applicationsNames.stream()
                         .filter(appName -> appBoxes.get(appName).isSelected()).collect(Collectors.toList());
 
                 appsToReport.forEach(app -> events.addAll(eventListener.getRepository().getEventForGivenAppinRange(app,start,end)));
+                appsToReport.forEach(app -> {
+                    if(new WindowsSystemHandler().getRunningApplications().contains(app)){
+                        events.add(new ApplicationEvent(EventType.ACTIVE,new Application(app,app,null),end1));
+                        events.add(new ApplicationEvent(EventType.PASSIVE,new Application(app,app,null),end2));
+                    }
+                });
                 events.addAll(eventListener.getRepository().getEventForGivenAppinRange("system", start, end));
                 if(!events.isEmpty()) {
                     CsvReport report = new CsvReport(appsToReport, events);
