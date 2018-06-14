@@ -98,7 +98,7 @@ public class MainWindowController {
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
 
-        systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
+        systemTracker = new SystemTracker(appConfig.getSystemPingTime(), appConfig.getTimeToBecomePassive());
 
 
         eventListenerSaver = new EventListenerSaver(eventRepository);
