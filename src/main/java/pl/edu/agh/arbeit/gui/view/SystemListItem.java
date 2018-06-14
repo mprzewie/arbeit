@@ -73,10 +73,12 @@ public class SystemListItem extends Pane {
     }
 
     public void setTextWhite() {
+        styleNow = dark;
         systemText.setFill(Color.SNOW);
     }
 
     public void setTextBlack() {
+        styleNow = standard;
         systemText.setFill(Color.BLACK);
     }
 

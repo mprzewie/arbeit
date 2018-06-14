@@ -143,15 +143,12 @@ public class AppListItem extends Pane {
 
     public void setTextWhite() {
         appNameText.setFill(Color.SNOW);
-
-        styleNow = standard;
-
+        styleNow = dark;
     }
 
     public void setTextBlack() {
         appNameText.setFill(Color.BLACK);
-
-        styleNow = dark;
+        styleNow = standard;
     }
 
     public Text getAppNameText() {

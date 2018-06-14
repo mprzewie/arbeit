@@ -166,13 +166,11 @@ public class MainWindowController {
                             anchorPane.getStylesheets().add(dark);
                             appListItems.forEach(AppListItem::setTextWhite);
                             systemListItem.setTextWhite();
-
                             styleNow = dark;
                         } else {
                             anchorPane.getStylesheets().add(standard);
                             appListItems.forEach(AppListItem::setTextBlack);
                             systemListItem.setTextBlack();
-
                             styleNow = standard;
                         }
                 });
