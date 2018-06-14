@@ -7,10 +7,10 @@ import pl.edu.agh.arbeit.tracker.trackers.SystemTracker;
 public class ApplicationInfo {
     private String displayName;
     private String programName;
+    private int pingTimeInSeconds = 5;
     private JsonColor activeColor = new JsonColor(Color.rgb(10, 128, 4));
     private JsonColor passiveColor = new JsonColor(Color.rgb(193, 16, 9));
     private JsonColor backgroundColor = new JsonColor(Color.grayRgb(70));
-    private int pingTimeInSeconds = 5;
 
     public ApplicationInfo() {
     }
@@ -40,6 +40,14 @@ public class ApplicationInfo {
         this.programName = programName;
     }
 
+    public int getPingTimeInSeconds() {
+        return pingTimeInSeconds;
+    }
+
+    public void setPingTimeInSeconds(int pingTimeInSeconds) {
+        this.pingTimeInSeconds = pingTimeInSeconds;
+    }
+
     public JsonColor getActiveColor() {
         return activeColor;
     }
@@ -62,14 +70,6 @@ public class ApplicationInfo {
 
     public void setBackgroundColor(JsonColor backgroundColor) {
         this.backgroundColor = backgroundColor;
-    }
-
-    public int getPingTimeInSeconds() {
-        return pingTimeInSeconds;
-    }
-
-    public void setPingTimeInSeconds(int pingTimeInSeconds) {
-        this.pingTimeInSeconds = pingTimeInSeconds;
     }
 
     public Application toApplication(SystemTracker systemTracker){

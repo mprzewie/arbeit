@@ -13,4 +13,5 @@ public interface ConfigProvider {
     void update();
     void setSystemPingTime(Duration pingTime);
     void setTimeToBecomePassive(Duration timeToBecomePassive);
+    Info getInfo();
 }

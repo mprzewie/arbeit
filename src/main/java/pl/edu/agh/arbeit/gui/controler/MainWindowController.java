@@ -1,5 +1,6 @@
 package pl.edu.agh.arbeit.gui.controler;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -67,6 +68,12 @@ public class MainWindowController {
     @FXML
     private VBox listContent;
 
+    @FXML
+    private FontAwesomeIconView leftArrow;
+
+    @FXML
+    private FontAwesomeIconView rightArrow;
+
     private EventListenerSaver eventListenerSaver;
     private List<EventListener> eventListeners = new ArrayList<>();
 
@@ -90,8 +97,6 @@ public class MainWindowController {
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
         this.overviewController= overviewController;
-        systemListItem = new SystemListItem(appConfig);
-        listContent.getChildren().add(0,systemListItem);
 
         systemTracker = new SystemTracker(appConfig.getSystemPingTime(), Duration.ofSeconds(10));
 
@@ -108,6 +113,8 @@ public class MainWindowController {
 
         systemTracker.start();
         styleNow = AppAdder.class.getResource("Standard.css").toExternalForm();
+        systemListItem = new SystemListItem(appConfig, styleNow);
+        listContent.getChildren().add(0,systemListItem);
 
         appListItems = new ArrayList<>();
 
@@ -127,9 +134,21 @@ public class MainWindowController {
         this.initAddCustomEventButton();
         this.initBeginCustomEventButton();
         this.initStyleChocieBox();
+        this.initArrows();
         //scrollAndButtonVBox.prefHeightProperty().bind(heightProperty);
 
         redrawTimelines(LocalDate.now());
+    }
+
+    private void initArrows() {
+        this.leftArrow.setOnMouseClicked(e->{
+            datePicker.setValue(datePicker.getValue().minusDays(1));
+        });
+
+        this.rightArrow.setOnMouseClicked(e->{
+            if(!datePicker.getValue().equals(LocalDate.now()))
+                datePicker.setValue(datePicker.getValue().plusDays(1));
+        });
     }
 
     private void initStyleChocieBox() {
@@ -296,7 +315,9 @@ public class MainWindowController {
             relevantEvents.forEach(appListItem.getTimeLine()::addEvent);
         });
         List<Event> relevantSystemEvents = eventRepository.getEventForGivenAppinRange("system", from, to);
-        systemListItem.setTimeLine(new TimeLine());
+        systemListItem.setTimeLine(new TimeLine(appConfig.getInfo().getSystemActiveColor().getColorFx(),
+                                                appConfig.getInfo().getSystemPassiveColor().getColorFx(),
+                                                appConfig.getInfo().getSystemBackgroundColor().getColorFx()));
         eventRepository.getPreviousEventTypeForApp(relevantSystemEvents)
                 .ifPresent(event -> systemListItem.getTimeLine().addEvent(new Event() {
                     @Override

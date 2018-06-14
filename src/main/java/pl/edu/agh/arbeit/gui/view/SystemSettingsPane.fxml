@@ -3,18 +3,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<AnchorPane fx:id="anchorPane" maxHeight="356.0" maxWidth="360.0" minHeight="356.0" minWidth="360.0" prefHeight="356.0" prefWidth="360.0" stylesheets="@Standard.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.arbeit.gui.controler.AppSettingsController">
+<AnchorPane fx:id="anchorPane" maxHeight="356.0" maxWidth="360.0" minHeight="356.0" minWidth="360.0" prefHeight="356.0" prefWidth="360.0" stylesheets="@Standard.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.arbeit.gui.controler.SystemSettingsController">
     <children>
-        <Label layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="145.0" text="Display name:" AnchorPane.topAnchor="14.0" />
-        <Label layoutX="14.0" layoutY="67.0" prefHeight="26.0" prefWidth="129.0" text="File to track:" AnchorPane.topAnchor="67.0" />
-        <Label layoutX="14.0" layoutY="116.0" prefHeight="26.0" prefWidth="121.0" text="Ping Time:" AnchorPane.topAnchor="116.0" />
+        <Label layoutX="14.0" layoutY="14.0" prefHeight="26.0" prefWidth="145.0" text="Display Name:" AnchorPane.topAnchor="14.0" />
+        <Label layoutX="14.0" layoutY="67.0" prefHeight="26.0" text="Time to become passive (sec):" AnchorPane.topAnchor="67.0" />
+        <Label layoutX="14.0" layoutY="116.0" prefHeight="26.0" prefWidth="121.0" text="System ping Time:" AnchorPane.topAnchor="116.0" />
         <Button fx:id="cancelButton" layoutX="58.0" layoutY="304.0" minHeight="38.0" minWidth="101.0" mnemonicParsing="false" text="Cancel" textAlignment="CENTER">
             <font>
                 <Font name="System Bold" size="12.0" />
             </font>
         </Button>
       <TextField fx:id="appNameTextField" layoutX="159.0" layoutY="12.0" />
-      <TextField fx:id="programNameTextField" layoutX="159.0" layoutY="65.0" />
+      <TextField fx:id="programNameTextField" layoutX="260.0" layoutY="65.0" prefWidth="87.0" />
       <ComboBox fx:id="pingTimeChoiceBox" layoutX="260.0" layoutY="113.0" prefWidth="87.0" />
       <Button fx:id="saveButton" layoutX="202.0" layoutY="304.0" minHeight="38.0" minWidth="101.0" mnemonicParsing="false" text="Save" textAlignment="CENTER">
          <font>

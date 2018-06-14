@@ -2,13 +2,15 @@ package pl.edu.agh.arbeit.gui.controler;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import pl.edu.agh.arbeit.gui.model.JsonColor;
 import pl.edu.agh.arbeit.gui.view.AppListItem;
+
+import java.util.stream.IntStream;
 
 public class AppSettingsController {
     private AppListItem appListItem;
@@ -30,7 +32,7 @@ public class AppSettingsController {
     private TextField programNameTextField;
 
     @FXML
-    private ChoiceBox pingTimeChoiceBox;
+    private ComboBox<Integer> pingTimeChoiceBox;
 
     @FXML
     private ColorPicker activeColorPicker;
@@ -50,7 +52,6 @@ public class AppSettingsController {
 
         appNameTextField.setText(appListItem.getApplication().getDisplayName());
         programNameTextField.setText(appListItem.getApplication().getProgramName());
-        pingTimeChoiceBox.setDisable(true);
 
         activeColorPicker.setValue(appListItem.getTimeLine().getActiveColor());
         passiveColorPicker.setValue(appListItem.getTimeLine().getPassiveColor());
@@ -58,6 +59,7 @@ public class AppSettingsController {
 
         initCancelButton();
         initSaveButton();
+        initPingTimeChoiceBox();
         anchorPane.getStylesheets().clear();
         anchorPane.getStylesheets().add(styleType);
     }
@@ -77,6 +79,18 @@ public class AppSettingsController {
                         appListItem.getApplication().setBackgroundColor(new JsonColor(backgroundColorPicker.getValue()));
                         appListItem.getTimeLine().setBackgroundColor(backgroundColorPicker.getValue());
                     }
+
+                    if (!appListItem.getApplication().getDisplayName().equals(appNameTextField.getText())){
+                        appListItem.getApplication().setDisplayName(appNameTextField.getText());
+                        appListItem.getAppNameText().setText(appNameTextField.getText());
+                    }
+
+                    if (!appListItem.getApplication().getProgramName().equals(programNameTextField.getText())){
+                        appListItem.getApplication().setProgramName(programNameTextField.getText());
+                    }
+                    if(appListItem.getApplication().getPingTimeInSeconds() != pingTimeChoiceBox.getValue()){
+                        appListItem.getApplication().setPingTimeInSeconds(pingTimeChoiceBox.getValue());
+                    }
                     stage.close();
                 }
         );
@@ -86,5 +100,10 @@ public class AppSettingsController {
         cancelButton.setOnAction(event ->
                 stage.close()
         );
+    }
+
+    private void initPingTimeChoiceBox(){
+        IntStream.rangeClosed(1,100).boxed().forEach(pingTimeChoiceBox.getItems()::add);
+        pingTimeChoiceBox.setValue(appListItem.getApplication().getPingTimeInSeconds());
     }
 }

@@ -154,5 +154,7 @@ public class AppListItem extends Pane {
         styleNow = dark;
     }
 
-
+    public Text getAppNameText() {
+        return appNameText;
+    }
 }

@@ -95,4 +95,9 @@ public class AppConfig implements ConfigProvider {
     public void setTimeToBecomePassive(Duration timeToBecomePassive) {
         this.info.setTimeToBecomePassiveInSeconds(timeToBecomePassive.getSeconds());
     }
+
+    @Override
+    public Info getInfo() {
+        return this.info;
+    }
 }
