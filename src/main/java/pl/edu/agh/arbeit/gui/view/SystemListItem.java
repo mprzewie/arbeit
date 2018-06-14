@@ -57,6 +57,15 @@ public class SystemListItem extends Pane {
                 appConfig.getInfo().getSystemPassiveColor().getColorFx(),
                 appConfig.getInfo().getSystemBackgroundColor().getColorFx()
         );
+        this.settingsIcon = new FontAwesomeIconView(FontAwesomeIcon.COG);
+        this.settingsIcon.setStyleClass("icon");
+        this.settingsIcon.setSize("22px");
+        this.settingsIcon.setLayoutX(97);
+        this.settingsIcon.setLayoutY(22);
+        this.settingsIcon.getStyleClass().add("settings-button");
+        this.getChildren().add(settingsIcon);
+
+        this.timeLine = new TimeLine();
         this.getChildren().add(timeLine);
 
         initSettingsButton();

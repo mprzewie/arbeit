@@ -1,5 +1,7 @@
 .root {
-    -fx-base: rgb(255, 255, 255);
+    -fx-base: #f8f8f8;
+    -fx-background-color: #bfbfbf;
+    -fx-text-fill: #f2f2f2;
 }
 
 .icon-arrow {
@@ -7,12 +9,20 @@
     -fx-fill: #497fff;
 }
 
-.icon-plus {
-    -fx-stroke: #497fff;
-    -fx-fill: #497fff;
+.trash-button, .settings-button, .icon-plus {
+    -fx-fill: #4ebec2;
 }
 
 .button{
-    -fx-background-color: #497fff;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #4ebec2;
+    -fx-text-fill: #f2f2f2;
 }
+
+.text-in-label {
+    -fx-text-fill: #f2f2f2;
+}
+
+.choice-box .context-menu { -fx-background-color: #f2f2f2; }
+.choice-box .menu-item:focused { -fx-background-color: #4ebec2; }
+.choice-box .menu-item > .label { -fx-text-fill: #07263b; }
+.choice-box .menu-item:focused > .label { -fx-text-fill: black; }

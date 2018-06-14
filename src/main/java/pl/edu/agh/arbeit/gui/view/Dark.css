@@ -8,13 +8,12 @@
 }
 
 .icon-plus {
-    -fx-stroke: #6838ff;
-    -fx-fill: #6838ff;
+    -fx-fill: #f34e4a;
 }
 
 .button{
-    -fx-background-color: #6838ff;
-    -fx-text-fill: #497fff;
+    -fx-background-color: #4ebec2;
+    -fx-text-fill: #f2f2f2;
 }
 
-
+.choice-box .menu-item:focused { -fx-background-color: #4ebec2; }

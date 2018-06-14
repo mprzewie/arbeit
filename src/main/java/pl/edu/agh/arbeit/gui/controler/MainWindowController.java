@@ -10,6 +10,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -68,14 +74,14 @@ public class MainWindowController {
     @FXML
     private VBox listContent;
 
+    private EventListenerSaver eventListenerSaver;
+    private List<EventListener> eventListeners = new ArrayList<>();
+
     @FXML
     private FontAwesomeIconView leftArrow;
 
     @FXML
-    private FontAwesomeIconView rightArrow;
-
-    private EventListenerSaver eventListenerSaver;
-    private List<EventListener> eventListeners = new ArrayList<>();
+    private FontAwesomeIconView rightArrow
 
     private SystemTracker systemTracker;
 
@@ -93,6 +99,12 @@ public class MainWindowController {
     private SystemListItem systemListItem;
 
     private String styleNow;
+
+    @FXML
+    private ImageView logoImg;
+
+    @FXML
+    private ImageView textTopImg;
 
 
     public void init(OverviewController overviewController, DoubleBinding heightProperty) {
@@ -117,6 +129,8 @@ public class MainWindowController {
         listContent.getChildren().add(0,systemListItem);
 
         appListItems = new ArrayList<>();
+        Image image = new Image("/logo_arbeit_darker_blue.png");
+        logoImg = new ImageView(image);
 
         datePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
